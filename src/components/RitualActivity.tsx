@@ -7,14 +7,18 @@ import Meditation from './rituals/Meditation';
 import Affirmation from './rituals/Affirmation';
 import useSpeechRecognition from '../hooks/useSpeechRecognition';
 import { formatTime, getRitualDuration } from '../utils/ritualUtils';
+import { saveRitualActivity } from '../utils/ritualService';
 
 interface RitualActivityProps {
   ritual: 'breathing' | 'meditation' | 'affirmation';
+  mood: string;
+  subject: string;
   onComplete: () => void;
 }
 
-const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) => {
-  const [timeLeft, setTimeLeft] = useState<number>(getRitualDuration(ritual));
+const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, onComplete }) => {
+  const initialTime = getRitualDuration(ritual);
+  const [timeLeft, setTimeLeft] = useState<number>(initialTime);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [step, setStep] = useState<number>(1);
   const [audioError, setAudioError] = useState<boolean>(false);
@@ -70,11 +74,24 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
     };
   }, [isActive, timeLeft, ritual]);
   
-  const handleComplete = () => {
+  const handleComplete = async () => {
+    // Calculate duration (how long they actually took)
+    const actualDuration = initialTime - timeLeft;
+    
+    // Save the ritual activity data
+    await saveRitualActivity({
+      subject,
+      ritual,
+      mood,
+      completedAt: new Date().toISOString(),
+      duration: actualDuration
+    });
+    
     toast({
       title: "Ritual Complete",
       description: "You're now prepared for your test. Good luck!",
     });
+    
     onComplete();
   };
   

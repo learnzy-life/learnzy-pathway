@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import MoodSelector from '../components/MoodSelector';
 import PreRitualCard from '../components/PreRitualCard';
 import RitualActivity from '../components/RitualActivity';
+import PostRitualInfo from '../components/PostRitualInfo';
 
 type Mood = 'great' | 'good' | 'okay' | 'stressed' | 'anxious';
 type PreRitual = 'breathing' | 'meditation' | 'affirmation' | 'none';
@@ -27,6 +28,7 @@ const PreTest: React.FC = () => {
   const [ritual, setRitual] = useState<PreRitual | undefined>(undefined);
   const [ritualCompleted, setRitualCompleted] = useState(false);
   const [showRitualActivity, setShowRitualActivity] = useState(false);
+  const [showPostRitualInfo, setShowPostRitualInfo] = useState(false);
   
   if (!subject) {
     return <div>Invalid subject</div>;
@@ -70,6 +72,7 @@ const PreTest: React.FC = () => {
     
     if (selectedRitual === 'none') {
       setRitualCompleted(true);
+      setShowPostRitualInfo(true);
       toast({
         title: "Ready to begin!",
         description: "You've chosen to skip the pre-test ritual.",
@@ -99,6 +102,7 @@ const PreTest: React.FC = () => {
   const handleRitualComplete = () => {
     setShowRitualActivity(false);
     setRitualCompleted(true);
+    setShowPostRitualInfo(true);
   };
 
   const handleStartTest = () => {
@@ -147,7 +151,40 @@ const PreTest: React.FC = () => {
             <MoodSelector onSelect={setMood} selectedMood={mood} />
           </div>
           
-          {!showRitualActivity ? (
+          {showRitualActivity ? (
+            <RitualActivity 
+              ritual={ritual as 'breathing' | 'meditation' | 'affirmation'} 
+              mood={mood || 'unknown'}
+              subject={subject}
+              onComplete={handleRitualComplete} 
+            />
+          ) : showPostRitualInfo ? (
+            <>
+              <PostRitualInfo 
+                ritual={ritual as 'breathing' | 'meditation' | 'affirmation' | 'none'} 
+                subject={subject}
+              />
+              
+              <div className="mt-8">
+                <div className="bg-learnzy-purple/5 border border-learnzy-purple/20 rounded-xl p-4 mb-8 flex items-start">
+                  <AlertCircle className="w-5 h-5 text-learnzy-purple flex-shrink-0 mt-0.5 mr-3" />
+                  <div>
+                    <h3 className="text-sm font-medium text-learnzy-dark mb-1">Important Information</h3>
+                    <p className="text-sm text-muted-foreground">
+                      This test contains 180 questions and has a time limit of 180 minutes. Once started, the timer cannot be paused. Ensure you have a stable internet connection and a distraction-free environment.
+                    </p>
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={handleStartTest}
+                  className="button-primary w-full flex justify-center items-center animate-pulse"
+                >
+                  Start {subjectTitle} Test <ArrowRight className="ml-2 w-5 h-5" />
+                </button>
+              </div>
+            </>
+          ) : (
             <div className="card-glass p-8 animate-fade-in">
               <h2 className="text-xl font-medium text-learnzy-dark mb-6 text-center">
                 Choose a Pre-Test Ritual
@@ -198,11 +235,6 @@ const PreTest: React.FC = () => {
                 Start {subjectTitle} Test <ArrowRight className="ml-2 w-5 h-5" />
               </button>
             </div>
-          ) : (
-            <RitualActivity 
-              ritual={ritual as 'breathing' | 'meditation' | 'affirmation'} 
-              onComplete={handleRitualComplete} 
-            />
           )}
         </section>
       </main>
