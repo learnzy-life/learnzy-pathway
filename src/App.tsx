@@ -11,6 +11,7 @@ import Test from "./pages/Test";
 import PreAnalysis from "./pages/PreAnalysis";
 import Results from "./pages/Results";
 import NotFound from "./pages/NotFound";
+import LearnMore from "./pages/LearnMore";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/test/:subject" element={<Test />} />
           <Route path="/analysis/:subject" element={<PreAnalysis />} />
           <Route path="/results/:subject" element={<Results />} />
+          <Route path="/learn-more" element={<LearnMore />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

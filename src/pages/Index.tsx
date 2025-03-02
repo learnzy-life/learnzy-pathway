@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, BrainCircuit, CheckCircle, Sparkles, HeartPulse, Medal, BarChart, Brain } from 'lucide-react';
@@ -34,7 +33,7 @@ const Index: React.FC = () => {
             <Link to="/subjects" className="button-primary w-full sm:w-auto">
               Start Test Now <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
-            <Link to="/about" className="button-secondary w-full sm:w-auto">
+            <Link to="/learn-more" className="button-secondary w-full sm:w-auto">
               Learn More
             </Link>
           </div>
