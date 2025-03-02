@@ -1,10 +1,14 @@
 
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Download, Share2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Download, Share2, Clock, Target, Brain, Book, ChevronRight, Award, BarChart, PieChart, LineChart, CheckCircle2, Lightbulb, ThumbsUp } from 'lucide-react';
 import Header from '../components/Header';
 import ResultsOverview from '../components/ResultsOverview';
 import TopicBreakdown from '../components/TopicBreakdown';
+import TimeAnalysis from '../components/TimeAnalysis';
+import CognitiveInsights from '../components/CognitiveInsights';
+import ImprovementResources from '../components/ImprovementResources';
+import MindsetAnalysis from '../components/MindsetAnalysis';
 
 type Subject = 'biology' | 'physics' | 'chemistry';
 
@@ -27,6 +31,8 @@ const getMockResultsData = (subject: Subject) => {
     unattempted: 0,
     accuracy: 77,
     timeSpent: '2h 15m',
+    allowedTime: '3h 0m',
+    idealTime: '2h 45m',
     subjectScores: [
       { name: 'Cell Biology', score: 85, total: 100 },
       { name: 'Genetics', score: 78, total: 100 },
@@ -41,7 +47,10 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 22,
         totalCount: 25,
         percentage: 88,
-        masteryLevel: 'Excellent' as const
+        previousPercentage: 82,
+        masteryLevel: 'Excellent' as const,
+        avgTimePerQuestion: '45s',
+        needsAttention: false
       },
       {
         id: '2',
@@ -49,7 +58,10 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 19,
         totalCount: 25,
         percentage: 76,
-        masteryLevel: 'Good' as const
+        previousPercentage: 70,
+        masteryLevel: 'Good' as const,
+        avgTimePerQuestion: '60s',
+        needsAttention: false
       },
       {
         id: '3',
@@ -57,7 +69,10 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 24,
         totalCount: 25,
         percentage: 96,
-        masteryLevel: 'Excellent' as const
+        previousPercentage: 88,
+        masteryLevel: 'Excellent' as const,
+        avgTimePerQuestion: '40s',
+        needsAttention: false
       },
       {
         id: '4',
@@ -65,7 +80,10 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 16,
         totalCount: 25,
         percentage: 64,
-        masteryLevel: 'Average' as const
+        previousPercentage: 72,
+        masteryLevel: 'Average' as const,
+        avgTimePerQuestion: '75s',
+        needsAttention: true
       },
       {
         id: '5',
@@ -73,7 +91,10 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 23,
         totalCount: 25,
         percentage: 92,
-        masteryLevel: 'Excellent' as const
+        previousPercentage: 85,
+        masteryLevel: 'Excellent' as const,
+        avgTimePerQuestion: '50s',
+        needsAttention: false
       },
       {
         id: '6',
@@ -81,7 +102,10 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 13,
         totalCount: 25,
         percentage: 52,
-        masteryLevel: 'Needs Improvement' as const
+        previousPercentage: 60,
+        masteryLevel: 'Needs Improvement' as const,
+        avgTimePerQuestion: '90s',
+        needsAttention: true
       },
       {
         id: '7',
@@ -89,9 +113,98 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 21,
         totalCount: 30,
         percentage: 70,
-        masteryLevel: 'Good' as const
+        previousPercentage: 65,
+        masteryLevel: 'Good' as const,
+        avgTimePerQuestion: '65s',
+        needsAttention: false
       },
-    ]
+    ],
+    timeAnalysis: {
+      timeSpent: '2h 15m',
+      allowedTime: '3h 0m',
+      idealTime: '2h 45m',
+      timeSummary: 'You finished 45 min early—excellent pacing!',
+      slowQuestions: [3, 7, 12, 18],
+      quickQuestions: [5, 9, 15, 22],
+      feedback: 'Your time management is good overall. Consider spending more time on difficult questions in the Molecular Biology section.'
+    },
+    cognitiveInsights: {
+      difficultyAccuracy: {
+        easy: 90,
+        medium: 65,
+        hard: 45
+      },
+      questionTypeAccuracy: {
+        conceptual: 75,
+        numerical: 50,
+        application: 60,
+        analytical: 55
+      },
+      bloomsAccuracy: {
+        remember: 85,
+        understand: 70,
+        apply: 60,
+        analyze: 50,
+        evaluate: 40,
+        create: 30
+      },
+      insights: [
+        'You excel at conceptual questions but could improve on numerical problems',
+        'Your analytical skills have improved by 8% since your last test',
+        'Consider spending more time on application-based questions'
+      ]
+    },
+    improvementResources: [
+      {
+        topic: 'Molecular Biology',
+        accuracy: 52,
+        resources: [
+          { type: 'Video', title: 'DNA Replication Explained', url: '#' },
+          { type: 'Practice', title: '25 DNA & RNA Questions', url: '#' },
+          { type: 'Reading', title: 'Molecular Biology Fundamentals', url: '#' }
+        ],
+        progress: 1,
+        totalActions: 3
+      },
+      {
+        topic: 'Ecology',
+        accuracy: 64,
+        resources: [
+          { type: 'Video', title: 'Ecosystem Dynamics', url: '#' },
+          { type: 'Practice', title: 'Ecological Cycles Quiz', url: '#' },
+          { type: 'Reading', title: 'Biodiversity and Conservation', url: '#' }
+        ],
+        progress: 2,
+        totalActions: 3
+      },
+      {
+        topic: 'Genetics',
+        accuracy: 76,
+        resources: [
+          { type: 'Video', title: 'Mendel's Laws Simplified', url: '#' },
+          { type: 'Practice', title: 'Genetic Disorders Quiz', url: '#' },
+          { type: 'Reading', title: 'Modern Genetics Applications', url: '#' }
+        ],
+        progress: 0,
+        totalActions: 3
+      }
+    ],
+    mindsetAnalysis: {
+      confidence: 75,
+      stress: 40,
+      focus: 85,
+      resilience: 70,
+      insights: [
+        'Your confidence level was optimal for peak performance',
+        'You showed good resilience when tackling difficult topics',
+        'Consider mindfulness techniques to further reduce stress during exams'
+      ],
+      improvements: [
+        'Practice more timed mock tests to build test-taking stamina',
+        'Try the 4-7-8 breathing technique before difficult questions',
+        'Use positive visualization techniques before your next exam'
+      ]
+    }
   };
 };
 
@@ -110,7 +223,7 @@ const Results: React.FC = () => {
       <Header />
       
       <main className="container mx-auto px-6 pt-24 pb-16">
-        <section className="py-12 max-w-4xl mx-auto">
+        <section className="py-8 max-w-5xl mx-auto">
           <Link to="/subjects" className="flex items-center text-muted-foreground hover:text-learnzy-dark mb-8 transition-colors duration-200">
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Subjects
           </Link>
@@ -121,7 +234,7 @@ const Results: React.FC = () => {
                 {subjectTitle} Test Results
               </h1>
               <p className="text-muted-foreground">
-                Here's a detailed breakdown of your diagnostic test performance.
+                Great job completing your diagnostic test! Here's a detailed breakdown of your performance.
               </p>
             </div>
             
@@ -135,79 +248,72 @@ const Results: React.FC = () => {
             </div>
           </div>
           
-          {/* Results Overview */}
-          <ResultsOverview
-            subject={subjectTitle}
-            totalScore={resultsData.totalScore}
-            maxScore={resultsData.maxScore}
-            correctAnswers={resultsData.correctAnswers}
-            incorrectAnswers={resultsData.incorrectAnswers}
-            unattempted={resultsData.unattempted}
-            accuracy={resultsData.accuracy}
-            timeSpent={resultsData.timeSpent}
-            subjectScores={resultsData.subjectScores}
-          />
-          
-          {/* Topic Breakdown */}
-          <TopicBreakdown topics={resultsData.topics} />
-          
-          {/* Recommendation Section */}
-          <div className="card-glass p-6 mt-8">
-            <h3 className="text-xl font-semibold text-learnzy-dark mb-6">Study Recommendations</h3>
-            
-            <div className="space-y-6">
-              <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-subtle">
-                <h4 className="text-base font-medium text-learnzy-dark mb-2">Focus Areas</h4>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li className="flex items-start">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 mt-2 mr-2"></span>
-                    Molecular Biology (52% accuracy) - Review basic concepts and practice more questions
-                  </li>
-                  <li className="flex items-start">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 mr-2"></span>
-                    Ecology (64% accuracy) - Focus on ecosystem dynamics and biogeochemical cycles
-                  </li>
-                </ul>
-              </div>
-              
-              <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-subtle">
-                <h4 className="text-base font-medium text-learnzy-dark mb-2">Strengths</h4>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li className="flex items-start">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2 mr-2"></span>
-                    Human Physiology (96% accuracy) - Excellent understanding of core concepts
-                  </li>
-                  <li className="flex items-start">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-2 mr-2"></span>
-                    Evolution (92% accuracy) - Strong grasp of evolutionary principles
-                  </li>
-                </ul>
-              </div>
-              
-              <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-subtle">
-                <h4 className="text-base font-medium text-learnzy-dark mb-2">Suggested Resources</h4>
-                <ul className="space-y-3 text-muted-foreground">
-                  <li className="flex items-start">
-                    <span className="w-1.5 h-1.5 rounded-full bg-learnzy-purple mt-2 mr-2"></span>
-                    <div>
-                      <p className="text-learnzy-dark">Molecular Biology Crash Course</p>
-                      <p className="text-sm">A comprehensive review of DNA, RNA, protein synthesis, and gene regulation.</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="w-1.5 h-1.5 rounded-full bg-learnzy-purple mt-2 mr-2"></span>
-                    <div>
-                      <p className="text-learnzy-dark">Ecology Practice Problems</p>
-                      <p className="text-sm">Targeted practice questions focusing on ecosystem interactions and energy flow.</p>
-                    </div>
-                  </li>
-                </ul>
-              </div>
+          {/* Section 1: Results Overview */}
+          <div className="mb-12">
+            <div className="flex items-center mb-6">
+              <CheckCircle2 className="w-6 h-6 text-learnzy-purple mr-3" />
+              <h2 className="text-2xl font-semibold text-learnzy-dark">Performance Overview</h2>
             </div>
+            <ResultsOverview
+              subject={subjectTitle}
+              totalScore={resultsData.totalScore}
+              maxScore={resultsData.maxScore}
+              correctAnswers={resultsData.correctAnswers}
+              incorrectAnswers={resultsData.incorrectAnswers}
+              unattempted={resultsData.unattempted}
+              accuracy={resultsData.accuracy}
+              timeSpent={resultsData.timeSpent}
+              subjectScores={resultsData.subjectScores}
+            />
+          </div>
+          
+          {/* Section 2: Time Analysis */}
+          <div className="mb-12">
+            <div className="flex items-center mb-6">
+              <Clock className="w-6 h-6 text-learnzy-purple mr-3" />
+              <h2 className="text-2xl font-semibold text-learnzy-dark">Time Management</h2>
+            </div>
+            <TimeAnalysis timeAnalysis={resultsData.timeAnalysis} />
+          </div>
+          
+          {/* Section 3: Topic Breakdown */}
+          <div className="mb-12">
+            <div className="flex items-center mb-6">
+              <BarChart className="w-6 h-6 text-learnzy-purple mr-3" />
+              <h2 className="text-2xl font-semibold text-learnzy-dark">Topic Breakdown</h2>
+            </div>
+            <TopicBreakdown topics={resultsData.topics} />
+          </div>
+          
+          {/* Section 4: Cognitive Insights */}
+          <div className="mb-12">
+            <div className="flex items-center mb-6">
+              <Brain className="w-6 h-6 text-learnzy-purple mr-3" />
+              <h2 className="text-2xl font-semibold text-learnzy-dark">Deep Insights</h2>
+            </div>
+            <CognitiveInsights insights={resultsData.cognitiveInsights} />
+          </div>
+          
+          {/* Section 5: Improvement Resources */}
+          <div className="mb-12">
+            <div className="flex items-center mb-6">
+              <Book className="w-6 h-6 text-learnzy-purple mr-3" />
+              <h2 className="text-2xl font-semibold text-learnzy-dark">Improve Before Your Next Mock</h2>
+            </div>
+            <ImprovementResources resources={resultsData.improvementResources} />
+          </div>
+          
+          {/* Section 6: Mindset Analysis */}
+          <div className="mb-12">
+            <div className="flex items-center mb-6">
+              <Lightbulb className="w-6 h-6 text-learnzy-purple mr-3" />
+              <h2 className="text-2xl font-semibold text-learnzy-dark">Your Mindset Performance</h2>
+            </div>
+            <MindsetAnalysis mindset={resultsData.mindsetAnalysis} />
           </div>
           
           {/* Next Steps */}
-          <div className="mt-10 text-center">
+          <div className="mt-12 text-center">
             <h3 className="text-xl font-medium mb-4">Ready for Your Next Challenge?</h3>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
               Continue your diagnostic journey by testing your knowledge in another subject area.
