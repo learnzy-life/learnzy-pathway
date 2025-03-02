@@ -183,8 +183,8 @@ const Index: React.FC = () => {
               </div>
               <div className="w-full md:w-1/2 order-1 md:order-2 bg-white p-4 rounded-xl border border-gray-100 shadow-subtle">
                 <img 
-                  src="/placeholder.svg" 
-                  alt="Analytics visualization" 
+                  src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d" 
+                  alt="Student using analytics dashboard" 
                   className="w-full h-auto rounded-lg"
                 />
               </div>
