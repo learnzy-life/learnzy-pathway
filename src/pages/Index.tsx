@@ -12,7 +12,7 @@ const Index: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-white">
       <Header />
       
-      <main className="container mx-auto px-4 sm:px-6 pt-20 pb-16">
+      <main className="container mx-auto px-2 sm:px-6 pt-16 sm:pt-20 pb-10 sm:pb-16 overflow-hidden">
         {/* Hero Section */}
         <HeroSection />
         
