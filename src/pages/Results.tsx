@@ -181,7 +181,7 @@ const getMockResultsData = (subject: Subject) => {
         topic: 'Genetics',
         accuracy: 76,
         resources: [
-          { type: 'Video', title: 'Mendel's Laws Simplified', url: '#' },
+          { type: 'Video', title: "Mendel's Laws Simplified", url: '#' },
           { type: 'Practice', title: 'Genetic Disorders Quiz', url: '#' },
           { type: 'Reading', title: 'Modern Genetics Applications', url: '#' }
         ],
