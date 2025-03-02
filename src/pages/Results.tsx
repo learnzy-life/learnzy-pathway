@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { 
   CheckCircle2, 
@@ -20,11 +20,26 @@ import ImprovementResources from '../components/ImprovementResources';
 import MindsetAnalysis from '../components/MindsetAnalysis';
 import SectionHeader from '../components/SectionHeader';
 import NextStepsSection from '../components/NextStepsSection';
+import { calculateMindsetMetrics, MindsetMetrics } from '../utils/mindsetMetricsService';
 
 type Subject = 'biology' | 'physics' | 'chemistry';
 
 const Results: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>();
+  const [mindsetMetrics, setMindsetMetrics] = useState<MindsetMetrics | null>(null);
+  
+  useEffect(() => {
+    // Store the mock data in localStorage so our mindset service can access it
+    // In a real app, this would be fetched from a database
+    if (subject) {
+      const resultsData = getMockResultsData(subject as Subject);
+      localStorage.setItem('mockData', JSON.stringify(resultsData));
+      
+      // Calculate real mindset metrics
+      const metrics = calculateMindsetMetrics(subject);
+      setMindsetMetrics(metrics);
+    }
+  }, [subject]);
   
   if (!subject) {
     return <div>Invalid subject</div>;
@@ -96,7 +111,7 @@ const Results: React.FC = () => {
           icon={Lightbulb} 
           title="Your Mindset Performance" 
         />
-        <MindsetAnalysis mindset={resultsData.mindsetAnalysis} />
+        <MindsetAnalysis mindset={mindsetMetrics || resultsData.mindsetAnalysis} />
       </div>
       
       {/* Next Steps */}

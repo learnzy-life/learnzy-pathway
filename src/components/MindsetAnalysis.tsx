@@ -1,16 +1,10 @@
 
 import React from 'react';
 import { Brain, TrendingUp, Lightbulb, ThumbsUp } from 'lucide-react';
+import { MindsetMetrics } from '../utils/mindsetMetricsService';
 
 interface MindsetAnalysisProps {
-  mindset: {
-    confidence: number;
-    stress: number;
-    focus: number;
-    resilience: number;
-    insights: string[];
-    improvements: string[];
-  };
+  mindset: MindsetMetrics;
 }
 
 const MindsetAnalysis: React.FC<MindsetAnalysisProps> = ({ mindset }) => {
