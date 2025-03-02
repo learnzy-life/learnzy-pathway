@@ -41,7 +41,7 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 22,
         totalCount: 25,
         percentage: 88,
-        masteryLevel: 'Excellent'
+        masteryLevel: 'Excellent' as const
       },
       {
         id: '2',
@@ -49,7 +49,7 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 19,
         totalCount: 25,
         percentage: 76,
-        masteryLevel: 'Good'
+        masteryLevel: 'Good' as const
       },
       {
         id: '3',
@@ -57,7 +57,7 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 24,
         totalCount: 25,
         percentage: 96,
-        masteryLevel: 'Excellent'
+        masteryLevel: 'Excellent' as const
       },
       {
         id: '4',
@@ -65,7 +65,7 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 16,
         totalCount: 25,
         percentage: 64,
-        masteryLevel: 'Average'
+        masteryLevel: 'Average' as const
       },
       {
         id: '5',
@@ -73,7 +73,7 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 23,
         totalCount: 25,
         percentage: 92,
-        masteryLevel: 'Excellent'
+        masteryLevel: 'Excellent' as const
       },
       {
         id: '6',
@@ -81,7 +81,7 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 13,
         totalCount: 25,
         percentage: 52,
-        masteryLevel: 'Needs Improvement'
+        masteryLevel: 'Needs Improvement' as const
       },
       {
         id: '7',
@@ -89,7 +89,7 @@ const getMockResultsData = (subject: Subject) => {
         correctCount: 21,
         totalCount: 30,
         percentage: 70,
-        masteryLevel: 'Good'
+        masteryLevel: 'Good' as const
       },
     ]
   };
