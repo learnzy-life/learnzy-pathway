@@ -52,7 +52,7 @@ const PostRitualInfo: React.FC<PostRitualInfoProps> = ({ ritual, subject }) => {
     none: {
       title: 'Ready to Begin',
       benefits: [
-        'You've chosen to proceed directly to the test',
+        "You've chosen to proceed directly to the test",
         'Trust in your existing preparation and knowledge',
         'Your confidence in your abilities is key to success'
       ],
