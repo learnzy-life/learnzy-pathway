@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { ArrowRight, Play, Pause, RotateCcw } from 'lucide-react';
+import { ArrowRight, Play, Pause, RotateCcw, Mic, MicOff } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
 
 interface RitualActivityProps {
@@ -13,6 +13,10 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
   const [isActive, setIsActive] = useState<boolean>(false);
   const [step, setStep] = useState<number>(1);
   const [audioError, setAudioError] = useState<boolean>(false);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [affirmationSpoken, setAffirmationSpoken] = useState<boolean>(false);
+  const [currentAffirmationIndex, setCurrentAffirmationIndex] = useState<number>(0);
+  const recognitionRef = useRef<any>(null);
   
   useEffect(() => {
     // Start automatically after a short delay
@@ -21,6 +25,64 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
     }, 1000);
     
     return () => clearTimeout(timer);
+  }, [ritual]);
+  
+  // Speech recognition setup for affirmations
+  useEffect(() => {
+    if (ritual === 'affirmation') {
+      // Check if browser supports speech recognition
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = false;
+        recognitionRef.current.interimResults = false;
+        recognitionRef.current.lang = 'en-US';
+        
+        recognitionRef.current.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript.toLowerCase();
+          const currentAffirmation = getAffirmations()[currentAffirmationIndex].toLowerCase();
+          
+          // Check if the spoken text contains key parts of the affirmation
+          const affirmationWords = currentAffirmation.split(' ').filter(word => word.length > 3);
+          const matchedWords = affirmationWords.filter(word => transcript.includes(word));
+          
+          // If at least 50% of key words match, consider it spoken correctly
+          if (matchedWords.length >= Math.ceil(affirmationWords.length * 0.4)) {
+            setAffirmationSpoken(true);
+            toast({
+              title: "Affirmation spoken!",
+              description: "Well done! Keep going with the next one.",
+            });
+            
+            // Move to next affirmation
+            setCurrentAffirmationIndex(prevIndex => 
+              (prevIndex + 1) % getAffirmations().length
+            );
+          } else {
+            toast({
+              title: "Try again",
+              description: "Please speak the affirmation as shown on screen.",
+              variant: "destructive"
+            });
+          }
+          
+          setIsSpeaking(false);
+        };
+        
+        recognitionRef.current.onerror = () => {
+          setIsSpeaking(false);
+        };
+        
+        return () => {
+          if (recognitionRef.current) {
+            recognitionRef.current.abort();
+          }
+        };
+      } else {
+        // Speech recognition not supported
+        setAudioError(true);
+      }
+    }
   }, [ritual]);
   
   useEffect(() => {
@@ -66,6 +128,7 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
     setTimeLeft(getRitualDuration(ritual));
     setIsActive(false);
     setStep(1);
+    setAffirmationSpoken(false);
   };
   
   const formatTime = (seconds: number): string => {
@@ -82,6 +145,28 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
       default: return 60;
     }
   }
+  
+  const getAffirmations = () => {
+    return [
+      "I am well-prepared and confident in my abilities.",
+      "I can solve any problem that comes my way.",
+      "My mind is clear, focused, and ready.",
+      "I trust my knowledge and intelligence.",
+      "I will perform at my best today."
+    ];
+  };
+  
+  const startSpeechRecognition = () => {
+    if (recognitionRef.current && !isSpeaking) {
+      try {
+        recognitionRef.current.start();
+        setIsSpeaking(true);
+      } catch (error) {
+        console.error("Speech recognition error:", error);
+        setIsSpeaking(false);
+      }
+    }
+  };
   
   const renderBreathingExercise = () => {
     const instructions = [
@@ -156,24 +241,37 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
   };
   
   const renderAffirmation = () => {
-    const affirmations = [
-      "I am well-prepared and confident in my abilities.",
-      "I can solve any problem that comes my way.",
-      "My mind is clear, focused, and ready.",
-      "I trust my knowledge and intelligence.",
-      "I will perform at my best today."
-    ];
+    const affirmations = getAffirmations();
     
-    // Select affirmation based on time
-    const currentAffirmation = affirmations[Math.floor((timeLeft / 12) % affirmations.length)];
+    // Select affirmation based on current index
+    const currentAffirmation = affirmations[currentAffirmationIndex];
     
     return (
       <div className="text-center">
-        <div className="text-3xl font-light mb-8">Repeat these affirmations</div>
-        <div className="bg-white/80 rounded-xl p-6 shadow-md mb-8 animate-pulse">
+        <div className="text-3xl font-light mb-8">Speak these affirmations out loud</div>
+        <div className={`bg-white/80 rounded-xl p-6 shadow-md mb-8 ${affirmationSpoken ? 'bg-green-100' : 'animate-pulse'}`}>
           <p className="text-2xl font-medium text-learnzy-dark">
             {currentAffirmation}
           </p>
+        </div>
+        <div className="flex justify-center mb-8">
+          <button
+            onClick={startSpeechRecognition}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full 
+              ${isSpeaking ? 'bg-red-500 text-white' : 'bg-learnzy-purple text-white'} 
+              transition-colors`}
+            disabled={!isActive}
+          >
+            {isSpeaking ? (
+              <>
+                <MicOff className="w-5 h-5" /> Stop Speaking
+              </>
+            ) : (
+              <>
+                <Mic className="w-5 h-5" /> Speak Now
+              </>
+            )}
+          </button>
         </div>
         <div className="relative w-40 h-40 mx-auto mb-8">
           <div className="absolute inset-0 bg-learnzy-purple/20 rounded-full animate-[pulse_3s_ease-in-out_infinite]" />
@@ -182,19 +280,20 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
           </div>
         </div>
         <p className="text-muted-foreground mb-4">
-          Say each affirmation out loud or in your mind. Feel the confidence building with each statement.
+          Say each affirmation out loud. Speaking them helps reinforce positive thoughts and build confidence.
         </p>
         
         {audioError ? (
           <div className="bg-orange-100 text-orange-800 p-4 rounded-xl mb-4">
             <p className="text-sm">
-              Audio playback is not supported in your browser. Please repeat the affirmations yourself.
+              Speech recognition is not supported in your browser. Please say the affirmations out loud on your own.
             </p>
           </div>
         ) : (
           <div className="bg-learnzy-purple/10 p-4 rounded-xl mb-4">
             <p className="text-sm text-center">
-              Speak this affirmation out loud: "{currentAffirmation}"
+              <strong>Instructions:</strong> Press the "Speak Now" button and say the affirmation displayed above.
+              {affirmationSpoken ? " Great job! Try the next one." : " Your voice will be recorded to check if you've spoken the affirmation."}
             </p>
           </div>
         )}
