@@ -9,9 +9,11 @@ interface SectionHeaderProps {
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({ icon: Icon, title }) => {
   return (
-    <div className="flex items-center mb-6">
-      <Icon className="w-6 h-6 text-learnzy-purple mr-3" />
-      <h2 className="text-2xl font-semibold text-learnzy-dark">{title}</h2>
+    <div className="flex items-center mb-4 sm:mb-6">
+      <div className="w-10 h-10 bg-learnzy-purple/10 rounded-xl flex items-center justify-center mr-3">
+        <Icon className="w-5 h-5 text-learnzy-purple" />
+      </div>
+      <h2 className="text-xl sm:text-2xl font-semibold text-learnzy-dark">{title}</h2>
     </div>
   );
 };
