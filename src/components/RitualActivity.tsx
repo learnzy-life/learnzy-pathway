@@ -12,15 +12,12 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
   const [timeLeft, setTimeLeft] = useState<number>(getRitualDuration(ritual));
   const [isActive, setIsActive] = useState<boolean>(false);
   const [step, setStep] = useState<number>(1);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [audioError, setAudioError] = useState<boolean>(false);
   
   useEffect(() => {
     // Start automatically after a short delay
     const timer = setTimeout(() => {
       setIsActive(true);
-      if (ritual === 'affirmation') {
-        playAffirmation();
-      }
     }, 1000);
     
     return () => clearTimeout(timer);
@@ -54,9 +51,6 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
   }, [isActive, timeLeft, ritual]);
   
   const handleComplete = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
     toast({
       title: "Ritual Complete",
       description: "You're now prepared for your test. Good luck!",
@@ -72,23 +66,6 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
     setTimeLeft(getRitualDuration(ritual));
     setIsActive(false);
     setStep(1);
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-  };
-  
-  const playAffirmation = () => {
-    if (audioRef.current) {
-      audioRef.current.play().catch(e => {
-        console.error("Audio playback failed:", e);
-        toast({
-          title: "Audio playback failed",
-          description: "Please ensure audio is enabled in your browser.",
-          variant: "destructive",
-        });
-      });
-    }
   };
   
   const formatTime = (seconds: number): string => {
@@ -130,6 +107,17 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
         <p className="text-muted-foreground mb-4">
           Focus on your breath and clear your mind. This exercise will help reduce anxiety and improve concentration.
         </p>
+        
+        {/* Text-to-speech instructions for breathing */}
+        {isActive && (
+          <div className="bg-learnzy-purple/10 p-4 rounded-xl mb-4">
+            <p className="text-sm text-center">
+              {step === 1 ? "Inhale deeply for 4 seconds" : 
+               step === 2 ? "Hold your breath for 4 seconds" : 
+                           "Exhale slowly for 4 seconds"}
+            </p>
+          </div>
+        )}
       </div>
     );
   };
@@ -147,14 +135,22 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
         <p className="text-muted-foreground mb-4">
           Focus on the present moment. Notice your thoughts without judgment, then let them pass by.
         </p>
-        <audio 
-          ref={audioRef} 
-          src="https://cdn.pixabay.com/download/audio/2022/01/27/audio_339ce2dd92.mp3?filename=meditation-126129.mp3" 
-          autoPlay
-          loop
-          className="w-full mt-4"
-          controls
-        />
+        
+        {audioError ? (
+          <div className="bg-orange-100 text-orange-800 p-4 rounded-xl mb-4">
+            <p className="text-sm">
+              Audio playback is not supported in your browser. Please continue with visual guidance.
+            </p>
+          </div>
+        ) : (
+          <div className="bg-learnzy-purple/10 p-4 rounded-xl mb-4">
+            <p className="text-sm text-center">
+              Guided meditation: Close your eyes. Take deep breaths. Focus on your breath.
+              {isActive && timeLeft % 15 === 0 && " Feel the tension leaving your body."}
+              {isActive && timeLeft % 30 === 0 && " You are calm and focused."}
+            </p>
+          </div>
+        )}
       </div>
     );
   };
@@ -168,12 +164,15 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
       "I will perform at my best today."
     ];
     
+    // Select affirmation based on time
+    const currentAffirmation = affirmations[Math.floor((timeLeft / 12) % affirmations.length)];
+    
     return (
       <div className="text-center">
         <div className="text-3xl font-light mb-8">Repeat these affirmations</div>
-        <div className="bg-white/80 rounded-xl p-6 shadow-md mb-8">
+        <div className="bg-white/80 rounded-xl p-6 shadow-md mb-8 animate-pulse">
           <p className="text-2xl font-medium text-learnzy-dark">
-            {affirmations[Math.floor((timeLeft / 12) % affirmations.length)]}
+            {currentAffirmation}
           </p>
         </div>
         <div className="relative w-40 h-40 mx-auto mb-8">
@@ -185,12 +184,20 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
         <p className="text-muted-foreground mb-4">
           Say each affirmation out loud or in your mind. Feel the confidence building with each statement.
         </p>
-        <audio 
-          ref={audioRef} 
-          src="https://cdn.pixabay.com/download/audio/2022/03/10/audio_1fb43be0c3.mp3?filename=relaxing-145038.mp3"
-          className="w-full mt-4"
-          controls
-        />
+        
+        {audioError ? (
+          <div className="bg-orange-100 text-orange-800 p-4 rounded-xl mb-4">
+            <p className="text-sm">
+              Audio playback is not supported in your browser. Please repeat the affirmations yourself.
+            </p>
+          </div>
+        ) : (
+          <div className="bg-learnzy-purple/10 p-4 rounded-xl mb-4">
+            <p className="text-sm text-center">
+              Speak this affirmation out loud: "{currentAffirmation}"
+            </p>
+          </div>
+        )}
       </div>
     );
   };
