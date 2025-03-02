@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import SubjectSelection from "./pages/SubjectSelection";
 import PreTest from "./pages/PreTest";
 import Test from "./pages/Test";
+import PreAnalysis from "./pages/PreAnalysis";
 import Results from "./pages/Results";
 import NotFound from "./pages/NotFound";
 
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/subjects" element={<SubjectSelection />} />
           <Route path="/pre-test/:subject" element={<PreTest />} />
           <Route path="/test/:subject" element={<Test />} />
+          <Route path="/analysis/:subject" element={<PreAnalysis />} />
           <Route path="/results/:subject" element={<Results />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -94,10 +94,33 @@ const Test: React.FC = () => {
   const handleSubmitTest = () => {
     setIsSubmitting(true);
     
+    // Create mock results with some answers marked as correct/incorrect
+    const questionResults = questions.map(q => {
+      const isCorrect = q.answer ? Math.random() > 0.4 : false; // 60% chance of correct if answered
+      return {
+        id: q.id,
+        text: q.text,
+        userAnswer: q.answer,
+        correctAnswer: q.answer ? (isCorrect ? q.answer : getRandomDifferentAnswer(q)) : undefined,
+        isCorrect,
+        tags: []
+      };
+    });
+    
+    // Store results in localStorage for the analysis page
+    localStorage.setItem('testResults', JSON.stringify(questionResults));
+    
     // In a real app, submit answers to backend
     setTimeout(() => {
-      navigate(`/results/${subject}`);
+      navigate(`/analysis/${subject}`);
     }, 1500);
+  };
+  
+  // Helper function to get a random answer different from the user's answer
+  const getRandomDifferentAnswer = (question: Question): string => {
+    const options = question.options.map(o => o.id);
+    const filteredOptions = options.filter(id => id !== question.answer);
+    return filteredOptions[Math.floor(Math.random() * filteredOptions.length)];
   };
   
   const currentQuestion = questions[currentQuestionIndex];
