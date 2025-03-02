@@ -1,7 +1,13 @@
-
 import React, { useEffect, useState, useRef } from 'react';
 import { ArrowRight, Play, Pause, RotateCcw, Mic, MicOff } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
+
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
 
 interface RitualActivityProps {
   ritual: 'breathing' | 'meditation' | 'affirmation';
@@ -32,8 +38,8 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, onComplete }) =
     if (ritual === 'affirmation') {
       // Check if browser supports speech recognition
       if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognitionRef.current = new SpeechRecognition();
+        const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognitionRef.current = new SpeechRecognitionAPI();
         recognitionRef.current.continuous = false;
         recognitionRef.current.interimResults = false;
         recognitionRef.current.lang = 'en-US';
