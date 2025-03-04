@@ -1,8 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, AlertCircle } from 'lucide-react';
 import TestQuestion from '../components/TestQuestion';
+import { supabase } from '../lib/supabase';
+import { toast } from 'sonner';
 
 interface Option {
   id: string;
@@ -18,7 +19,6 @@ interface Question {
 
 type Subject = 'biology' | 'physics' | 'chemistry';
 
-// Mock data - in a real app this would come from an API
 const generateMockQuestions = (count: number): Question[] => {
   return Array.from({ length: count }, (_, i) => ({
     id: i + 1,
@@ -40,12 +40,58 @@ const Test: React.FC = () => {
   const [timeRemaining, setTimeRemaining] = useState(180 * 60); // 180 minutes in seconds
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // In a real app, fetch questions from API
-    setQuestions(generateMockQuestions(180));
+    const fetchQuestions = async () => {
+      setIsLoading(true);
+      try {
+        let tableToQuery = '';
+        
+        if (subject === 'physics') {
+          tableToQuery = 'physics_dt';
+        } else {
+          setQuestions(generateMockQuestions(180));
+          setIsLoading(false);
+          return;
+        }
+        
+        const { data, error } = await supabase
+          .from(tableToQuery)
+          .select('*');
+          
+        if (error) {
+          console.error('Error fetching questions:', error);
+          toast.error('Failed to load questions. Using sample questions instead.');
+          setQuestions(generateMockQuestions(180));
+        } else if (data && data.length > 0) {
+          const formattedQuestions: Question[] = data.map((q: any, index: number) => ({
+            id: index + 1,
+            text: q.question_text || q.text || `Question ${index + 1}`,
+            options: [
+              { id: 'A', text: q.option_a || 'Option A' },
+              { id: 'B', text: q.option_b || 'Option B' },
+              { id: 'C', text: q.option_c || 'Option C' },
+              { id: 'D', text: q.option_d || 'Option D' }
+            ]
+          }));
+          setQuestions(formattedQuestions);
+          console.log(`Loaded ${formattedQuestions.length} questions from ${tableToQuery}`);
+        } else {
+          console.warn('No questions found in the database. Using sample questions instead.');
+          setQuestions(generateMockQuestions(180));
+        }
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        toast.error('An unexpected error occurred. Using sample questions instead.');
+        setQuestions(generateMockQuestions(180));
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    // Set up timer
+    fetchQuestions();
+    
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 1) {
@@ -58,7 +104,7 @@ const Test: React.FC = () => {
     }, 1000);
     
     return () => clearInterval(timer);
-  }, []);
+  }, [subject]);
   
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -94,9 +140,8 @@ const Test: React.FC = () => {
   const handleSubmitTest = () => {
     setIsSubmitting(true);
     
-    // Create mock results with some answers marked as correct/incorrect
     const questionResults = questions.map(q => {
-      const isCorrect = q.answer ? Math.random() > 0.4 : false; // 60% chance of correct if answered
+      const isCorrect = q.answer ? Math.random() > 0.4 : false;
       return {
         id: q.id,
         text: q.text,
@@ -107,16 +152,13 @@ const Test: React.FC = () => {
       };
     });
     
-    // Store results in localStorage for the analysis page
     localStorage.setItem('testResults', JSON.stringify(questionResults));
     
-    // In a real app, submit answers to backend
     setTimeout(() => {
       navigate(`/analysis/${subject}`);
     }, 1500);
   };
   
-  // Helper function to get a random answer different from the user's answer
   const getRandomDifferentAnswer = (question: Question): string => {
     const options = question.options.map(o => o.id);
     const filteredOptions = options.filter(id => id !== question.answer);
@@ -134,8 +176,17 @@ const Test: React.FC = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-learnzy-purple/30 border-t-learnzy-purple rounded-full animate-spin mb-6"></div>
+        <h2 className="text-xl font-medium ml-4">Loading test questions...</h2>
+      </div>
+    );
+  }
+
   if (questions.length === 0) {
-    return <div className="min-h-screen flex items-center justify-center">Loading test...</div>;
+    return <div className="min-h-screen flex items-center justify-center">No questions available. Please try again later.</div>;
   }
 
   if (isSubmitting) {
@@ -150,7 +201,6 @@ const Test: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Top Bar */}
       <div className="bg-white border-b border-gray-100 py-3 px-6 sticky top-0 z-10 shadow-subtle">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -172,7 +222,6 @@ const Test: React.FC = () => {
       </div>
       
       <div className="flex flex-1 overflow-hidden">
-        {/* Question Navigation Sidebar */}
         <div className="w-20 md:w-64 border-r border-gray-100 bg-white shadow-subtle h-[calc(100vh-57px)] overflow-y-auto p-4 hidden md:block">
           <h3 className="text-sm font-medium text-muted-foreground mb-3 px-2 hidden md:block">Questions</h3>
           
@@ -198,7 +247,6 @@ const Test: React.FC = () => {
           </div>
         </div>
         
-        {/* Main Content */}
         <div className="flex-1 overflow-y-auto pb-32">
           <div className="container mx-auto px-6 py-8 max-w-3xl">
             {questions.map((question, index) => (
@@ -216,7 +264,6 @@ const Test: React.FC = () => {
         </div>
       </div>
       
-      {/* Bottom Navigation Bar */}
       <div className="bg-white border-t border-gray-100 py-4 px-6 sticky bottom-0 z-10 shadow-subtle">
         <div className="container mx-auto flex items-center justify-between max-w-3xl">
           <button
@@ -246,7 +293,6 @@ const Test: React.FC = () => {
         </div>
       </div>
       
-      {/* Warning Modal */}
       {showWarning && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-elevated animate-scale-in">
