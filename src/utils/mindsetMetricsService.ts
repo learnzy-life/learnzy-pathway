@@ -1,3 +1,4 @@
+
 import { saveRitualActivity, getLatestRitualActivity } from './ritualService';
 
 // Types for mindset metrics
@@ -106,24 +107,18 @@ export const calculateStressManagement = (
   }
   
   // Factor 2: Time management (rushing or barely finishing increases stress)
-  // Fix: Add null check for timeData and its properties
   if (timeData && timeData.timeSpent && timeData.allowedTime) {
-    try {
-      const timeSpentMinutes = parseInt(timeData.timeSpent.split('h')[0]) * 60 + 
-                              parseInt(timeData.timeSpent.split('h')[1].split('m')[0]);
-      const allowedTimeMinutes = parseInt(timeData.allowedTime.split('h')[0]) * 60 + 
-                                parseInt(timeData.allowedTime.split('h')[1].split('m')[0]);
-      
-      const timeRatio = timeSpentMinutes / allowedTimeMinutes;
-      
-      if (timeRatio < 0.5) stressScore += 15; // Rushed through test (high stress)
-      else if (timeRatio < 0.7) stressScore -= 5; // Good pace (lower stress)
-      else if (timeRatio > 0.95) stressScore += 10; // Barely finished (higher stress)
-      else stressScore -= 10; // Optimal time usage (lower stress)
-    } catch (error) {
-      console.log("Error parsing time data:", error);
-      // If there's an error parsing the time, don't modify the stress score
-    }
+    const timeSpentMinutes = parseInt(timeData.timeSpent.split('h')[0]) * 60 + 
+                            parseInt(timeData.timeSpent.split('h')[1].split('m')[0]);
+    const allowedTimeMinutes = parseInt(timeData.allowedTime.split('h')[0]) * 60 + 
+                              parseInt(timeData.allowedTime.split('h')[1].split('m')[0]);
+    
+    const timeRatio = timeSpentMinutes / allowedTimeMinutes;
+    
+    if (timeRatio < 0.5) stressScore += 15; // Rushed through test (high stress)
+    else if (timeRatio < 0.7) stressScore -= 5; // Good pace (lower stress)
+    else if (timeRatio > 0.95) stressScore += 10; // Barely finished (higher stress)
+    else stressScore -= 10; // Optimal time usage (lower stress)
   }
   
   // Factor 3: Error clusters (many errors in a row indicate high stress)
@@ -347,13 +342,13 @@ export const calculateMindsetMetrics = (subject: string): MindsetMetrics => {
     const stress = calculateStressManagement(
       mockData,
       ritualActivity?.ritual || null,
-      mockData?.timeAnalysis || null
+      mockData?.timeAnalysis
     );
     
     const focus = calculateFocus(
       mockData,
       ritualActivity?.mood || null,
-      mockData?.timeAnalysis || null
+      mockData?.timeAnalysis
     );
     
     const resilience = calculateResilience(

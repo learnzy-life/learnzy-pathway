@@ -21,70 +21,32 @@ import MindsetAnalysis from '../components/MindsetAnalysis';
 import SectionHeader from '../components/SectionHeader';
 import NextStepsSection from '../components/NextStepsSection';
 import { calculateMindsetMetrics, MindsetMetrics } from '../utils/mindsetMetricsService';
-import { analyzeTestResults } from '../utils/csvQuestionService';
-import { Subject } from '../types/common';
-import { useToast } from '@/hooks/use-toast';
+
+type Subject = 'biology' | 'physics' | 'chemistry';
 
 const Results: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>();
   const [mindsetMetrics, setMindsetMetrics] = useState<MindsetMetrics | null>(null);
-  const [resultsData, setResultsData] = useState<any>(null);
-  const { toast } = useToast();
   
   useEffect(() => {
+    // Store the mock data in localStorage so our mindset service can access it
+    // In a real app, this would be fetched from a database
     if (subject) {
-      // Try to load real results first
-      const testResultsJson = localStorage.getItem('testResults');
+      const resultsData = getMockResultsData(subject as Subject);
+      localStorage.setItem('mockData', JSON.stringify(resultsData));
       
-      if (testResultsJson) {
-        try {
-          const testResults = JSON.parse(testResultsJson);
-          const analyzedResults = analyzeTestResults(testResults);
-          
-          if (analyzedResults) {
-            setResultsData(analyzedResults);
-            // Use for mindset calculation as well
-            localStorage.setItem('mockData', JSON.stringify(analyzedResults));
-          } else {
-            fallbackToMockData();
-          }
-        } catch (error) {
-          console.error("Error parsing test results:", error);
-          fallbackToMockData();
-          toast({
-            title: "Error loading results",
-            description: "Using sample data instead",
-            variant: "destructive"
-          });
-        }
-      } else {
-        fallbackToMockData();
-      }
-      
-      try {
-        // Calculate mindset metrics
-        const metrics = calculateMindsetMetrics(subject);
-        setMindsetMetrics(metrics);
-      } catch (error) {
-        console.error("Error calculating mindset metrics:", error);
-        // If mindset metrics fail, we'll show the default ones from resultsData
-      }
+      // Calculate real mindset metrics
+      const metrics = calculateMindsetMetrics(subject);
+      setMindsetMetrics(metrics);
     }
-  }, [subject, toast]);
+  }, [subject]);
   
-  const fallbackToMockData = () => {
-    if (!subject) return;
-    
-    const mockData = getMockResultsData(subject as Subject);
-    setResultsData(mockData);
-    localStorage.setItem('mockData', JSON.stringify(mockData));
-  };
-  
-  if (!subject || !resultsData) {
-    return <div className="flex items-center justify-center min-h-screen">Loading results...</div>;
+  if (!subject) {
+    return <div>Invalid subject</div>;
   }
 
   const subjectTitle = getSubjectTitle(subject as Subject);
+  const resultsData = getMockResultsData(subject as Subject);
 
   return (
     <ResultsLayout subjectTitle={subjectTitle}>
