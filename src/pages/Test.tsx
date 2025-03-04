@@ -1,180 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Clock, AlertCircle } from 'lucide-react';
+
+import React from 'react';
+import { useParams } from 'react-router-dom';
 import TestQuestion from '../components/TestQuestion';
-import { supabase } from '../lib/supabase';
-import { toast } from 'sonner';
-
-interface Option {
-  id: string;
-  text: string;
-}
-
-interface Question {
-  id: number;
-  text: string;
-  options: Option[];
-  answer?: string;
-}
-
-type Subject = 'biology' | 'physics' | 'chemistry';
-
-const generateMockQuestions = (count: number): Question[] => {
-  return Array.from({ length: count }, (_, i) => ({
-    id: i + 1,
-    text: `This is a sample question about a topic in ${i % 3 === 0 ? 'cell biology' : i % 3 === 1 ? 'genetics' : 'physiology'}. It tests your understanding of key concepts and principles.`,
-    options: [
-      { id: 'A', text: 'Sample option A with some explanation text to make it longer.' },
-      { id: 'B', text: 'Sample option B that provides an alternative answer to the question.' },
-      { id: 'C', text: 'Sample option C which might be correct or incorrect.' },
-      { id: 'D', text: 'Sample option D to complete the four possible answers.' }
-    ]
-  }));
-};
+import TestHeader from '../components/TestHeader';
+import TestFooter from '../components/TestFooter';
+import QuestionNavigation from '../components/QuestionNavigation';
+import SubmitWarningDialog from '../components/SubmitWarningDialog';
+import { useTestState } from '../hooks/useTestState';
+import { Subject } from '../services/questionService';
 
 const Test: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>();
-  const navigate = useNavigate();
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [timeRemaining, setTimeRemaining] = useState(180 * 60); // 180 minutes in seconds
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showWarning, setShowWarning] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      setIsLoading(true);
-      try {
-        let tableToQuery = '';
-        
-        if (subject === 'physics') {
-          tableToQuery = 'physics_dt';
-        } else {
-          setQuestions(generateMockQuestions(180));
-          setIsLoading(false);
-          return;
-        }
-        
-        const { data, error } = await supabase
-          .from(tableToQuery)
-          .select('*');
-          
-        if (error) {
-          console.error('Error fetching questions:', error);
-          toast.error('Failed to load questions. Using sample questions instead.');
-          setQuestions(generateMockQuestions(180));
-        } else if (data && data.length > 0) {
-          const formattedQuestions: Question[] = data.map((q: any, index: number) => ({
-            id: index + 1,
-            text: q.question_text || q.text || `Question ${index + 1}`,
-            options: [
-              { id: 'A', text: q.option_a || 'Option A' },
-              { id: 'B', text: q.option_b || 'Option B' },
-              { id: 'C', text: q.option_c || 'Option C' },
-              { id: 'D', text: q.option_d || 'Option D' }
-            ]
-          }));
-          setQuestions(formattedQuestions);
-          console.log(`Loaded ${formattedQuestions.length} questions from ${tableToQuery}`);
-        } else {
-          console.warn('No questions found in the database. Using sample questions instead.');
-          setQuestions(generateMockQuestions(180));
-        }
-      } catch (err) {
-        console.error('Unexpected error:', err);
-        toast.error('An unexpected error occurred. Using sample questions instead.');
-        setQuestions(generateMockQuestions(180));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchQuestions();
-    
-    const timer = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          handleSubmitTest();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    
-    return () => clearInterval(timer);
-  }, [subject]);
-  
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hours}:${minutes < 10 ? '0' : ''}${minutes}:${secs < 10 ? '0' : ''}${secs}`;
-  };
-  
-  const handleAnswerSelected = (questionId: number, answerId: string) => {
-    setQuestions(prev => 
-      prev.map(q => 
-        q.id === questionId ? { ...q, answer: answerId } : q
-      )
-    );
-  };
-  
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-    }
-  };
-  
-  const handlePrevQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
-    }
-  };
-  
-  const handleJumpToQuestion = (index: number) => {
-    setCurrentQuestionIndex(index);
-  };
-  
-  const handleSubmitTest = () => {
-    setIsSubmitting(true);
-    
-    const questionResults = questions.map(q => {
-      const isCorrect = q.answer ? Math.random() > 0.4 : false;
-      return {
-        id: q.id,
-        text: q.text,
-        userAnswer: q.answer,
-        correctAnswer: q.answer ? (isCorrect ? q.answer : getRandomDifferentAnswer(q)) : undefined,
-        isCorrect,
-        tags: []
-      };
-    });
-    
-    localStorage.setItem('testResults', JSON.stringify(questionResults));
-    
-    setTimeout(() => {
-      navigate(`/analysis/${subject}`);
-    }, 1500);
-  };
-  
-  const getRandomDifferentAnswer = (question: Question): string => {
-    const options = question.options.map(o => o.id);
-    const filteredOptions = options.filter(id => id !== question.answer);
-    return filteredOptions[Math.floor(Math.random() * filteredOptions.length)];
-  };
+  const [
+    { questions, currentQuestionIndex, timeRemaining, isSubmitting, showWarning, isLoading },
+    { handleAnswerSelected, handleNextQuestion, handlePrevQuestion, handleJumpToQuestion, handleSubmitTest, handleSubmitClick, formatTime }
+  ] = useTestState(subject as Subject);
   
   const currentQuestion = questions[currentQuestionIndex];
   const answeredCount = questions.filter(q => q.answer).length;
-  
-  const handleSubmitClick = () => {
-    if (answeredCount < questions.length * 0.5) {
-      setShowWarning(true);
-    } else {
-      handleSubmitTest();
-    }
-  };
 
   if (isLoading) {
     return (
@@ -201,51 +44,20 @@ const Test: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className="bg-white border-b border-gray-100 py-3 px-6 sticky top-0 z-10 shadow-subtle">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium px-3 py-1 bg-learnzy-purple/10 text-learnzy-purple rounded-full">
-              {subject?.charAt(0).toUpperCase() + subject?.slice(1)} Test
-            </span>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <span>{answeredCount}/{questions.length} answered</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center">
-            <div className="flex items-center bg-red-50 text-red-600 px-3 py-1 rounded-full">
-              <Clock className="w-4 h-4 mr-1" />
-              <span className="font-medium">{formatTime(timeRemaining)}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <TestHeader
+        subject={subject || ''}
+        answeredCount={answeredCount}
+        totalQuestions={questions.length}
+        timeRemaining={timeRemaining}
+        formatTime={formatTime}
+      />
       
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-20 md:w-64 border-r border-gray-100 bg-white shadow-subtle h-[calc(100vh-57px)] overflow-y-auto p-4 hidden md:block">
-          <h3 className="text-sm font-medium text-muted-foreground mb-3 px-2 hidden md:block">Questions</h3>
-          
-          <div className="grid grid-cols-5 md:grid-cols-6 gap-2">
-            {questions.map((q, index) => (
-              <button
-                key={q.id}
-                onClick={() => handleJumpToQuestion(index)}
-                className={`
-                  w-full aspect-square flex items-center justify-center rounded-lg text-sm
-                  ${index === currentQuestionIndex 
-                    ? 'bg-learnzy-purple text-white' 
-                    : q.answer 
-                      ? 'bg-learnzy-purple/20 text-learnzy-purple'
-                      : 'bg-gray-100 text-learnzy-dark/70'
-                  }
-                  hover:opacity-90 transition-opacity
-                `}
-              >
-                {q.id}
-              </button>
-            ))}
-          </div>
-        </div>
+        <QuestionNavigation
+          questions={questions}
+          currentQuestionIndex={currentQuestionIndex}
+          onJumpToQuestion={handleJumpToQuestion}
+        />
         
         <div className="flex-1 overflow-y-auto pb-32">
           <div className="container mx-auto px-6 py-8 max-w-3xl">
@@ -264,65 +76,21 @@ const Test: React.FC = () => {
         </div>
       </div>
       
-      <div className="bg-white border-t border-gray-100 py-4 px-6 sticky bottom-0 z-10 shadow-subtle">
-        <div className="container mx-auto flex items-center justify-between max-w-3xl">
-          <button
-            onClick={handlePrevQuestion}
-            disabled={currentQuestionIndex === 0}
-            className={`button-secondary ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            Previous
-          </button>
-          
-          <div className="flex space-x-3">
-            <button
-              onClick={handleNextQuestion}
-              disabled={currentQuestionIndex === questions.length - 1}
-              className={`button-primary ${currentQuestionIndex === questions.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              Next Question
-            </button>
-            
-            <button
-              onClick={handleSubmitClick}
-              className="button-primary bg-green-600 hover:bg-green-700"
-            >
-              Submit Test
-            </button>
-          </div>
-        </div>
-      </div>
+      <TestFooter
+        currentQuestionIndex={currentQuestionIndex}
+        questionsLength={questions.length}
+        onPrevQuestion={handlePrevQuestion}
+        onNextQuestion={handleNextQuestion}
+        onSubmitClick={handleSubmitClick}
+      />
       
       {showWarning && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-elevated animate-scale-in">
-            <div className="flex items-start mb-4">
-              <AlertCircle className="w-6 h-6 text-amber-500 mr-3 flex-shrink-0" />
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Are you sure?</h3>
-                <p className="text-muted-foreground mb-4">
-                  You've only answered {answeredCount} out of {questions.length} questions ({Math.round((answeredCount/questions.length)*100)}%). 
-                  Unanswered questions will be marked as incorrect.
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex justify-end space-x-3">
-              <button 
-                onClick={() => setShowWarning(false)}
-                className="button-secondary"
-              >
-                Continue Test
-              </button>
-              <button
-                onClick={handleSubmitTest}
-                className="button-primary bg-red-600 hover:bg-red-700"
-              >
-                Submit Anyway
-              </button>
-            </div>
-          </div>
-        </div>
+        <SubmitWarningDialog
+          answeredCount={answeredCount}
+          totalQuestions={questions.length}
+          onContinue={() => setShowWarning(false)}
+          onSubmit={handleSubmitTest}
+        />
       )}
     </div>
   );
