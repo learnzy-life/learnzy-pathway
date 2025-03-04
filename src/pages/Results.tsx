@@ -23,11 +23,13 @@ import NextStepsSection from '../components/NextStepsSection';
 import { calculateMindsetMetrics, MindsetMetrics } from '../utils/mindsetMetricsService';
 import { analyzeTestResults } from '../utils/csvQuestionService';
 import { Subject } from '../types/common';
+import { useToast } from '@/hooks/use-toast';
 
 const Results: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>();
   const [mindsetMetrics, setMindsetMetrics] = useState<MindsetMetrics | null>(null);
   const [resultsData, setResultsData] = useState<any>(null);
+  const { toast } = useToast();
   
   useEffect(() => {
     if (subject) {
@@ -49,16 +51,26 @@ const Results: React.FC = () => {
         } catch (error) {
           console.error("Error parsing test results:", error);
           fallbackToMockData();
+          toast({
+            title: "Error loading results",
+            description: "Using sample data instead",
+            variant: "destructive"
+          });
         }
       } else {
         fallbackToMockData();
       }
       
-      // Calculate mindset metrics
-      const metrics = calculateMindsetMetrics(subject);
-      setMindsetMetrics(metrics);
+      try {
+        // Calculate mindset metrics
+        const metrics = calculateMindsetMetrics(subject);
+        setMindsetMetrics(metrics);
+      } catch (error) {
+        console.error("Error calculating mindset metrics:", error);
+        // If mindset metrics fail, we'll show the default ones from resultsData
+      }
     }
-  }, [subject]);
+  }, [subject, toast]);
   
   const fallbackToMockData = () => {
     if (!subject) return;
