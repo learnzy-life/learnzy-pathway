@@ -13,7 +13,7 @@ const Test: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>();
   const [
     { questions, currentQuestionIndex, timeRemaining, isSubmitting, showWarning, isLoading },
-    { handleAnswerSelected, handleNextQuestion, handlePrevQuestion, handleJumpToQuestion, handleSubmitTest, handleSubmitClick, formatTime }
+    { handleAnswerSelected, handleNextQuestion, handlePrevQuestion, handleJumpToQuestion, handleSubmitTest, handleSubmitClick, formatTime, setShowWarning }
   ] = useTestState(subject as Subject);
   
   const currentQuestion = questions[currentQuestionIndex];

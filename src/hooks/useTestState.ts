@@ -21,6 +21,7 @@ interface TestActions {
   handleSubmitTest: () => void;
   handleSubmitClick: () => void;
   formatTime: (seconds: number) => string;
+  setShowWarning: (show: boolean) => void;
 }
 
 export const useTestState = (subject: Subject): [TestState, TestActions] => {
@@ -140,7 +141,8 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
       handleJumpToQuestion,
       handleSubmitTest,
       handleSubmitClick,
-      formatTime
+      formatTime,
+      setShowWarning
     }
   ];
 };
