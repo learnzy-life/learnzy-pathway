@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { 
@@ -22,71 +23,36 @@ import NextStepsSection from '../components/NextStepsSection';
 import { calculateMindsetMetrics, MindsetMetrics } from '../utils/mindsetMetricsService';
 import { analyzeTestResults } from '../utils/csvQuestionService';
 import { Subject } from '../types/common';
-import { getTestSession } from '../utils/supabaseQuestionService';
-import { toast } from '@/hooks/use-toast';
 
 const Results: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>();
   const [mindsetMetrics, setMindsetMetrics] = useState<MindsetMetrics | null>(null);
   const [resultsData, setResultsData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     if (subject) {
-      const loadResults = async () => {
-        setLoading(true);
-        try {
-          // First try to get results from Supabase
-          const sessionId = localStorage.getItem('currentTestSessionId');
-          if (sessionId) {
-            const session = await getTestSession(sessionId);
-            if (session && session.is_completed) {
-              // We have a completed session, now get the test results
-              const testResultsJson = localStorage.getItem('testResults');
-              if (testResultsJson) {
-                const testResults = JSON.parse(testResultsJson);
-                const analyzedResults = analyzeTestResults(testResults);
-                
-                if (analyzedResults) {
-                  setResultsData(analyzedResults);
-                  localStorage.setItem('mockData', JSON.stringify(analyzedResults));
-                  setLoading(false);
-                  return;
-                }
-              }
-            }
-          }
-          
-          // If no session or results, try localStorage fallback
-          const testResultsJson = localStorage.getItem('testResults');
-          if (testResultsJson) {
-            const testResults = JSON.parse(testResultsJson);
-            const analyzedResults = analyzeTestResults(testResults);
-            
-            if (analyzedResults) {
-              setResultsData(analyzedResults);
-              localStorage.setItem('mockData', JSON.stringify(analyzedResults));
-              setLoading(false);
-              return;
-            }
-          }
-          
-          // Final fallback to mock data
-          fallbackToMockData();
-        } catch (error) {
-          console.error("Error loading results:", error);
-          fallbackToMockData();
-          toast({
-            title: "Error loading results",
-            description: "There was a problem loading your test results. Showing sample data instead.",
-            variant: "destructive",
-          });
-        } finally {
-          setLoading(false);
-        }
-      };
+      // Try to load real results first
+      const testResultsJson = localStorage.getItem('testResults');
       
-      loadResults();
+      if (testResultsJson) {
+        try {
+          const testResults = JSON.parse(testResultsJson);
+          const analyzedResults = analyzeTestResults(testResults);
+          
+          if (analyzedResults) {
+            setResultsData(analyzedResults);
+            // Use for mindset calculation as well
+            localStorage.setItem('mockData', JSON.stringify(analyzedResults));
+          } else {
+            fallbackToMockData();
+          }
+        } catch (error) {
+          console.error("Error parsing test results:", error);
+          fallbackToMockData();
+        }
+      } else {
+        fallbackToMockData();
+      }
       
       // Calculate mindset metrics
       const metrics = calculateMindsetMetrics(subject);
@@ -102,7 +68,7 @@ const Results: React.FC = () => {
     localStorage.setItem('mockData', JSON.stringify(mockData));
   };
   
-  if (!subject || !resultsData || loading) {
+  if (!subject || !resultsData) {
     return <div className="flex items-center justify-center min-h-screen">Loading results...</div>;
   }
 

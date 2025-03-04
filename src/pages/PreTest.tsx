@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
@@ -7,11 +7,10 @@ import MoodSelector from '../components/MoodSelector';
 import PreRitualCard from '../components/PreRitualCard';
 import RitualActivity from '../components/RitualActivity';
 import PostRitualInfo from '../components/PostRitualInfo';
-import { importCSVQuestionsToSupabase, createTestSession } from '../utils/supabaseQuestionService';
-import { Subject } from '../types/common';
 
 type Mood = 'great' | 'good' | 'okay' | 'stressed' | 'anxious';
 type PreRitual = 'breathing' | 'meditation' | 'affirmation' | 'none';
+type Subject = 'biology' | 'physics' | 'chemistry';
 
 const getSubjectTitle = (subject: Subject): string => {
   switch (subject) {
@@ -30,22 +29,6 @@ const PreTest: React.FC = () => {
   const [ritualCompleted, setRitualCompleted] = useState(false);
   const [showRitualActivity, setShowRitualActivity] = useState(false);
   const [showPostRitualInfo, setShowPostRitualInfo] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  
-  useEffect(() => {
-    if (subject) {
-      const importQuestions = async () => {
-        try {
-          await importCSVQuestionsToSupabase(subject as Subject);
-        } catch (error) {
-          console.error("Error importing questions:", error);
-        }
-      };
-      
-      importQuestions();
-    }
-  }, [subject]);
   
   if (!subject) {
     return <div>Invalid subject</div>;
@@ -122,7 +105,7 @@ const PreTest: React.FC = () => {
     setShowPostRitualInfo(true);
   };
 
-  const handleStartTest = async () => {
+  const handleStartTest = () => {
     if (!mood) {
       toast({
         title: "Mood Required",
@@ -141,32 +124,8 @@ const PreTest: React.FC = () => {
       return;
     }
     
-    setLoading(true);
-    
-    try {
-      const newSessionId = await createTestSession(subject as Subject, {
-        mood: mood,
-        ritual: ritual
-      });
-      
-      setSessionId(newSessionId);
-      
-      if (newSessionId) {
-        localStorage.setItem('currentTestSessionId', newSessionId);
-      }
-      
-      console.log('Starting test with:', { subject, mood, ritual, sessionId: newSessionId });
-      navigate(`/test/${subject}`);
-    } catch (error) {
-      console.error("Error creating test session:", error);
-      toast({
-        title: "Error Starting Test",
-        description: "There was an issue starting your test. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+    console.log('Starting test with:', { subject, mood, ritual });
+    navigate(`/test/${subject}`);
   };
 
   return (
@@ -219,12 +178,9 @@ const PreTest: React.FC = () => {
                 
                 <button 
                   onClick={handleStartTest}
-                  disabled={loading}
-                  className={`button-primary w-full flex justify-center items-center ${loading ? 'opacity-70 cursor-not-allowed' : 'animate-pulse'}`}
+                  className="button-primary w-full flex justify-center items-center animate-pulse"
                 >
-                  {loading ? 'Preparing Test...' : (
-                    <>Start {subjectTitle} Test <ArrowRight className="ml-2 w-5 h-5" /></>
-                  )}
+                  Start {subjectTitle} Test <ArrowRight className="ml-2 w-5 h-5" />
                 </button>
               </div>
             </>
@@ -274,12 +230,9 @@ const PreTest: React.FC = () => {
               
               <button 
                 onClick={handleStartTest}
-                disabled={loading}
-                className={`button-primary w-full flex justify-center items-center ${loading ? 'opacity-70 cursor-not-allowed' : (ritual && ritualCompleted ? 'animate-pulse' : '')}`}
+                className={`button-primary w-full flex justify-center items-center ${ritual && ritualCompleted ? 'animate-pulse' : ''}`}
               >
-                {loading ? 'Preparing Test...' : (
-                  <>Start {subjectTitle} Test <ArrowRight className="ml-2 w-5 h-5" /></>
-                )}
+                Start {subjectTitle} Test <ArrowRight className="ml-2 w-5 h-5" />
               </button>
             </div>
           )}
