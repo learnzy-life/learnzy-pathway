@@ -9,108 +9,66 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      questions: {
+      "Physics DT": {
         Row: {
-          blooms_taxonomy: string
-          common_pitfalls: string
-          correct_answer: string
-          created_at: string | null
-          difficulty_level: string
-          id: string
-          key_concept_tested: string
-          option_a: string
-          option_b: string
-          option_c: string
-          option_d: string
-          priority_level: string
-          question_number: number
-          question_structure: string
-          question_text: string
-          subject: string
-          subtopic: string
-          time_to_solve: number
-          topic: string
+          "Bloom’s Taxonomy": string
+          "Chapter name": string
+          "Common Pitfalls": string
+          "Correct Answer": string
+          "Difficulty Level": string
+          "Key Concept Tested": string
+          "Option A": string
+          "Option B": string
+          "Option C": string
+          "Option D": string
+          "Priority Level": string
+          "Question Number": number
+          "Question Structure": string
+          "Question Text": string
+          Subject: string
+          Subtopic: string
+          "Time to Solve (seconds)": number
+          Topic: string
         }
         Insert: {
-          blooms_taxonomy: string
-          common_pitfalls: string
-          correct_answer: string
-          created_at?: string | null
-          difficulty_level: string
-          id?: string
-          key_concept_tested: string
-          option_a: string
-          option_b: string
-          option_c: string
-          option_d: string
-          priority_level: string
-          question_number: number
-          question_structure: string
-          question_text: string
-          subject: string
-          subtopic: string
-          time_to_solve: number
-          topic: string
+          "Bloom’s Taxonomy": string
+          "Chapter name": string
+          "Common Pitfalls": string
+          "Correct Answer": string
+          "Difficulty Level": string
+          "Key Concept Tested": string
+          "Option A": string
+          "Option B": string
+          "Option C": string
+          "Option D": string
+          "Priority Level": string
+          "Question Number": number
+          "Question Structure": string
+          "Question Text": string
+          Subject: string
+          Subtopic: string
+          "Time to Solve (seconds)": number
+          Topic: string
         }
         Update: {
-          blooms_taxonomy?: string
-          common_pitfalls?: string
-          correct_answer?: string
-          created_at?: string | null
-          difficulty_level?: string
-          id?: string
-          key_concept_tested?: string
-          option_a?: string
-          option_b?: string
-          option_c?: string
-          option_d?: string
-          priority_level?: string
-          question_number?: number
-          question_structure?: string
-          question_text?: string
-          subject?: string
-          subtopic?: string
-          time_to_solve?: number
-          topic?: string
-        }
-        Relationships: []
-      }
-      test_sessions: {
-        Row: {
-          answers: Json | null
-          created_at: string | null
-          end_time: string | null
-          id: string
-          is_completed: boolean | null
-          pre_ritual: Json | null
-          start_time: string | null
-          subject: string
-          total_score: number | null
-          user_id: string | null
-        }
-        Insert: {
-          answers?: Json | null
-          created_at?: string | null
-          end_time?: string | null
-          id?: string
-          is_completed?: boolean | null
-          pre_ritual?: Json | null
-          start_time?: string | null
-          subject: string
-          total_score?: number | null
-          user_id?: string | null
-        }
-        Update: {
-          answers?: Json | null
-          created_at?: string | null
-          end_time?: string | null
-          id?: string
-          is_completed?: boolean | null
-          pre_ritual?: Json | null
-          start_time?: string | null
-          subject?: string
-          total_score?: number | null
-          user_id?: string | null
+          "Bloom’s Taxonomy"?: string
+          "Chapter name"?: string
+          "Common Pitfalls"?: string
+          "Correct Answer"?: string
+          "Difficulty Level"?: string
+          "Key Concept Tested"?: string
+          "Option A"?: string
+          "Option B"?: string
+          "Option C"?: string
+          "Option D"?: string
+          "Priority Level"?: string
+          "Question Number"?: number
+          "Question Structure"?: string
+          "Question Text"?: string
+          Subject?: string
+          Subtopic?: string
+          "Time to Solve (seconds)"?: number
+          Topic?: string
         }
         Relationships: []
       }

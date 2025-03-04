@@ -50,7 +50,8 @@ export const loadQuestionsFromSupabase = async (subject: Subject): Promise<Quest
       return loadQuestionsFromCSV(subject);
     }
     
-    return dbQuestions.map(mapDBQuestionToAppQuestion);
+    // Fix: Use type assertion to match the expected DBQuestion type
+    return (dbQuestions as unknown as DBQuestion[]).map(mapDBQuestionToAppQuestion);
   } catch (error) {
     console.error(`Error in loadQuestionsFromSupabase for ${subject}:`, error);
     return loadQuestionsFromCSV(subject); // Fallback to CSV if Supabase fails
