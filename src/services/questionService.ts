@@ -30,14 +30,21 @@ export const generateMockQuestions = (count: number): Question[] => {
 };
 
 export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
+  console.log(`Fetching questions for ${subject}...`);
+  
   try {
     let tableToQuery = '';
     
     if (subject === 'physics') {
       tableToQuery = 'physics_dt';
+      console.log('Attempting to fetch from physics_dt table...');
     } else {
+      console.log(`No specific table for ${subject}, using mock data.`);
       return generateMockQuestions(180);
     }
+    
+    // Log Supabase URL for debugging (don't log the key)
+    console.log(`Using Supabase URL: ${supabase.supabaseUrl}`);
     
     const { data, error } = await supabase
       .from(tableToQuery)
@@ -48,6 +55,9 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
       toast.error('Failed to load questions. Using sample questions instead.');
       return generateMockQuestions(180);
     } else if (data && data.length > 0) {
+      console.log(`Successfully loaded ${data.length} questions from ${tableToQuery}`);
+      console.log('Sample question:', data[0]);
+      
       const formattedQuestions: Question[] = data.map((q: any, index: number) => ({
         id: index + 1,
         text: q.question_text || q.text || `Question ${index + 1}`,
@@ -58,7 +68,7 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
           { id: 'D', text: q.option_d || 'Option D' }
         ]
       }));
-      console.log(`Loaded ${formattedQuestions.length} questions from ${tableToQuery}`);
+      
       return formattedQuestions;
     } else {
       console.warn('No questions found in the database. Using sample questions instead.');
