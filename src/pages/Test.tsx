@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, AlertCircle } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 import TestQuestion from '../components/TestQuestion';
-import { loadQuestions, saveTestResults, Question } from '../utils/csvQuestionService';
+import { Question } from '../utils/csvQuestionService';
+import { loadQuestionsFromSupabase, updateTestSession } from '../utils/supabaseQuestionService';
 import { Subject } from '../types/common';
 
 const Test: React.FC = () => {
@@ -15,17 +17,30 @@ const Test: React.FC = () => {
   const [showWarning, setShowWarning] = useState(false);
   const [questionTimes, setQuestionTimes] = useState<Record<number, number>>({});
   const [loading, setLoading] = useState(true);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   
   useEffect(() => {
+    // Get test session ID from localStorage
+    const testSessionId = localStorage.getItem('currentTestSessionId');
+    if (testSessionId) {
+      setSessionId(testSessionId);
+    }
+    
     const loadTestQuestions = async () => {
       if (!subject) return;
       
       try {
         setLoading(true);
-        const loadedQuestions = await loadQuestions(subject);
+        // Use Supabase service to load questions
+        const loadedQuestions = await loadQuestionsFromSupabase(subject);
         setQuestions(loadedQuestions);
       } catch (error) {
         console.error("Error loading questions:", error);
+        toast({
+          title: "Error loading questions",
+          description: "There was a problem loading the test questions. Please try again.",
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
@@ -86,7 +101,7 @@ const Test: React.FC = () => {
     setCurrentQuestionIndex(index);
   };
   
-  const handleSubmitTest = () => {
+  const handleSubmitTest = async () => {
     setIsSubmitting(true);
     
     if (!subject) {
@@ -102,8 +117,18 @@ const Test: React.FC = () => {
       }
     });
     
-    // Save test results with our new service
+    // Store results in localStorage for backward compatibility
+    const { saveTestResults } = await import('../utils/csvQuestionService'); 
     saveTestResults(subject, questions, answerMap, questionTimes);
+    
+    // If we have a sessionId, update the test session in Supabase
+    if (sessionId) {
+      try {
+        await updateTestSession(sessionId, answerMap, questionTimes);
+      } catch (error) {
+        console.error("Error updating test session:", error);
+      }
+    }
     
     // In a real app, submit answers to backend
     setTimeout(() => {
