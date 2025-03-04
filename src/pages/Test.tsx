@@ -1,36 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, AlertCircle } from 'lucide-react';
 import TestQuestion from '../components/TestQuestion';
-
-interface Option {
-  id: string;
-  text: string;
-}
-
-interface Question {
-  id: number;
-  text: string;
-  options: Option[];
-  answer?: string;
-}
-
-type Subject = 'biology' | 'physics' | 'chemistry';
-
-// Mock data - in a real app this would come from an API
-const generateMockQuestions = (count: number): Question[] => {
-  return Array.from({ length: count }, (_, i) => ({
-    id: i + 1,
-    text: `This is a sample question about a topic in ${i % 3 === 0 ? 'cell biology' : i % 3 === 1 ? 'genetics' : 'physiology'}. It tests your understanding of key concepts and principles.`,
-    options: [
-      { id: 'A', text: 'Sample option A with some explanation text to make it longer.' },
-      { id: 'B', text: 'Sample option B that provides an alternative answer to the question.' },
-      { id: 'C', text: 'Sample option C which might be correct or incorrect.' },
-      { id: 'D', text: 'Sample option D to complete the four possible answers.' }
-    ]
-  }));
-};
+import { loadQuestions, saveTestResults, Question } from '../utils/csvQuestionService';
+import { Subject } from '../types/common';
 
 const Test: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>();
@@ -40,10 +13,25 @@ const Test: React.FC = () => {
   const [timeRemaining, setTimeRemaining] = useState(180 * 60); // 180 minutes in seconds
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
+  const [questionTimes, setQuestionTimes] = useState<Record<number, number>>({});
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    // In a real app, fetch questions from API
-    setQuestions(generateMockQuestions(180));
+    const loadTestQuestions = async () => {
+      if (!subject) return;
+      
+      try {
+        setLoading(true);
+        const loadedQuestions = await loadQuestions(subject);
+        setQuestions(loadedQuestions);
+      } catch (error) {
+        console.error("Error loading questions:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadTestQuestions();
     
     // Set up timer
     const timer = setInterval(() => {
@@ -58,7 +46,7 @@ const Test: React.FC = () => {
     }, 1000);
     
     return () => clearInterval(timer);
-  }, []);
+  }, [subject]);
   
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -73,6 +61,13 @@ const Test: React.FC = () => {
         q.id === questionId ? { ...q, answer: answerId } : q
       )
     );
+    
+    // Record time spent on question
+    if (!questionTimes[questionId]) {
+      // This is simplified for the demo - in a real app you'd need to track when they started this question
+      const timeSpent = Math.floor(Math.random() * 60) + 30; // Mock 30-90 seconds per question
+      setQuestionTimes(prev => ({ ...prev, [questionId]: timeSpent }));
+    }
   };
   
   const handleNextQuestion = () => {
@@ -94,33 +89,26 @@ const Test: React.FC = () => {
   const handleSubmitTest = () => {
     setIsSubmitting(true);
     
-    // Create mock results with some answers marked as correct/incorrect
-    const questionResults = questions.map(q => {
-      const isCorrect = q.answer ? Math.random() > 0.4 : false; // 60% chance of correct if answered
-      return {
-        id: q.id,
-        text: q.text,
-        userAnswer: q.answer,
-        correctAnswer: q.answer ? (isCorrect ? q.answer : getRandomDifferentAnswer(q)) : undefined,
-        isCorrect,
-        tags: []
-      };
+    if (!subject) {
+      console.error("Subject is undefined");
+      return;
+    }
+    
+    // Create answer map for quick lookup
+    const answerMap: Record<number, string> = {};
+    questions.forEach(q => {
+      if (q.answer) {
+        answerMap[q.id] = q.answer;
+      }
     });
     
-    // Store results in localStorage for the analysis page
-    localStorage.setItem('testResults', JSON.stringify(questionResults));
+    // Save test results with our new service
+    saveTestResults(subject, questions, answerMap, questionTimes);
     
     // In a real app, submit answers to backend
     setTimeout(() => {
       navigate(`/analysis/${subject}`);
     }, 1500);
-  };
-  
-  // Helper function to get a random answer different from the user's answer
-  const getRandomDifferentAnswer = (question: Question): string => {
-    const options = question.options.map(o => o.id);
-    const filteredOptions = options.filter(id => id !== question.answer);
-    return filteredOptions[Math.floor(Math.random() * filteredOptions.length)];
   };
   
   const currentQuestion = questions[currentQuestionIndex];
@@ -134,8 +122,8 @@ const Test: React.FC = () => {
     }
   };
 
-  if (questions.length === 0) {
-    return <div className="min-h-screen flex items-center justify-center">Loading test...</div>;
+  if (loading || questions.length === 0) {
+    return <div className="min-h-screen flex items-center justify-center">Loading test questions...</div>;
   }
 
   if (isSubmitting) {
