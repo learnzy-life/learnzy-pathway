@@ -1,3 +1,4 @@
+
 import { toast } from 'sonner'
 import { supabase } from '../lib/supabase'
 
@@ -61,7 +62,7 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
     }
 
     // Log Supabase URL for debugging (don't log the key)
-    console.log(`Using Supabase URL: ${supabase.supabaseUrl}`)
+    console.log(`Using Supabase URL: ${import.meta.env.VITE_SUPABASE_URL}`)
 
     const { data, error } = await supabase
       .from(tableToQuery)
