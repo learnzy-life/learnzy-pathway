@@ -12,7 +12,6 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
-  signInWithGoogle: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -116,38 +115,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const signInWithGoogle = async () => {
-    try {
-      setIsLoading(true)
-      
-      // Get the current URL for redirect
-      const redirectTo = window.location.origin + '/auth';
-      console.log('Redirect URL:', redirectTo);
-      
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: redirectTo,
-        },
-      });
-
-      if (error) {
-        toast.error(error.message)
-        console.error('Google sign in error:', error)
-        throw error
-      }
-      
-      console.log('OAuth sign-in initiated:', data);
-      // The redirect will happen automatically
-    } catch (error) {
-      console.error('Google sign in error:', error)
-      toast.error('Failed to sign in with Google')
-      throw error
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   return (
     <AuthContext.Provider
       value={{
@@ -157,7 +124,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signIn,
         signUp,
         signOut,
-        signInWithGoogle,
       }}
     >
       {children}
