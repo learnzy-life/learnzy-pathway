@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Session, User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
@@ -120,15 +119,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsLoading(true)
       
-      // Get the current URL for the redirect
-      const redirectUrl = new URL('/auth', window.location.origin).toString()
-      console.log('Redirecting to:', redirectUrl)
-      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          redirectTo: redirectUrl,
-        },
       })
 
       if (error) {
