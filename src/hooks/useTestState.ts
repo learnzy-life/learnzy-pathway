@@ -126,6 +126,7 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
         userAnswer: q.answer,
         correctAnswer: q.correctAnswer || '',
         isCorrect,
+        timeTaken: timeTaken / questions.length, // Add the missing timeTaken property
         tags: [],
       }
     })
