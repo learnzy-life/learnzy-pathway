@@ -6,7 +6,7 @@ import {
   QuestionResult,
   getTestSession,
   updateQuestionTags,
-} from '../services/testSessionService'
+} from '../services/testSession'
 
 interface TagOption {
   id: string
@@ -25,7 +25,6 @@ const PreAnalysis: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Tag options for incorrect questions
   const tagOptions: TagOption[] = [
     {
       id: 'misunderstood_concept',
@@ -64,7 +63,6 @@ const PreAnalysis: React.FC = () => {
       setIsLoading(true)
 
       if (sessionId) {
-        // Fetch test session from database
         const session = await getTestSession(sessionId)
         if (session && session.questions) {
           setQuestions(session.questions)
@@ -73,7 +71,6 @@ const PreAnalysis: React.FC = () => {
         }
       }
 
-      // Fallback to localStorage if no session ID or session not found
       const storedResults = localStorage.getItem('testResults')
       if (storedResults) {
         try {
@@ -81,11 +78,9 @@ const PreAnalysis: React.FC = () => {
           setQuestions(parsedResults)
         } catch (error) {
           console.error('Error parsing stored results:', error)
-          // If parsing fails, use empty array
           setQuestions([])
         }
       } else {
-        // If no stored results, use empty array
         setQuestions([])
       }
 
@@ -98,7 +93,6 @@ const PreAnalysis: React.FC = () => {
   const incorrectQuestions = questions.filter((q) => !q.isCorrect)
 
   if (incorrectQuestions.length === 0 && !isLoading && questions.length > 0) {
-    // If no incorrect questions, redirect to results page
     navigate(`/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`)
     return null
   }
@@ -111,12 +105,10 @@ const PreAnalysis: React.FC = () => {
     setQuestions((prevQuestions) =>
       prevQuestions.map((q) => {
         if (q.id === currentQuestion.id) {
-          // Toggle tag
           const updatedTags = q.tags.includes(tagId)
             ? q.tags.filter((t) => t !== tagId)
             : [...q.tags, tagId]
 
-          // Update tags in database if session ID exists
           if (sessionId) {
             updateQuestionTags(sessionId, q.id, updatedTags).catch((error) =>
               console.error('Error updating tags:', error)
@@ -134,7 +126,6 @@ const PreAnalysis: React.FC = () => {
     if (currentQuestionIndex < incorrectQuestions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1)
     } else {
-      // Last question, submit analysis
       handleSubmitAnalysis()
     }
   }
@@ -148,7 +139,6 @@ const PreAnalysis: React.FC = () => {
   const handleSubmitAnalysis = () => {
     setIsSubmitting(true)
 
-    // Save to localStorage for the results page to use
     localStorage.setItem('analyzedQuestions', JSON.stringify(questions))
 
     toast({
