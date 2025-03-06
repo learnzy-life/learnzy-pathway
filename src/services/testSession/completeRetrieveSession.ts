@@ -9,7 +9,6 @@ export const completeTestSession = async (
   questions: QuestionResult[]
 ): Promise<boolean> => {
   try {
-    console.log("Completing test session with ID:", sessionId);
     // Calculate score
     const answeredQuestions = questions.filter((q) => q.userAnswer !== null)
     const correctAnswers = questions.filter((q) => q.isCorrect)
@@ -30,7 +29,6 @@ export const completeTestSession = async (
       return false
     }
 
-    console.log("Test session completed successfully");
     return true
   } catch (err) {
     console.error('Unexpected error completing test session:', err)
@@ -43,7 +41,6 @@ export const getTestSession = async (
   sessionId: string
 ): Promise<TestSession | null> => {
   try {
-    console.log("Fetching test session with ID:", sessionId);
     const { data, error } = await supabase
       .from('test_sessions')
       .select('*')
@@ -55,27 +52,18 @@ export const getTestSession = async (
       return null
     }
 
-    if (!data) {
-      console.log("No test session found with ID:", sessionId);
-      return null;
-    }
+    if (!data) return null
 
-    console.log("Raw test session data:", data);
-
-    // Create a structured TestSession object
-    const testSession: TestSession = {
+    return {
       id: data.id,
       userId: data.user_id,
       subject: data.subject,
       startTime: data.start_time,
       endTime: data.end_time,
       score: data.score,
-      totalQuestions: data.total_questions || 0,
-      questions: data.questions_data || data.questions || []
+      totalQuestions: data.total_questions,
+      questions: data.questions_data,
     }
-
-    console.log("Structured test session:", testSession);
-    return testSession;
   } catch (err) {
     console.error('Unexpected error fetching test session:', err)
     return null
