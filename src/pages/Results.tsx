@@ -51,7 +51,7 @@ const Results: React.FC = () => {
           title="Performance Overview" 
         />
         <ResultsOverview
-          subject={subjectTitle}
+          subject={subject}
           totalScore={resultsData.totalScore}
           maxScore={resultsData.maxScore}
           correctAnswers={resultsData.correctAnswers}
@@ -60,6 +60,7 @@ const Results: React.FC = () => {
           accuracy={resultsData.accuracy}
           timeSpent={resultsData.timeSpent}
           subjectScores={resultsData.subjectScores}
+          subjectCategoryData={resultsData.subjectCategoryData}
         />
       </div>
       
