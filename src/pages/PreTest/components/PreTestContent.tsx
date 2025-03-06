@@ -4,7 +4,7 @@ import MoodSelector from '../../../components/MoodSelector';
 import PreRitualCard from '../../../components/PreRitualCard';
 import RitualActivity from '../../../components/RitualActivity';
 import PostRitualInfo from '../../../components/PostRitualInfo';
-import { Subject, getRitualOptions } from '../utils/subjectUtils';
+import { Subject, PreRitual, getRitualOptions } from '../utils/subjectUtils';
 import { usePreTestState } from '../hooks/usePreTestState';
 import StartTestButton from './StartTestButton';
 import TestInformation from './TestInformation';
