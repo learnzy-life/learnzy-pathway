@@ -1,16 +1,12 @@
 import { useToast } from '@/hooks/use-toast'
 import { ArrowRight, Check, Info } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-
-interface Question {
-  id: number
-  text: string
-  userAnswer?: string
-  correctAnswer: string
-  isCorrect: boolean
-  tags: string[]
-}
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import {
+  QuestionResult,
+  getTestSession,
+  updateQuestionTags,
+} from '../services/testSessionService'
 
 interface TagOption {
   id: string
@@ -20,9 +16,11 @@ interface TagOption {
 
 const PreAnalysis: React.FC = () => {
   const { subject } = useParams<{ subject: string }>()
+  const [searchParams] = useSearchParams()
+  const sessionId = searchParams.get('sessionId')
   const navigate = useNavigate()
   const { toast } = useToast()
-  const [questions, setQuestions] = useState<Question[]>([])
+  const [questions, setQuestions] = useState<QuestionResult[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -62,30 +60,46 @@ const PreAnalysis: React.FC = () => {
   ]
 
   useEffect(() => {
-    // In a real app, fetch test results from API or localStorage
-    // For now, we'll mock the data
-    setTimeout(() => {
-      const mockQuestions = Array.from({ length: 10 }, (_, i) => ({
-        id: i + 1,
-        text: `Sample question ${
-          i + 1
-        } about ${subject}. This is used to analyze your understanding of key concepts.`,
-        userAnswer: String.fromCharCode(65 + (i % 4)), // A, B, C, or D
-        correctAnswer: String.fromCharCode(65 + ((i + (i % 2)) % 4)), // Different from user answer for some questions
-        isCorrect: i % 3 !== 0, // Make some questions incorrect
-        tags: [],
-      }))
+    const fetchTestData = async () => {
+      setIsLoading(true)
 
-      setQuestions(mockQuestions)
+      if (sessionId) {
+        // Fetch test session from database
+        const session = await getTestSession(sessionId)
+        if (session && session.questions) {
+          setQuestions(session.questions)
+          setIsLoading(false)
+          return
+        }
+      }
+
+      // Fallback to localStorage if no session ID or session not found
+      const storedResults = localStorage.getItem('testResults')
+      if (storedResults) {
+        try {
+          const parsedResults = JSON.parse(storedResults)
+          setQuestions(parsedResults)
+        } catch (error) {
+          console.error('Error parsing stored results:', error)
+          // If parsing fails, use empty array
+          setQuestions([])
+        }
+      } else {
+        // If no stored results, use empty array
+        setQuestions([])
+      }
+
       setIsLoading(false)
-    }, 1000)
-  }, [subject])
+    }
+
+    fetchTestData()
+  }, [sessionId, subject])
 
   const incorrectQuestions = questions.filter((q) => !q.isCorrect)
 
   if (incorrectQuestions.length === 0 && !isLoading && questions.length > 0) {
     // If no incorrect questions, redirect to results page
-    navigate(`/results/${subject}`)
+    navigate(`/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`)
     return null
   }
 
@@ -101,6 +115,13 @@ const PreAnalysis: React.FC = () => {
           const updatedTags = q.tags.includes(tagId)
             ? q.tags.filter((t) => t !== tagId)
             : [...q.tags, tagId]
+
+          // Update tags in database if session ID exists
+          if (sessionId) {
+            updateQuestionTags(sessionId, q.id, updatedTags).catch((error) =>
+              console.error('Error updating tags:', error)
+            )
+          }
 
           return { ...q, tags: updatedTags }
         }
@@ -127,10 +148,6 @@ const PreAnalysis: React.FC = () => {
   const handleSubmitAnalysis = () => {
     setIsSubmitting(true)
 
-    // In a real app, save the tagged questions to backend or localStorage
-    // For demo purposes we'll log it and navigate to results
-    console.log('Analyzed questions:', questions)
-
     // Save to localStorage for the results page to use
     localStorage.setItem('analyzedQuestions', JSON.stringify(questions))
 
@@ -141,7 +158,9 @@ const PreAnalysis: React.FC = () => {
     })
 
     setTimeout(() => {
-      navigate(`/results/${subject}`)
+      navigate(
+        `/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`
+      )
     }, 800)
   }
 
@@ -177,7 +196,13 @@ const PreAnalysis: React.FC = () => {
             Great job! Proceeding to your results.
           </p>
           <button
-            onClick={() => navigate(`/results/${subject}`)}
+            onClick={() =>
+              navigate(
+                `/results/${subject}${
+                  sessionId ? `?sessionId=${sessionId}` : ''
+                }`
+              )
+            }
             className="button-primary"
           >
             View Results
@@ -222,7 +247,7 @@ const PreAnalysis: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <span className="text-muted-foreground">Your answer:</span>
                 <span className="font-medium text-red-600">
-                  {currentQuestion.userAnswer}
+                  {currentQuestion.userAnswer || 'Not answered'}
                 </span>
               </div>
               <div className="flex items-center space-x-2">
@@ -288,6 +313,13 @@ const PreAnalysis: React.FC = () => {
             }`}
           >
             Previous
+          </button>
+
+          <button
+            onClick={handleSubmitAnalysis}
+            className="button-secondary ml-auto mr-2"
+          >
+            Skip Analysis
           </button>
 
           <button
