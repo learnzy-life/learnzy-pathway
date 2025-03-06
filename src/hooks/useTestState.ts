@@ -1,11 +1,10 @@
-
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Question, Subject, fetchQuestions } from '../services/questionService'
 import {
   createTestSession,
   completeTestSession,
-} from '../services/testSessionService'
+} from '../services/testSession'
 
 interface TestState {
   questions: Question[]
