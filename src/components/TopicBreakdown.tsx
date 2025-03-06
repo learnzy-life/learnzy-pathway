@@ -64,7 +64,7 @@ const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
         <table className="min-w-full bg-white rounded-xl border border-gray-200 shadow-subtle">
           <thead>
             <tr className="bg-gray-50">
-              <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Chapter</th>
+              <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Topic</th>
               <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Accuracy</th>
               <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Previous</th>
               <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Progress</th>
