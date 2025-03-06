@@ -84,7 +84,7 @@ const Results: React.FC = () => {
       <div className="mb-12">
         <SectionHeader 
           icon={BarChart} 
-          title="Chapter Performance" 
+          title="Topic Breakdown" 
         />
         <TopicBreakdown topics={resultsData.topics} />
       </div>

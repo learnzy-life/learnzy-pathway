@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { ArrowRight, TrendingUp, TrendingDown, Minus, Award, Clock, CheckCircle } from 'lucide-react';
 
 interface TopicItem {
   id: string;
@@ -21,16 +21,28 @@ interface TopicBreakdownProps {
 const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
   const getMasteryColor = (level: string) => {
     switch (level) {
-      case 'Excellent': return 'bg-green-500';
-      case 'Good': return 'bg-blue-500';
-      case 'Average': return 'bg-yellow-500';
-      case 'Needs Improvement': return 'bg-red-500';
+      case 'NEET Ready': return 'bg-green-500';
+      case 'On the Path': return 'bg-blue-500';
+      case 'Needs Improvement': return 'bg-yellow-500';
+      case 'Poor': return 'bg-red-500';
       default: return 'bg-gray-500';
     }
   };
 
+  const getMasteryLevel = (percentage: number): string => {
+    if (percentage > 95) return 'NEET Ready';
+    if (percentage >= 85) return 'On the Path';
+    if (percentage >= 75) return 'Needs Improvement';
+    return 'Poor';
+  };
+
   const getProgressIndicator = (current: number, previous?: number) => {
-    if (!previous) return null;
+    if (!previous) return (
+      <div className="flex items-center text-gray-500">
+        <Minus className="w-4 h-4 mr-1" />
+        <span className="text-sm font-medium">N/A</span>
+      </div>
+    );
     
     const diff = current - previous;
     
@@ -38,14 +50,14 @@ const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
       return (
         <div className="flex items-center text-green-600">
           <TrendingUp className="w-4 h-4 mr-1" />
-          <span className="text-sm font-medium">+{diff}%</span>
+          <span className="text-sm font-medium">+{diff.toFixed(1)}%</span>
         </div>
       );
     } else if (diff < 0) {
       return (
         <div className="flex items-center text-red-600">
           <TrendingDown className="w-4 h-4 mr-1" />
-          <span className="text-sm font-medium">{diff}%</span>
+          <span className="text-sm font-medium">{diff.toFixed(1)}%</span>
         </div>
       );
     } else {
@@ -65,17 +77,34 @@ const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
           <thead>
             <tr className="bg-gray-50">
               <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Topic</th>
-              <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Accuracy</th>
+              <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">
+                <div className="flex items-center">
+                  <CheckCircle className="w-4 h-4 mr-1 text-learnzy-purple" />
+                  Accuracy
+                </div>
+              </th>
               <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Previous</th>
               <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Progress</th>
-              <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Mastery</th>
-              <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Avg. Time</th>
+              <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">
+                <div className="flex items-center">
+                  <Award className="w-4 h-4 mr-1 text-learnzy-purple" />
+                  Mastery
+                </div>
+              </th>
+              <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">
+                <div className="flex items-center">
+                  <Clock className="w-4 h-4 mr-1 text-learnzy-purple" />
+                  Avg. Time
+                </div>
+              </th>
               <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Action</th>
             </tr>
           </thead>
           <tbody>
             {topics.length > 0 ? (
-              topics.map((topic) => (
+              topics.map((topic) => {
+                const masteryLevel = getMasteryLevel(topic.percentage);
+                return (
                 <tr key={topic.id} className={topic.needsAttention ? 'bg-red-50' : 'bg-white'}>
                   <td className="py-3 px-4 border-b">
                     <span className="font-medium text-learnzy-dark">{topic.name}</span>
@@ -83,32 +112,32 @@ const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
                   <td className="py-3 px-4 border-b">
                     <div className="flex items-center">
                       <span className="font-medium text-learnzy-dark mr-2">
-                        {topic.percentage}%
+                        {topic.percentage.toFixed(1)}%
                       </span>
                       <div className="w-16 bg-gray-100 rounded-full h-1.5">
                         <div 
-                          className={`h-1.5 rounded-full ${getMasteryColor(topic.masteryLevel)}`} 
+                          className={`h-1.5 rounded-full ${getMasteryColor(masteryLevel)}`} 
                           style={{ width: `${topic.percentage}%` }}
                         ></div>
                       </div>
                     </div>
                   </td>
                   <td className="py-3 px-4 border-b text-muted-foreground">
-                    {topic.previousPercentage}%
+                    {topic.previousPercentage ? `${topic.previousPercentage.toFixed(1)}%` : 'N/A'}
                   </td>
                   <td className="py-3 px-4 border-b">
                     {getProgressIndicator(topic.percentage, topic.previousPercentage)}
                   </td>
                   <td className="py-3 px-4 border-b">
-                    <span className={`px-2 py-1 text-xs font-medium text-white rounded-full ${getMasteryColor(topic.masteryLevel)}`}>
-                      {topic.masteryLevel}
+                    <span className={`px-2 py-1 text-xs font-medium text-white rounded-full ${getMasteryColor(masteryLevel)}`}>
+                      {masteryLevel}
                     </span>
                   </td>
                   <td className="py-3 px-4 border-b text-muted-foreground">
-                    {topic.avgTimePerQuestion}
+                    {topic.avgTimePerQuestion || 'N/A'}
                   </td>
                   <td className="py-3 px-4 border-b">
-                    {topic.needsAttention ? (
+                    {topic.needsAttention || masteryLevel === 'Poor' || masteryLevel === 'Needs Improvement' ? (
                       <button className="text-sm font-medium text-learnzy-purple flex items-center hover:underline">
                         Practice <ArrowRight className="ml-1 w-3 h-3" />
                       </button>
@@ -117,7 +146,7 @@ const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
                     )}
                   </td>
                 </tr>
-              ))
+              )})
             ) : (
               <tr>
                 <td colSpan={7} className="py-6 text-center text-muted-foreground">
@@ -132,7 +161,7 @@ const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
       <div className="mt-8 bg-amber-50 p-4 rounded-lg border border-amber-100">
         <h4 className="font-medium text-amber-800 mb-2">Recommendations</h4>
         <p className="text-amber-700">
-          Focus on improving topics that show a decline in performance compared to previous tests.
+          Focus on improving topics that show a mastery level of "Needs Improvement" or "Poor" to boost your overall performance.
         </p>
       </div>
     </div>
