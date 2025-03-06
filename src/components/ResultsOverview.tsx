@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface ResultsOverviewProps {
   subject: string;
@@ -17,19 +17,8 @@ interface ResultsOverviewProps {
     total: number;
     correct: number;
     incorrect: number;
-    subjectCategory?: string;
-  }[];
-  subjectCategoryData?: {
-    name: string;
-    score: number;
-    total: number;
-    correct: number;
-    incorrect: number;
-    chapterCount: number;
   }[];
 }
-
-const COLORS = ['#9b87f5', '#36B9CC', '#1cc88a', '#f6c23e', '#e74a3b', '#5a5c69'];
 
 const ResultsOverview: React.FC<ResultsOverviewProps> = ({
   subject,
@@ -41,7 +30,6 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
   accuracy,
   timeSpent,
   subjectScores,
-  subjectCategoryData = []
 }) => {
   // Format the tooltip for the chapter performance chart
   const renderTooltip = (props: any) => {
@@ -52,7 +40,7 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
       return (
         <div className="bg-white p-3 border border-gray-200 shadow-lg rounded-md">
           <p className="font-medium">{data.name}</p>
-          <p className="text-sm text-gray-600">Score: {data.score}%</p>
+          <p className="text-sm text-gray-600">Accuracy: {data.score}%</p>
           <p className="text-sm text-gray-600">
             {data.total} questions: {data.correct} correct, {data.incorrect} incorrect
           </p>
@@ -61,147 +49,6 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
     }
     
     return null;
-  };
-
-  // Format the tooltip for the subject category pie chart
-  const renderCategoryTooltip = (props: any) => {
-    const { active, payload } = props;
-    
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-white p-3 border border-gray-200 shadow-lg rounded-md">
-          <p className="font-medium">{data.name}</p>
-          <p className="text-sm text-gray-600">Score: {data.score}%</p>
-          <p className="text-sm text-gray-600">
-            {data.total} questions: {data.correct} correct, {data.incorrect} incorrect
-          </p>
-          <p className="text-sm text-gray-600">
-            {data.chapterCount} chapter{data.chapterCount !== 1 ? 's' : ''}
-          </p>
-        </div>
-      );
-    }
-    
-    return null;
-  };
-  
-  // Group subject scores by category
-  const getCategoryCharts = () => {
-    if (!subjectCategoryData || subjectCategoryData.length <= 1) {
-      return null;
-    }
-    
-    const categoryNames = {
-      biology: {
-        title: "Biology Category Performance",
-        description: "Performance across botany, zoology, and general biology topics."
-      },
-      chemistry: {
-        title: "Chemistry Category Performance",
-        description: "Performance across organic, inorganic, and physical chemistry."
-      },
-      physics: {
-        title: "Physics Category Performance",
-        description: "Performance across mechanics, electromagnetism, and modern physics."
-      }
-    };
-    
-    const currentSubject = subject.toLowerCase() as keyof typeof categoryNames;
-    const titleInfo = categoryNames[currentSubject] || {
-      title: "Subject Category Performance",
-      description: "Performance across different categories."
-    };
-    
-    return (
-      <div className="mb-8">
-        <h4 className="text-base font-medium text-learnzy-dark mb-2">{titleInfo.title}</h4>
-        <p className="text-sm text-gray-600 mb-4">{titleInfo.description}</p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-subtle">
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={subjectCategoryData}
-                    dataKey="total"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                  >
-                    {subjectCategoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip content={renderCategoryTooltip} />
-                </PieChart>
-              </ResponsiveContainer>
-              <p className="text-center text-sm text-gray-600 mt-2">Question Distribution</p>
-            </div>
-          </div>
-          
-          <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-subtle">
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={subjectCategoryData}
-                  margin={{ top: 5, right: 5, left: 5, bottom: 20 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="name" angle={-45} textAnchor="end" height={50} />
-                  <YAxis domain={[0, 100]} />
-                  <Tooltip content={renderCategoryTooltip} />
-                  <Bar dataKey="score" fill="#9b87f5" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-              <p className="text-center text-sm text-gray-600 mt-2">Score by Category</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Get the proper subject scores based on the current subject
-  const getFilteredScores = () => {
-    // Group scores by category
-    if (subjectScores.length > 8) {
-      // If there are too many chapters, group them by subject category
-      const categoryScores = new Map();
-      
-      subjectScores.forEach(score => {
-        const category = score.subjectCategory || 'General';
-        if (!categoryScores.has(category)) {
-          categoryScores.set(category, {
-            name: category,
-            total: 0,
-            correct: 0,
-            incorrect: 0,
-            score: 0
-          });
-        }
-        
-        const catScore = categoryScores.get(category);
-        catScore.total += score.total;
-        catScore.correct += score.correct;
-        catScore.incorrect += score.incorrect;
-      });
-      
-      // Calculate score for each category
-      categoryScores.forEach(catScore => {
-        catScore.score = catScore.total > 0 
-          ? Math.round((catScore.correct / catScore.total) * 100) 
-          : 0;
-      });
-      
-      return Array.from(categoryScores.values());
-    }
-    
-    return subjectScores;
   };
 
   return (
@@ -250,30 +97,33 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
         </div>
       </div>
       
-      {getCategoryCharts()}
-      
       <div>
         <h4 className="text-base font-medium text-learnzy-dark mb-4">Chapter Performance</h4>
         <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={getFilteredScores()}
-              margin={{ top: 5, right: 5, left: 5, bottom: 20 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis 
-                dataKey="name" 
-                angle={-45} 
-                textAnchor="end" 
-                height={50}
-                tick={{ fontSize: 12 }}
-                interval={0}
-              />
-              <YAxis domain={[0, 100]} />
-              <Tooltip content={renderTooltip} />
-              <Bar dataKey="score" fill="#9b87f5" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {subjectScores.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={subjectScores}
+                margin={{ top: 5, right: 5, left: 5, bottom: 25 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis 
+                  dataKey="name" 
+                  tick={{ fontSize: 12 }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
+                />
+                <YAxis domain={[0, 100]} />
+                <Tooltip content={renderTooltip} />
+                <Bar dataKey="score" fill="#9b87f5" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-full flex items-center justify-center">
+              <p className="text-muted-foreground">No chapter data available</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -15,7 +15,6 @@ export const useResultsData = (subject: Subject | undefined, sessionId: string |
 
   useEffect(() => {
     const fetchResults = async () => {
-      setLoading(true);
       try {
         console.log("Fetching results with sessionId:", sessionId, "and subject:", subject);
         
@@ -108,11 +107,10 @@ export const useResultsData = (subject: Subject | undefined, sessionId: string |
         } else {
           setErrorMessage("No question data available");
         }
-        
-        setLoading(false);
       } catch (error) {
         console.error("Error in results page:", error);
         setErrorMessage("An unexpected error occurred");
+      } finally {
         setLoading(false);
       }
     };
