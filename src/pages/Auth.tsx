@@ -28,7 +28,22 @@ const Auth: React.FC = () => {
 
     try {
       if (isSignUp) {
-        await signUp(email, password)
+        try {
+          await signUp(email, password)
+        } catch (err) {
+          const errorMessage = err instanceof Error ? err.message : 'An error occurred during sign up'
+          
+          // Check if it's the "User already registered" error
+          if (errorMessage.includes('User already registered') || errorMessage.includes('user already exists')) {
+            setError('This email is already registered. Please sign in instead.')
+            // Optionally switch to sign in mode
+            setIsSignUp(false)
+            setIsLoading(false)
+            return
+          }
+          
+          throw err
+        }
       } else {
         await signIn(email, password)
       }
@@ -122,7 +137,10 @@ const Auth: React.FC = () => {
 
             <div className="mt-6 text-center">
               <button
-                onClick={() => setIsSignUp(!isSignUp)}
+                onClick={() => {
+                  setIsSignUp(!isSignUp)
+                  setError(null) // Clear any existing errors when switching modes
+                }}
                 className="text-sm text-learnzy-purple hover:text-learnzy-dark transition-colors"
               >
                 {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}

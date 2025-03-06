@@ -82,7 +82,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (error) {
-        toast.error(error.message)
+        if (error.message.includes('User already registered') || error.message.includes('user already exists')) {
+          toast.error('This email is already registered. Please sign in instead.')
+        } else {
+          toast.error(error.message)
+        }
         throw error
       }
 
