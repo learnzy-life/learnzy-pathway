@@ -23,7 +23,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Check for active session on mount
     const checkSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession()
@@ -38,7 +37,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     checkSession()
 
-    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session)
@@ -52,7 +50,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Sign in function
   const signIn = async (email: string, password: string) => {
     try {
       setIsLoading(true)
@@ -76,7 +73,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Sign up function
   const signUp = async (email: string, password: string) => {
     try {
       setIsLoading(true)
@@ -99,7 +95,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Sign out function
   const signOut = async () => {
     try {
       setIsLoading(true)
@@ -120,7 +115,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Sign in with Google function
   const signInWithGoogle = async () => {
     try {
       setIsLoading(true)

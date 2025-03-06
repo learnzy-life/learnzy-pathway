@@ -1,22 +1,9 @@
 
 import { createClient } from '@supabase/supabase-js'
 
-// Use environment variables or default values
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project-url.supabase.co'
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key'
-
-// Inform users if the keys are missing but create a client anyway to prevent crashes
-if (
-  !import.meta.env.VITE_SUPABASE_URL ||
-  !import.meta.env.VITE_SUPABASE_ANON_KEY
-) {
-  console.warn(
-    'Supabase URL or API key not found in environment variables. Using default values.'
-  )
-  console.warn(
-    'Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables for proper functionality.'
-  )
-}
+// Use the actual Supabase URL and anon key from the project
+const supabaseUrl = 'https://duvqdpyxrkdmoyizepqv.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR1dnFkcHl4cmtkbW95aXplcHF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NDY2MTIsImV4cCI6MjA1NjQyMjYxMn0.3g2BQ5Jnc42MXtMsk-5bMIEpxRTW82-LttJfQ61cHck'
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
