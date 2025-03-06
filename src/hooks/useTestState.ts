@@ -1,9 +1,10 @@
+
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Question, Subject, fetchQuestions } from '../services/questionService'
 import {
+  createTestSession,
   completeTestSession,
-  startTestSession,
 } from '../services/testSessionService'
 
 interface TestState {
@@ -42,12 +43,14 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
     const loadQuestions = async () => {
       setIsLoading(true)
 
-      // Start a new test session
-      const newSessionId = await startTestSession(subject)
+      // Load the questions first
+      const loadedQuestions = await fetchQuestions(subject)
+      
+      // Then create a new test session with the loaded questions
+      const newSessionId = await createTestSession(subject, loadedQuestions)
       setSessionId(newSessionId)
       setStartTime(Date.now())
-
-      const loadedQuestions = await fetchQuestions(subject)
+      
       setQuestions(loadedQuestions)
       setIsLoading(false)
     }
@@ -129,7 +132,7 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
 
     // Save to test session in database
     if (sessionId) {
-      completeTestSession(sessionId, questionResults, timeTaken)
+      completeTestSession(sessionId, questionResults)
         .then(() => {
           // Navigate to analysis page with session ID
           navigate(`/analysis/${subject}?sessionId=${sessionId}`)
