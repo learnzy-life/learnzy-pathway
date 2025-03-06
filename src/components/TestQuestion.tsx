@@ -11,7 +11,7 @@ interface QuestionProps {
   id: number;
   text: string;
   options: Option[];
-  onAnswerSelected: (questionId: number, answerId: string) => void;
+  onAnswerSelected: (questionId: number, answerId: string, timeTaken: number) => void;
   selectedAnswer?: string;
   isCurrentQuestion: boolean;
 }
@@ -46,6 +46,10 @@ const TestQuestion: React.FC<QuestionProps> = ({
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
+  const handleAnswerClick = (answerId: string) => {
+    onAnswerSelected(id, answerId, timeSpent);
+  };
+
   if (!isCurrentQuestion) return null;
 
   return (
@@ -68,7 +72,7 @@ const TestQuestion: React.FC<QuestionProps> = ({
         {options.map((option) => (
           <button
             key={option.id}
-            onClick={() => onAnswerSelected(id, option.id)}
+            onClick={() => handleAnswerClick(option.id)}
             className={`
               w-full p-4 rounded-xl text-left transition-all duration-200
               ${selectedAnswer === option.id 

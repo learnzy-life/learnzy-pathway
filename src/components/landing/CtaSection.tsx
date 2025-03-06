@@ -1,21 +1,57 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
-const CtaSection: React.FC = () => {
+const CtaSection = () => {
+  const { user } = useAuth();
+  
   return (
-    <section className="py-10 md:py-16 px-3 sm:px-0">
-      <div className="card-glass p-5 sm:p-6 md:p-10 lg:p-16 text-center">
-        <h2 className="text-xl sm:text-2xl md:text-4xl font-display font-bold mb-3 md:mb-6">
-          Ready to Find Your Strengths?
+    <section className="py-20 bg-learnzy-purple/5">
+      <div className="container mx-auto px-6 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-learnzy-dark mb-4">
+          Ready to Revolutionize Your Test Prep?
         </h2>
-        <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto mb-5 md:mb-10">
-          Join thousands of students who use Learnzy to find what they need to work on and improve their exam scores.
+        <p className="text-muted-foreground max-w-2xl mx-auto mb-10">
+          Join thousands of students who are transforming their study habits and achieving better results with our innovative approach.
         </p>
-        <Link to="/subjects" className="button-primary inline-flex">
-          Start Your Learning Journey <ArrowRight className="ml-2 w-5 h-5" />
-        </Link>
+        
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          {user ? (
+            <>
+              <Link
+                to="/subjects"
+                className="button-primary inline-flex items-center"
+              >
+                Take a Practice Test <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+              
+              <Link
+                to="/dashboard"
+                className="button-secondary inline-flex items-center"
+              >
+                View Your Dashboard <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/auth"
+                className="button-primary inline-flex items-center"
+              >
+                Get Started <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+              
+              <Link
+                to="/learn-more"
+                className="button-secondary inline-flex items-center"
+              >
+                Learn More <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </section>
   );

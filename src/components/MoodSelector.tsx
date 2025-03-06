@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 
-type Mood = 'great' | 'good' | 'okay' | 'stressed' | 'anxious';
+export type Mood = 'great' | 'good' | 'okay' | 'stressed' | 'anxious';
 
 interface MoodSelectorProps {
   onSelect: (mood: Mood) => void;
@@ -36,8 +36,8 @@ const MoodSelector: React.FC<MoodSelectorProps> = ({ onSelect, selectedMood }) =
               ${selectedMood === mood.type ? 'shadow-md' : 'hover:shadow-sm'}
             `}
           >
-            <span className="text-4xl transition-transform duration-300 
-              ${hovered === mood.type || selectedMood === mood.type ? 'transform scale-110' : ''}">
+            <span className={`text-4xl transition-transform duration-300 
+              ${hovered === mood.type || selectedMood === mood.type ? 'transform scale-110' : ''}`}>
               {mood.emoji}
             </span>
             <span className={`text-sm font-medium transition-opacity duration-300 

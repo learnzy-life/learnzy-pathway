@@ -27,8 +27,16 @@ const PreTestContent: React.FC<PreTestContentProps> = ({
   
   const rituals = getRitualOptions()
 
+  const handleMoodSelect = (selectedMood: Mood) => {
+    setMood(selectedMood)
+    // Save to localStorage
+    localStorage.setItem('selected_mood', selectedMood)
+  }
+
   const handleRitualSelect = (selectedRitual: PreRitual) => {
     setRitual(selectedRitual)
+    // Save to localStorage
+    localStorage.setItem('selected_ritual', selectedRitual)
 
     if (selectedRitual === 'none') {
       setRitualCompleted(true)
@@ -87,13 +95,15 @@ const PreTestContent: React.FC<PreTestContentProps> = ({
     }
 
     console.log('Starting test with:', { subject, mood, ritual })
+    
+    // This data is already saved in localStorage, and will be used when starting the test
     onStartTest()
   }
 
   return (
     <>
       <div className="card-glass p-8 mb-10 animate-fade-in">
-        <MoodSelector onSelect={setMood} selectedMood={mood} />
+        <MoodSelector onSelect={handleMoodSelect} selectedMood={mood} />
       </div>
 
       {showRitualActivity ? (

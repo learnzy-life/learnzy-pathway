@@ -1,10 +1,14 @@
+
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Question, Subject, fetchQuestions } from '../services/questionService'
 import {
   createTestSession,
   completeTestSession,
+  updateQuestionAnswer,
 } from '../services/testSession'
+import { supabase } from '../lib/supabase'
+import { toast } from 'sonner'
 
 interface TestState {
   questions: Question[]
@@ -17,7 +21,7 @@ interface TestState {
 }
 
 interface TestActions {
-  handleAnswerSelected: (questionId: number, answerId: string) => void
+  handleAnswerSelected: (questionId: number, answerId: string, timeTaken: number) => void
   handleNextQuestion: () => void
   handlePrevQuestion: () => void
   handleJumpToQuestion: (index: number) => void
@@ -42,16 +46,45 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
     const loadQuestions = async () => {
       setIsLoading(true)
 
-      // Load the questions first
-      const loadedQuestions = await fetchQuestions(subject)
-      
-      // Then create a new test session with the loaded questions
-      const newSessionId = await createTestSession(subject, loadedQuestions)
-      setSessionId(newSessionId)
-      setStartTime(Date.now())
-      
-      setQuestions(loadedQuestions)
-      setIsLoading(false)
+      try {
+        // Load the questions first
+        const loadedQuestions = await fetchQuestions(subject)
+        
+        // Get user mood and ritual data from localStorage
+        const mood = localStorage.getItem('selected_mood') || 'unknown'
+        const ritual = localStorage.getItem('selected_ritual') || 'none'
+        
+        // Then create a new test session with the loaded questions
+        const newSessionId = await createTestSession(subject, loadedQuestions)
+        setSessionId(newSessionId)
+        
+        if (newSessionId) {
+          // Save the preparation data
+          const { data: { user } } = await supabase.auth.getUser()
+          
+          if (user) {
+            const { error } = await supabase.from('user_test_preparations').insert({
+              user_id: user.id,
+              test_session_id: newSessionId,
+              subject,
+              mood,
+              ritual
+            })
+            
+            if (error) {
+              console.error('Error saving test preparation data:', error)
+            }
+          }
+        }
+        
+        setStartTime(Date.now())
+        setQuestions(loadedQuestions)
+      } catch (error) {
+        console.error('Error loading test:', error)
+        toast.error('Failed to load test questions')
+      } finally {
+        setIsLoading(false)
+      }
     }
 
     loadQuestions()
@@ -79,10 +112,16 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
     }${secs}`
   }
 
-  const handleAnswerSelected = (questionId: number, answerId: string) => {
+  const handleAnswerSelected = (questionId: number, answerId: string, timeTaken: number) => {
     setQuestions((prev) =>
       prev.map((q) => (q.id === questionId ? { ...q, answer: answerId } : q))
     )
+    
+    // Update the answer in the database if we have a session
+    if (sessionId) {
+      updateQuestionAnswer(sessionId, questionId, answerId, timeTaken)
+        .catch(error => console.error('Error updating question answer:', error))
+    }
   }
 
   const handleNextQuestion = () => {
@@ -99,12 +138,6 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
 
   const handleJumpToQuestion = (index: number) => {
     setCurrentQuestionIndex(index)
-  }
-
-  const getRandomDifferentAnswer = (question: Question): string => {
-    const options = question.options.map((o) => o.id)
-    const filteredOptions = options.filter((id) => id !== question.answer)
-    return filteredOptions[Math.floor(Math.random() * filteredOptions.length)]
   }
 
   const handleSubmitTest = () => {
@@ -125,7 +158,7 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
         userAnswer: q.answer,
         correctAnswer: q.correctAnswer || '',
         isCorrect,
-        timeTaken: timeTaken / questions.length, // Add the missing timeTaken property
+        timeTaken: timeTaken / questions.length, // Default time distribution if not tracked per question
         tags: [],
       }
     })
