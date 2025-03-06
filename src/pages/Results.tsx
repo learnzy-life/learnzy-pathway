@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { 
   CheckCircle2, 
@@ -32,16 +32,8 @@ const Results: React.FC = () => {
   const { mindsetMetrics, loading, resultsData, errorMessage } = useResultsData(subject, sessionId);
   
   // Handle loading and error states
-  if (loading) {
-    return <ResultsLoadingState loading={true} errorMessage={null} />;
-  }
-  
-  if (errorMessage) {
-    return <ResultsLoadingState loading={false} errorMessage={errorMessage} />;
-  }
-  
-  if (!resultsData) {
-    return <ResultsLoadingState loading={false} errorMessage="No data available" />;
+  if (loading || errorMessage || !resultsData) {
+    return <ResultsLoadingState loading={loading} errorMessage={errorMessage} />;
   }
   
   if (!subject) {

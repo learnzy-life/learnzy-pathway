@@ -1,3 +1,4 @@
+
 import { QuestionResult } from '../services/testSession';
 import { Subject } from '../services/questionService';
 
@@ -188,7 +189,7 @@ export const calculateAnalytics = (
   
   // Convert chapter performance to array format for chart
   const subjectScores = Array.from(chapterPerformance.entries()).map(([name, data]) => ({
-    name: name !== 'Unknown' ? name : 'General',
+    name,
     score: data.score,
     total: data.total,
     correct: data.correct,
