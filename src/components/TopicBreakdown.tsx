@@ -67,6 +67,15 @@ const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
     }
   };
 
+  // Add a fallback message when no topics are available
+  if (!topics || topics.length === 0) {
+    return (
+      <div className="card-glass p-6">
+        <p className="text-center text-gray-500">No topic data available for this test session.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="card-glass">
       <div className="overflow-x-auto w-full">

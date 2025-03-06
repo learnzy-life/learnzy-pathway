@@ -35,8 +35,6 @@ const calculateAnalytics = (
   questionDetails: QueryResult[],
   subj: string
 ): ResultsData => {
-  // This is a simplified version to make the code compile
-  // The actual implementation should be in resultsAnalytics.ts
   console.log("Calculating analytics with:", userAnswers.length, "answers and", questionDetails.length, "question details");
   
   // Create a map of question details for easier lookup
@@ -69,6 +67,7 @@ const calculateAnalytics = (
   
   userAnswers.forEach(answer => {
     const questionDetail = questionMap.get(answer.id);
+    // Use Topic field instead of defaulting to Unknown
     const topic = questionDetail ? (questionDetail.Topic || 'Unknown') : 'Unknown';
     
     if (!topicPerformance.has(topic)) {
