@@ -1,3 +1,4 @@
+
 import { AlertCircle, CheckCircle, Clock } from 'lucide-react'
 import React from 'react'
 import {
@@ -10,6 +11,12 @@ import {
   YAxis,
 } from 'recharts'
 
+interface TimeData {
+  questionId: number;
+  actualTime: number;
+  idealTime: number;
+}
+
 interface TimeAnalysisProps {
   timeAnalysis: {
     timeSpent: string
@@ -19,34 +26,62 @@ interface TimeAnalysisProps {
     slowQuestions: number[]
     quickQuestions: number[]
     feedback: string
+    timeData?: TimeData[]
   }
 }
 
 const TimeAnalysis: React.FC<TimeAnalysisProps> = ({ timeAnalysis }) => {
-  // Mock data for the time spent per question chart
-  const generateTimeData = () => {
-    const mockData = []
-    for (let i = 1; i <= 20; i++) {
-      const isSlowQuestion = timeAnalysis.slowQuestions.includes(i)
-      const isQuickQuestion = timeAnalysis.quickQuestions.includes(i)
+  // Format the time data for the chart
+  const formatTimeData = () => {
+    if (!timeAnalysis.timeData || timeAnalysis.timeData.length === 0) {
+      // Generate mock data if no time data is available
+      const mockData = []
+      for (let i = 1; i <= 20; i++) {
+        const isSlowQuestion = timeAnalysis.slowQuestions.includes(i)
+        const isQuickQuestion = timeAnalysis.quickQuestions.includes(i)
 
-      const yourTime = isSlowQuestion
-        ? 120
-        : isQuickQuestion
-        ? 20
-        : Math.floor(Math.random() * 40) + 40
-      const idealTime = 60
+        const yourTime = isSlowQuestion
+          ? 120
+          : isQuickQuestion
+          ? 20
+          : Math.floor(Math.random() * 40) + 40
+        const idealTime = 60
 
-      mockData.push({
-        question: `Q${i}`,
-        yourTime,
-        idealTime,
-      })
+        mockData.push({
+          question: `Q${i}`,
+          yourTime,
+          idealTime,
+        })
+      }
+      return mockData
     }
-    return mockData
+    
+    // Use actual time data
+    return timeAnalysis.timeData.map(item => ({
+      question: `Q${item.questionId}`,
+      yourTime: Math.round(item.actualTime), // Round to nearest second
+      idealTime: Math.round(item.idealTime)
+    }));
   }
 
-  const timeData = generateTimeData()
+  const timeData = formatTimeData()
+  
+  // Format the custom tooltip for the chart
+  const renderTimeTooltip = (props: any) => {
+    const { active, payload } = props;
+    
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 border border-gray-200 shadow-lg rounded-md">
+          <p className="font-medium">{payload[0].payload.question}</p>
+          <p className="text-sm text-indigo-600">Your Time: {payload[0].value} seconds</p>
+          <p className="text-sm text-green-600">Ideal Time: {payload[1].value} seconds</p>
+        </div>
+      );
+    }
+    
+    return null;
+  };
 
   return (
     <div className="card-glass p-6">
@@ -117,18 +152,7 @@ const TimeAnalysis: React.FC<TimeAnalysisProps> = ({ timeAnalysis }) => {
                 style: { textAnchor: 'middle' },
               }}
             />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #f1f1f1',
-                borderRadius: '8px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-              }}
-              formatter={(value: number, name: string) => [
-                `${value} seconds`,
-                name === 'yourTime' ? 'Your Time' : 'Ideal Time',
-              ]}
-            />
+            <Tooltip content={renderTimeTooltip} />
             <Bar
               dataKey="yourTime"
               name="Your Time"
@@ -153,13 +177,19 @@ const TimeAnalysis: React.FC<TimeAnalysisProps> = ({ timeAnalysis }) => {
               <h4 className="text-base font-medium text-amber-800 mb-2">
                 Slow Questions
               </h4>
-              <p className="text-amber-700 mb-1">
-                {timeAnalysis.slowQuestions.map((q) => `Q${q}`).join(', ')}
-                <span className="text-amber-600 text-sm">
-                  {' '}
-                  (Your Time: 120s, Ideal: 60s)
-                </span>
-              </p>
+              {timeAnalysis.slowQuestions.length > 0 ? (
+                <p className="text-amber-700 mb-1">
+                  {timeAnalysis.slowQuestions.map((q) => `Q${q}`).join(', ')}
+                  <span className="text-amber-600 text-sm">
+                    {' '}
+                    (Taking ≥1.5× the ideal time)
+                  </span>
+                </p>
+              ) : (
+                <p className="text-amber-700 mb-1">
+                  None detected! You managed your time well across all questions.
+                </p>
+              )}
               <p className="text-sm text-amber-600">
                 Consider practicing similar questions to improve speed
               </p>
@@ -174,13 +204,19 @@ const TimeAnalysis: React.FC<TimeAnalysisProps> = ({ timeAnalysis }) => {
               <h4 className="text-base font-medium text-blue-800 mb-2">
                 Quick Questions
               </h4>
-              <p className="text-blue-700 mb-1">
-                {timeAnalysis.quickQuestions.map((q) => `Q${q}`).join(', ')}
-                <span className="text-blue-600 text-sm">
-                  {' '}
-                  (Your Time: 20s, Ideal: 60s)
-                </span>
-              </p>
+              {timeAnalysis.quickQuestions.length > 0 ? (
+                <p className="text-blue-700 mb-1">
+                  {timeAnalysis.quickQuestions.map((q) => `Q${q}`).join(', ')}
+                  <span className="text-blue-600 text-sm">
+                    {' '}
+                    (Taking ≤0.5× the ideal time)
+                  </span>
+                </p>
+              ) : (
+                <p className="text-blue-700 mb-1">
+                  You took a reasonable amount of time on all questions.
+                </p>
+              )}
               <p className="text-sm text-blue-600">
                 Great speed! Make sure you're not rushing through questions
               </p>

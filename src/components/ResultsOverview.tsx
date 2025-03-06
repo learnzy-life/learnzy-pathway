@@ -15,6 +15,8 @@ interface ResultsOverviewProps {
     name: string;
     score: number;
     total: number;
+    correct: number;
+    incorrect: number;
   }[];
 }
 
@@ -29,6 +31,26 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
   timeSpent,
   subjectScores,
 }) => {
+  // Format the tooltip for the chapter performance chart
+  const renderTooltip = (props: any) => {
+    const { active, payload } = props;
+    
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white p-3 border border-gray-200 shadow-lg rounded-md">
+          <p className="font-medium">{data.name}</p>
+          <p className="text-sm text-gray-600">Score: {data.score}%</p>
+          <p className="text-sm text-gray-600">
+            {data.total} questions: {data.correct} correct, {data.incorrect} incorrect
+          </p>
+        </div>
+      );
+    }
+    
+    return null;
+  };
+
   return (
     <div className="card-glass p-6 mb-8">
       <h3 className="text-xl font-semibold text-learnzy-dark mb-6">Performance Overview</h3>
@@ -76,7 +98,7 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
       </div>
       
       <div>
-        <h4 className="text-base font-medium text-learnzy-dark mb-4">Topic Performance</h4>
+        <h4 className="text-base font-medium text-learnzy-dark mb-4">Chapter Performance</h4>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -85,15 +107,8 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip
-                contentStyle={{ 
-                  backgroundColor: 'white',
-                  border: '1px solid #f1f1f1',
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                }}
-              />
+              <YAxis domain={[0, 100]} />
+              <Tooltip content={renderTooltip} />
               <Bar dataKey="score" fill="#9b87f5" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
