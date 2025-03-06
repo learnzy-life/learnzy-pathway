@@ -1,3 +1,4 @@
+
 import { useToast } from '@/hooks/use-toast'
 import { ArrowRight, Check, Info } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
@@ -61,9 +62,11 @@ const PreAnalysis: React.FC = () => {
   useEffect(() => {
     const fetchTestData = async () => {
       setIsLoading(true)
+      console.log('PreAnalysis: Fetching test data with sessionId:', sessionId, 'and subject:', subject)
 
       if (sessionId) {
         const session = await getTestSession(sessionId)
+        console.log('PreAnalysis: Retrieved session:', session)
         if (session && session.questions) {
           setQuestions(session.questions)
           setIsLoading(false)
@@ -71,16 +74,19 @@ const PreAnalysis: React.FC = () => {
         }
       }
 
+      console.log('PreAnalysis: No session found, trying localStorage')
       const storedResults = localStorage.getItem('testResults')
       if (storedResults) {
         try {
           const parsedResults = JSON.parse(storedResults)
+          console.log('PreAnalysis: Using data from localStorage:', parsedResults)
           setQuestions(parsedResults)
         } catch (error) {
           console.error('Error parsing stored results:', error)
           setQuestions([])
         }
       } else {
+        console.log('PreAnalysis: No data found in localStorage')
         setQuestions([])
       }
 
@@ -91,9 +97,14 @@ const PreAnalysis: React.FC = () => {
   }, [sessionId, subject])
 
   const incorrectQuestions = questions.filter((q) => !q.isCorrect)
+  console.log('PreAnalysis: Incorrect questions:', incorrectQuestions.length)
 
   if (incorrectQuestions.length === 0 && !isLoading && questions.length > 0) {
-    navigate(`/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`)
+    console.log('PreAnalysis: No incorrect questions, navigating to results')
+    // Ensure sessionId is passed to the results page
+    const resultsUrl = `/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`
+    console.log('PreAnalysis: Navigating to', resultsUrl)
+    navigate(resultsUrl)
     return null
   }
 
@@ -105,11 +116,14 @@ const PreAnalysis: React.FC = () => {
     setQuestions((prevQuestions) =>
       prevQuestions.map((q) => {
         if (q.id === currentQuestion.id) {
-          const updatedTags = q.tags.includes(tagId)
-            ? q.tags.filter((t) => t !== tagId)
-            : [...q.tags, tagId]
+          // Initialize tags array if it doesn't exist
+          const currentTags = q.tags || []
+          const updatedTags = currentTags.includes(tagId)
+            ? currentTags.filter((t) => t !== tagId)
+            : [...currentTags, tagId]
 
           if (sessionId) {
+            console.log('PreAnalysis: Updating tags for question', q.id, 'to', updatedTags)
             updateQuestionTags(sessionId, q.id, updatedTags).catch((error) =>
               console.error('Error updating tags:', error)
             )
@@ -139,7 +153,9 @@ const PreAnalysis: React.FC = () => {
   const handleSubmitAnalysis = () => {
     setIsSubmitting(true)
 
+    // Save to localStorage for backup
     localStorage.setItem('analyzedQuestions', JSON.stringify(questions))
+    console.log('PreAnalysis: Analysis completed, navigating to results')
 
     toast({
       title: 'Analysis complete',
@@ -148,9 +164,10 @@ const PreAnalysis: React.FC = () => {
     })
 
     setTimeout(() => {
-      navigate(
-        `/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`
-      )
+      // Ensure sessionId is passed to the results page
+      const resultsUrl = `/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`
+      console.log('PreAnalysis: Navigating to', resultsUrl)
+      navigate(resultsUrl)
     }, 800)
   }
 
@@ -186,13 +203,11 @@ const PreAnalysis: React.FC = () => {
             Great job! Proceeding to your results.
           </p>
           <button
-            onClick={() =>
-              navigate(
-                `/results/${subject}${
-                  sessionId ? `?sessionId=${sessionId}` : ''
-                }`
-              )
-            }
+            onClick={() => {
+              const resultsUrl = `/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`
+              console.log('PreAnalysis: Navigating to', resultsUrl)
+              navigate(resultsUrl)
+            }}
             className="button-primary"
           >
             View Results

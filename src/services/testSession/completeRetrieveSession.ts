@@ -14,6 +14,9 @@ export const completeTestSession = async (
     const correctAnswers = questions.filter((q) => q.isCorrect)
     const score = (correctAnswers.length / questions.length) * 100
 
+    console.log('Completing test session:', sessionId, 'with score:', score)
+    console.log('Questions data:', questions)
+
     const { error } = await supabase
       .from('test_sessions')
       .update({
@@ -29,6 +32,7 @@ export const completeTestSession = async (
       return false
     }
 
+    console.log('Test session completed successfully')
     return true
   } catch (err) {
     console.error('Unexpected error completing test session:', err)
@@ -41,6 +45,8 @@ export const getTestSession = async (
   sessionId: string
 ): Promise<TestSession | null> => {
   try {
+    console.log('Fetching test session:', sessionId)
+
     const { data, error } = await supabase
       .from('test_sessions')
       .select('*')
@@ -52,7 +58,17 @@ export const getTestSession = async (
       return null
     }
 
-    if (!data) return null
+    if (!data) {
+      console.error('No test session found with ID:', sessionId)
+      return null
+    }
+
+    console.log('Test session data:', data)
+
+    // Make sure questions_data is always an array
+    const questionsData = Array.isArray(data.questions_data) 
+      ? data.questions_data 
+      : []
 
     return {
       id: data.id,
@@ -60,9 +76,9 @@ export const getTestSession = async (
       subject: data.subject,
       startTime: data.start_time,
       endTime: data.end_time,
-      score: data.score,
-      totalQuestions: data.total_questions,
-      questions: data.questions_data,
+      score: data.score || 0,
+      totalQuestions: data.total_questions || questionsData.length,
+      questions: questionsData,
     }
   } catch (err) {
     console.error('Unexpected error fetching test session:', err)
