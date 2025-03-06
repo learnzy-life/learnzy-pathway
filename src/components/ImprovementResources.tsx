@@ -6,6 +6,7 @@ interface Resource {
   type: string;
   title: string;
   url: string;
+  description?: string;
 }
 
 interface ImprovementResourceItem {
@@ -104,7 +105,7 @@ const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }
       <div className="flex items-center justify-center mt-8 p-4 bg-green-50 rounded-lg border border-green-100">
         <div className="text-center">
           <div className="text-green-700 font-medium">Complete these resources before your next test to see improved results!</div>
-          <div className="text-sm text-green-600 mt-1">3 topics need your attention</div>
+          <div className="text-sm text-green-600 mt-1">{resources.length} topics need your attention</div>
         </div>
       </div>
     </div>

@@ -25,6 +25,17 @@ interface CognitiveInsightsProps {
       create: number;
     };
     insights: string[];
+    strengths?: string[];
+    weaknesses?: string[];
+    recommendations?: string[];
+    bloomTaxonomyPerformance?: {
+      remember: number;
+      understand: number;
+      apply: number;
+      analyze: number;
+      evaluate: number;
+      create: number;
+    };
   };
 }
 

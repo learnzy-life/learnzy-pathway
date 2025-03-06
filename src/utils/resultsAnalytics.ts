@@ -64,15 +64,31 @@ export interface ResultsData {
     }[];
   };
   cognitiveInsights: {
-    strengths: string[];
-    weaknesses: string[];
-    recommendations: string[];
     difficultyAccuracy: {
       easy: number;
       medium: number;
       hard: number;
     };
-    bloomTaxonomyPerformance: {
+    questionTypeAccuracy: {
+      conceptual: number;
+      numerical: number;
+      application: number;
+      analytical: number;
+    };
+    bloomsAccuracy: {
+      remember: number;
+      understand: number;
+      apply: number;
+      analyze: number;
+      evaluate: number;
+      create: number;
+    };
+    insights: string[];
+    // Additional properties that we'll use internally
+    strengths?: string[];
+    weaknesses?: string[];
+    recommendations?: string[];
+    bloomTaxonomyPerformance?: {
       remember: number;
       understand: number;
       apply: number;
@@ -82,18 +98,24 @@ export interface ResultsData {
     };
   };
   improvementResources: {
-    topics: {
-      topic: string;
-      accuracy: number;
-      progress: number;
-      totalActions: number;
-      resources: {
-        type: string;
-        title: string;
-        url: string;
-        description: string;
-      }[];
+    topic: string;
+    accuracy: number;
+    resources: {
+      type: string;
+      title: string;
+      url: string;
+      description?: string;
     }[];
+    progress: number;
+    totalActions: number;
+  }[];
+  mindsetAnalysis?: {
+    confidence: number;
+    stress: number;
+    focus: number;
+    resilience: number;
+    insights: string[];
+    improvements: string[];
   };
 }
 
@@ -252,19 +274,38 @@ export const calculateAnalytics = (
       };
     });
   
-  // Default data for empty sections to avoid errors
+  // Default data for cognitive insights to avoid errors
   const defaultCognitiveInsights = {
+    difficultyAccuracy: {
+      easy: 80,
+      medium: 60,
+      hard: 40
+    },
+    questionTypeAccuracy: {
+      conceptual: 75,
+      numerical: 60,
+      application: 55,
+      analytical: 50
+    },
+    bloomsAccuracy: {
+      remember: 90,
+      understand: 80,
+      apply: 70,
+      analyze: 60,
+      evaluate: 50,
+      create: 40
+    },
+    insights: [
+      "You excel at conceptual questions but could improve on numerical problems",
+      "Your analytical skills need improvement, focus on application-based questions",
+      "Consider spending more time on difficult questions"
+    ],
     strengths: ["Conceptual Understanding", "Problem Solving"],
     weaknesses: ["Calculation Speed", "Formula Application"],
     recommendations: [
       "Focus on practicing calculations to improve speed",
       "Review formula applications, particularly in specific topics"
     ],
-    difficultyAccuracy: {
-      easy: 80,
-      medium: 60,
-      hard: 40
-    },
     bloomTaxonomyPerformance: {
       remember: 90,
       understand: 80,
@@ -275,36 +316,85 @@ export const calculateAnalytics = (
     }
   };
   
-  const defaultImprovementResources = {
-    topics: [
-      {
-        topic: "Mechanics",
-        accuracy: 65,
-        progress: 2,
-        totalActions: 5,
-        resources: [
-          {
-            type: "Video",
-            title: "Mastering Force and Motion",
-            url: "#",
-            description: "Comprehensive coverage of Newton's laws"
-          }
-        ]
-      },
-      {
-        topic: "Electromagnetism",
-        accuracy: 45,
-        progress: 1,
-        totalActions: 4,
-        resources: [
-          {
-            type: "Practice",
-            title: "Electric Field Problems",
-            url: "#",
-            description: "Practice problems for electric fields"
-          }
-        ]
-      }
+  // Default data for improvement resources
+  const defaultImprovementResources = [
+    {
+      topic: "Mechanics",
+      accuracy: 65,
+      resources: [
+        {
+          type: "Video",
+          title: "Mastering Force and Motion",
+          url: "#",
+          description: "Comprehensive coverage of Newton's laws"
+        },
+        {
+          type: "Practice",
+          title: "Mechanics Problem Set",
+          url: "#",
+          description: "Practice problems for mechanics"
+        }
+      ],
+      progress: 2,
+      totalActions: 5
+    },
+    {
+      topic: "Electromagnetism",
+      accuracy: 45,
+      resources: [
+        {
+          type: "Video",
+          title: "Understanding Electric Fields",
+          url: "#",
+          description: "Clear explanation of electric field concepts"
+        },
+        {
+          type: "Practice",
+          title: "Electric Field Problems",
+          url: "#",
+          description: "Practice problems for electric fields"
+        }
+      ],
+      progress: 1,
+      totalActions: 4
+    },
+    {
+      topic: "Thermodynamics",
+      accuracy: 55,
+      resources: [
+        {
+          type: "Reading",
+          title: "Thermodynamics Principles",
+          url: "#",
+          description: "Essential reading on thermodynamics"
+        },
+        {
+          type: "Video",
+          title: "Entropy Explained",
+          url: "#",
+          description: "Visual explanation of entropy"
+        }
+      ],
+      progress: 0,
+      totalActions: 3
+    }
+  ];
+
+  // Default mindset analysis
+  const defaultMindsetAnalysis = {
+    confidence: 75,
+    stress: 40,
+    focus: 85,
+    resilience: 70,
+    insights: [
+      'Your confidence level was optimal for peak performance',
+      'You showed good resilience when tackling difficult topics',
+      'Consider mindfulness techniques to further reduce stress during exams'
+    ],
+    improvements: [
+      'Practice more timed mock tests to build test-taking stamina',
+      'Try the 4-7-8 breathing technique before difficult questions',
+      'Use positive visualization techniques before your next exam'
     ]
   };
   
@@ -341,6 +431,7 @@ export const calculateAnalytics = (
       timeData
     },
     cognitiveInsights: defaultCognitiveInsights,
-    improvementResources: defaultImprovementResources
+    improvementResources: defaultImprovementResources,
+    mindsetAnalysis: defaultMindsetAnalysis
   };
 };
