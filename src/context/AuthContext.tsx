@@ -119,10 +119,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = async () => {
     try {
       setIsLoading(true)
+      
+      // Get the current URL for the redirect
+      const redirectUrl = new URL('/auth', window.location.origin).toString()
+      console.log('Redirecting to:', redirectUrl)
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin,
+          redirectTo: redirectUrl,
         },
       })
 
@@ -132,7 +137,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       
       // The redirect will happen automatically
-      // We don't need to navigate programmatically
     } catch (error) {
       console.error('Google sign in error:', error)
       toast.error('Failed to sign in with Google')
