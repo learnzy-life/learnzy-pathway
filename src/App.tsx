@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import SubjectSelection from "./pages/SubjectSelection";
 import PreTest from "./pages/PreTest";
@@ -12,6 +12,9 @@ import PreAnalysis from "./pages/PreAnalysis";
 import Results from "./pages/Results";
 import NotFound from "./pages/NotFound";
 import LearnMore from "./pages/LearnMore";
+import Auth from "./pages/Auth";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -21,16 +24,35 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/subjects" element={<SubjectSelection />} />
-          <Route path="/pre-test/:subject" element={<PreTest />} />
-          <Route path="/test/:subject" element={<Test />} />
-          <Route path="/analysis/:subject" element={<PreAnalysis />} />
-          <Route path="/results/:subject" element={<Results />} />
-          <Route path="/learn-more" element={<LearnMore />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/subjects" element={<SubjectSelection />} />
+            <Route path="/pre-test/:subject" element={
+              <ProtectedRoute>
+                <PreTest />
+              </ProtectedRoute>
+            } />
+            <Route path="/test/:subject" element={
+              <ProtectedRoute>
+                <Test />
+              </ProtectedRoute>
+            } />
+            <Route path="/analysis/:subject" element={
+              <ProtectedRoute>
+                <PreAnalysis />
+              </ProtectedRoute>
+            } />
+            <Route path="/results/:subject" element={
+              <ProtectedRoute>
+                <Results />
+              </ProtectedRoute>
+            } />
+            <Route path="/learn-more" element={<LearnMore />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

@@ -1,11 +1,13 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Book, UserCircle, Sun } from 'lucide-react';
+import { Book, UserCircle, Sun, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Header: React.FC = () => {
   const location = useLocation();
   const isTestPage = location.pathname.includes('/test');
+  const { user, signOut } = useAuth();
 
   // Don't show header on the test page to avoid distractions
   if (isTestPage) return null;
@@ -30,9 +32,25 @@ const Header: React.FC = () => {
             <button className="button-ghost !py-2 !px-3">
               <Sun className="w-5 h-5" />
             </button>
-            <button className="button-ghost !py-2 !px-3">
-              <UserCircle className="w-5 h-5" />
-            </button>
+            
+            {user ? (
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-gray-700 hidden md:inline">
+                  {user.email}
+                </span>
+                <button 
+                  onClick={() => signOut()}
+                  className="button-ghost !py-2 !px-3 flex items-center"
+                  title="Sign out"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <Link to="/auth" className="button-ghost !py-2 !px-3">
+                <UserCircle className="w-5 h-5" />
+              </Link>
+            )}
           </div>
         </div>
       </div>

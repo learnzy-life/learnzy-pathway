@@ -19,3 +19,15 @@ if (
 }
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
+
+// Helper function to get the current user
+export const getCurrentUser = async () => {
+  const { data: { user } } = await supabase.auth.getUser()
+  return user
+}
+
+// Helper function to get the current session
+export const getCurrentSession = async () => {
+  const { data: { session } } = await supabase.auth.getSession()
+  return session
+}

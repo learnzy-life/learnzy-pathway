@@ -1,3 +1,4 @@
+
 import { toast } from 'sonner'
 import { supabase } from '../lib/supabase'
 import { Question, Subject } from './questionService'
@@ -29,8 +30,8 @@ export const createTestSession = async (
   questions: Question[]
 ): Promise<string | null> => {
   try {
-    const user = supabase.auth.getUser()
-    const userId = (await user).data.user?.id || null
+    const { data: { user } } = await supabase.auth.getUser()
+    const userId = user?.id || null
 
     const newSession = {
       user_id: userId,
