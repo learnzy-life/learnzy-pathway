@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Session, User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
@@ -119,15 +120,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsLoading(true)
       
-      const { error } = await supabase.auth.signInWithOAuth({
+      // Get the current URL for redirect
+      const redirectTo = window.location.origin + '/auth';
+      console.log('Redirect URL:', redirectTo);
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-      })
+        options: {
+          redirectTo: redirectTo,
+        },
+      });
 
       if (error) {
         toast.error(error.message)
+        console.error('Google sign in error:', error)
         throw error
       }
       
+      console.log('OAuth sign-in initiated:', data);
       // The redirect will happen automatically
     } catch (error) {
       console.error('Google sign in error:', error)

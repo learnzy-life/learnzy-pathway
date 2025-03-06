@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { AlertCircle, ArrowRight, Github } from 'lucide-react'
+import { AlertCircle, ArrowRight } from 'lucide-react'
 import Header from '../components/Header'
 
 const Auth: React.FC = () => {
@@ -14,8 +14,19 @@ const Auth: React.FC = () => {
   const navigate = useNavigate()
   const { signIn, signUp, user, signInWithGoogle } = useAuth()
 
+  // Check if this page is being loaded as part of OAuth callback
+  useEffect(() => {
+    // Check if URL contains hash fragment from OAuth callback
+    const hasOAuthParams = window.location.hash.includes('access_token') || 
+                           window.location.search.includes('code=');
+    
+    if (hasOAuthParams) {
+      console.log('OAuth callback detected');
+    }
+  }, []);
+
   // If user is already logged in, redirect to home
-  React.useEffect(() => {
+  useEffect(() => {
     if (user) {
       navigate('/')
     }
