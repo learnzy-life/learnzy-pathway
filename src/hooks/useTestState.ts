@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Question, Subject, fetchQuestions } from '../services/questionService'
@@ -164,8 +165,10 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
 
     // Save to test session in database
     if (sessionId) {
+      console.log(`Submitting test with sessionId: ${sessionId}`);
       completeTestSession(sessionId, questionResults)
         .then(() => {
+          console.log(`Test submitted successfully, navigating to /results/${subject}?sessionId=${sessionId}`);
           // Navigate to results page with session ID
           navigate(`/results/${subject}?sessionId=${sessionId}`)
         })
@@ -176,6 +179,7 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
           navigate(`/results/${subject}`)
         })
     } else {
+      console.warn('No sessionId available, falling back to localStorage');
       // Fallback to localStorage if no session ID
       localStorage.setItem('testResults', JSON.stringify(questionResults))
       setTimeout(() => {

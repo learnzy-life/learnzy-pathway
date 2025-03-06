@@ -23,6 +23,7 @@ import NextStepsSection from '../components/NextStepsSection';
 import { calculateMindsetMetrics, MindsetMetrics } from '../utils/mindsetMetricsService';
 import { getTestSession, QuestionResult } from '../services/testSession';
 import { supabase } from '../lib/supabase';
+import { toast } from 'sonner';
 
 type Subject = 'biology' | 'physics' | 'chemistry';
 
@@ -58,24 +59,38 @@ const Results: React.FC = () => {
   
   useEffect(() => {
     const fetchResults = async () => {
+      console.log("Results page loaded with subject:", subject, "and sessionId:", sessionId);
       setLoading(true);
       try {
         if (!sessionId || !subject) {
+          console.error("Missing sessionId or subject", { sessionId, subject });
           setErrorMessage("Missing session ID or subject");
           setLoading(false);
           return;
         }
         
         // Get the test session data
+        console.log("Fetching test session data for ID:", sessionId);
         const session = await getTestSession(sessionId);
         
         if (!session) {
+          console.error("Could not find test session with ID:", sessionId);
           setErrorMessage("Could not find test session");
           setLoading(false);
           return;
         }
         
+        console.log("Session data retrieved:", session);
+        
+        if (!session.questions || session.questions.length === 0) {
+          console.error("Test session has no questions data:", session);
+          setErrorMessage("Test session has no questions data");
+          setLoading(false);
+          return;
+        }
+        
         // Fetch question details from the appropriate subject table
+        console.log(`Fetching question details from ${subject}_dt table for ${session.questions.length} questions`);
         const { data: questionDetails, error } = await supabase
           .from(`${subject}_dt`)
           .select('*')
@@ -87,6 +102,8 @@ const Results: React.FC = () => {
           setLoading(false);
           return;
         }
+        
+        console.log(`Retrieved ${questionDetails?.length || 0} question details`);
         
         // Calculate analytics based on session and question details
         const analyticsData = calculateAnalytics(session.questions, questionDetails, subject);
@@ -101,6 +118,9 @@ const Results: React.FC = () => {
         console.error("Error in results page:", error);
         setErrorMessage("An unexpected error occurred");
         setLoading(false);
+        
+        // Show a toast with the error message
+        toast.error("Error loading results. Please try again later.");
       }
     };
     
@@ -326,6 +346,12 @@ const Results: React.FC = () => {
         <div className="text-center">
           <h2 className="text-xl font-medium mb-4">Error Loading Results</h2>
           <p className="text-muted-foreground mb-6">{errorMessage || "Could not load test results"}</p>
+          <button 
+            className="button-primary" 
+            onClick={() => window.location.href = '/subjects'}
+          >
+            Go Back to Subjects
+          </button>
         </div>
       </div>
     );
