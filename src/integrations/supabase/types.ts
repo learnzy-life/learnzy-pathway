@@ -228,9 +228,12 @@ export type Database = {
           end_time: string | null
           id: string
           questions: Json | null
+          questions_data: Json | null
+          score: number | null
           start_time: string | null
           subject: string
           time_taken: number | null
+          total_questions: number | null
           user_id: string | null
         }
         Insert: {
@@ -238,9 +241,12 @@ export type Database = {
           end_time?: string | null
           id?: string
           questions?: Json | null
+          questions_data?: Json | null
+          score?: number | null
           start_time?: string | null
           subject: string
           time_taken?: number | null
+          total_questions?: number | null
           user_id?: string | null
         }
         Update: {
@@ -248,9 +254,12 @@ export type Database = {
           end_time?: string | null
           id?: string
           questions?: Json | null
+          questions_data?: Json | null
+          score?: number | null
           start_time?: string | null
           subject?: string
           time_taken?: number | null
+          total_questions?: number | null
           user_id?: string | null
         }
         Relationships: []
