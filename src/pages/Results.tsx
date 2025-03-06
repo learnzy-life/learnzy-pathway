@@ -32,9 +32,16 @@ const Results: React.FC = () => {
   const { mindsetMetrics, loading, resultsData, errorMessage } = useResultsData(subject, sessionId);
   
   // Handle loading and error states
-  const loadingState = <ResultsLoadingState loading={loading} errorMessage={errorMessage} />;
-  if (loading || errorMessage || !resultsData) {
-    return loadingState;
+  if (loading) {
+    return <ResultsLoadingState loading={true} errorMessage={null} />;
+  }
+  
+  if (errorMessage) {
+    return <ResultsLoadingState loading={false} errorMessage={errorMessage} />;
+  }
+  
+  if (!resultsData) {
+    return <ResultsLoadingState loading={false} errorMessage="No data available" />;
   }
   
   if (!subject) {
@@ -77,7 +84,7 @@ const Results: React.FC = () => {
       <div className="mb-12">
         <SectionHeader 
           icon={BarChart} 
-          title="Topic Breakdown" 
+          title="Chapter Performance" 
         />
         <TopicBreakdown topics={resultsData.topics} />
       </div>

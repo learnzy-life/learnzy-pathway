@@ -40,7 +40,7 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
       return (
         <div className="bg-white p-3 border border-gray-200 shadow-lg rounded-md">
           <p className="font-medium">{data.name}</p>
-          <p className="text-sm text-gray-600">Score: {data.score}%</p>
+          <p className="text-sm text-gray-600">Accuracy: {data.score}%</p>
           <p className="text-sm text-gray-600">
             {data.total} questions: {data.correct} correct, {data.incorrect} incorrect
           </p>
@@ -100,18 +100,30 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
       <div>
         <h4 className="text-base font-medium text-learnzy-dark mb-4">Chapter Performance</h4>
         <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={subjectScores}
-              margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" />
-              <YAxis domain={[0, 100]} />
-              <Tooltip content={renderTooltip} />
-              <Bar dataKey="score" fill="#9b87f5" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {subjectScores.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={subjectScores}
+                margin={{ top: 5, right: 5, left: 5, bottom: 25 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis 
+                  dataKey="name" 
+                  tick={{ fontSize: 12 }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
+                />
+                <YAxis domain={[0, 100]} />
+                <Tooltip content={renderTooltip} />
+                <Bar dataKey="score" fill="#9b87f5" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-full flex items-center justify-center">
+              <p className="text-muted-foreground">No chapter data available</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
