@@ -1,0 +1,345 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  public: {
+    Tables: {
+      biology_dt: {
+        Row: {
+          Bloom_Taxonomy: string | null
+          Chapter_name: string | null
+          Common_Pitfalls: string | null
+          Correct_Answer: string | null
+          Difficulty_Level: string | null
+          Key_Concept_Tested: string | null
+          Option_A: string | null
+          Option_B: string | null
+          Option_C: string | null
+          Option_D: string | null
+          Priority_Level: string | null
+          q_no: number
+          Question_Structure: string | null
+          Question_Text: string | null
+          Subject: string | null
+          Subtopic: string | null
+          Time_to_Solve: number | null
+          Topic: string | null
+        }
+        Insert: {
+          Bloom_Taxonomy?: string | null
+          Chapter_name?: string | null
+          Common_Pitfalls?: string | null
+          Correct_Answer?: string | null
+          Difficulty_Level?: string | null
+          Key_Concept_Tested?: string | null
+          Option_A?: string | null
+          Option_B?: string | null
+          Option_C?: string | null
+          Option_D?: string | null
+          Priority_Level?: string | null
+          q_no?: number
+          Question_Structure?: string | null
+          Question_Text?: string | null
+          Subject?: string | null
+          Subtopic?: string | null
+          Time_to_Solve?: number | null
+          Topic?: string | null
+        }
+        Update: {
+          Bloom_Taxonomy?: string | null
+          Chapter_name?: string | null
+          Common_Pitfalls?: string | null
+          Correct_Answer?: string | null
+          Difficulty_Level?: string | null
+          Key_Concept_Tested?: string | null
+          Option_A?: string | null
+          Option_B?: string | null
+          Option_C?: string | null
+          Option_D?: string | null
+          Priority_Level?: string | null
+          q_no?: number
+          Question_Structure?: string | null
+          Question_Text?: string | null
+          Subject?: string | null
+          Subtopic?: string | null
+          Time_to_Solve?: number | null
+          Topic?: string | null
+        }
+        Relationships: []
+      }
+      chemistry_dt: {
+        Row: {
+          Bloom_Taxonomy: string | null
+          Chapter_name: string | null
+          Common_Pitfalls: string | null
+          Correct_Answer: string | null
+          Difficulty_Level: string | null
+          Key_Concept_Tested: string | null
+          Option_A: string | null
+          Option_B: string | null
+          Option_C: string | null
+          Option_D: string | null
+          Priority_Level: string | null
+          q_no: number
+          Question_Structure: string | null
+          Question_Text: string | null
+          Subject: string | null
+          Subtopic: string | null
+          Time_to_Solve: number | null
+          Topic: string | null
+        }
+        Insert: {
+          Bloom_Taxonomy?: string | null
+          Chapter_name?: string | null
+          Common_Pitfalls?: string | null
+          Correct_Answer?: string | null
+          Difficulty_Level?: string | null
+          Key_Concept_Tested?: string | null
+          Option_A?: string | null
+          Option_B?: string | null
+          Option_C?: string | null
+          Option_D?: string | null
+          Priority_Level?: string | null
+          q_no?: number
+          Question_Structure?: string | null
+          Question_Text?: string | null
+          Subject?: string | null
+          Subtopic?: string | null
+          Time_to_Solve?: number | null
+          Topic?: string | null
+        }
+        Update: {
+          Bloom_Taxonomy?: string | null
+          Chapter_name?: string | null
+          Common_Pitfalls?: string | null
+          Correct_Answer?: string | null
+          Difficulty_Level?: string | null
+          Key_Concept_Tested?: string | null
+          Option_A?: string | null
+          Option_B?: string | null
+          Option_C?: string | null
+          Option_D?: string | null
+          Priority_Level?: string | null
+          q_no?: number
+          Question_Structure?: string | null
+          Question_Text?: string | null
+          Subject?: string | null
+          Subtopic?: string | null
+          Time_to_Solve?: number | null
+          Topic?: string | null
+        }
+        Relationships: []
+      }
+      physics_dt: {
+        Row: {
+          Bloom_Taxonomy: string | null
+          Chapter_name: string | null
+          Common_Pitfalls: string | null
+          Correct_Answer: string | null
+          Difficulty_Level: string | null
+          Key_Concept_Tested: string | null
+          Option_A: string | null
+          Option_B: string | null
+          Option_C: string | null
+          Option_D: string | null
+          Priority_Level: string | null
+          q_no: number
+          Question_Structure: string | null
+          Question_Text: string | null
+          Subject: string | null
+          Subtopic: string | null
+          Time_to_Solve: number | null
+          Topic: string | null
+        }
+        Insert: {
+          Bloom_Taxonomy?: string | null
+          Chapter_name?: string | null
+          Common_Pitfalls?: string | null
+          Correct_Answer?: string | null
+          Difficulty_Level?: string | null
+          Key_Concept_Tested?: string | null
+          Option_A?: string | null
+          Option_B?: string | null
+          Option_C?: string | null
+          Option_D?: string | null
+          Priority_Level?: string | null
+          q_no?: number
+          Question_Structure?: string | null
+          Question_Text?: string | null
+          Subject?: string | null
+          Subtopic?: string | null
+          Time_to_Solve?: number | null
+          Topic?: string | null
+        }
+        Update: {
+          Bloom_Taxonomy?: string | null
+          Chapter_name?: string | null
+          Common_Pitfalls?: string | null
+          Correct_Answer?: string | null
+          Difficulty_Level?: string | null
+          Key_Concept_Tested?: string | null
+          Option_A?: string | null
+          Option_B?: string | null
+          Option_C?: string | null
+          Option_D?: string | null
+          Priority_Level?: string | null
+          q_no?: number
+          Question_Structure?: string | null
+          Question_Text?: string | null
+          Subject?: string | null
+          Subtopic?: string | null
+          Time_to_Solve?: number | null
+          Topic?: string | null
+        }
+        Relationships: []
+      }
+      test_sessions: {
+        Row: {
+          created_at: string | null
+          end_time: string | null
+          id: string
+          questions: Json | null
+          start_time: string | null
+          subject: string
+          time_taken: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          end_time?: string | null
+          id?: string
+          questions?: Json | null
+          start_time?: string | null
+          subject: string
+          time_taken?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          end_time?: string | null
+          id?: string
+          questions?: Json | null
+          start_time?: string | null
+          subject?: string
+          time_taken?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type PublicSchema = Database[Extract<keyof Database, "public">]
+
+export type Tables<
+  PublicTableNameOrOptions extends
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  PublicEnumNameOrOptions extends
+    | keyof PublicSchema["Enums"]
+    | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
