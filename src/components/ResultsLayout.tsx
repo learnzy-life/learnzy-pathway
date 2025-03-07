@@ -1,8 +1,11 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Download, Share2 } from 'lucide-react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import Header from './Header';
+import { toast } from 'sonner';
 
 interface ResultsLayoutProps {
   children: React.ReactNode;
@@ -10,6 +13,41 @@ interface ResultsLayoutProps {
 }
 
 const ResultsLayout: React.FC<ResultsLayoutProps> = ({ children, subjectTitle }) => {
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const handleDownload = async () => {
+    if (!contentRef.current) return;
+
+    try {
+      toast.info("Preparing your PDF...");
+
+      const content = contentRef.current;
+      const canvas = await html2canvas(content, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`${subjectTitle.toLowerCase().replace(/\s+/g, '-')}-test-results.pdf`);
+      
+      toast.success("Download complete!");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Failed to download results. Please try again.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -31,7 +69,10 @@ const ResultsLayout: React.FC<ResultsLayoutProps> = ({ children, subjectTitle })
             </div>
             
             <div className="flex space-x-3">
-              <button className="button-secondary text-sm sm:text-base py-2 px-4 sm:px-6">
+              <button 
+                className="button-secondary text-sm sm:text-base py-2 px-4 sm:px-6 flex items-center"
+                onClick={handleDownload}
+              >
                 <Download className="w-4 h-4 mr-2" /> Download
               </button>
               <button className="button-secondary text-sm sm:text-base py-2 px-4 sm:px-6">
@@ -40,7 +81,9 @@ const ResultsLayout: React.FC<ResultsLayoutProps> = ({ children, subjectTitle })
             </div>
           </div>
           
-          {children}
+          <div ref={contentRef}>
+            {children}
+          </div>
         </section>
       </main>
     </div>
