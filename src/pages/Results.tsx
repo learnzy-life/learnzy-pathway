@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { 
@@ -76,10 +75,10 @@ const Results: React.FC = () => {
       resources,
       progress: 0,
       totalActions: 3,
-      // Add priority information
+      // Use optional chaining to prevent undefined errors
       priorityScore: topic.improvementPriorityScore,
-      difficultyLevel: topic.difficultyLevel as string,
-      priorityLevel: topic.priorityLevel as string
+      difficultyLevel: topic.difficultyLevel,
+      priorityLevel: topic.priorityLevel
     };
   });
 

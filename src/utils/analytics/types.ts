@@ -64,6 +64,11 @@ export interface ResultsData {
     masteryLevel: 'Excellent' | 'Good' | 'Average' | 'Needs Improvement';
     avgTimePerQuestion: string;
     needsAttention: boolean;
+    // Add the new properties
+    accuracyGap?: number;
+    difficultyLevel?: string;
+    priorityLevel?: string;
+    improvementPriorityScore?: number;
   }[];
   timeAnalysis: {
     timeSpent: string;
