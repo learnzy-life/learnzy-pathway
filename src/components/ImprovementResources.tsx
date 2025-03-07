@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ExternalLink, Play, FileText, CheckCircle, BookOpen, ChevronRight, TrendingUp } from 'lucide-react';
 
@@ -15,7 +14,6 @@ interface ImprovementResourceItem {
   resources: Resource[];
   progress: number;
   totalActions: number;
-  priorityScore?: number;
   difficultyLevel?: string;
   priorityLevel?: string;
 }
@@ -25,11 +23,8 @@ interface ImprovementResourcesProps {
 }
 
 const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }) => {
-  // Sort resources by priority score if available
+  // Sort resources by accuracy gap (lower accuracy first)
   const sortedResources = [...resources].sort((a, b) => {
-    if (a.priorityScore !== undefined && b.priorityScore !== undefined) {
-      return b.priorityScore - a.priorityScore;
-    }
     return b.accuracy - a.accuracy;
   });
   
@@ -115,11 +110,6 @@ const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }
                 {item.priorityLevel && (
                   <span className={`text-xs px-2 py-1 rounded-full ${getPriorityColor(item.priorityLevel)}`}>
                     {item.priorityLevel} Priority
-                  </span>
-                )}
-                {item.priorityScore !== undefined && (
-                  <span className="text-xs px-2 py-1 rounded-full bg-learnzy-purple/10 text-learnzy-purple">
-                    Score: {Math.round(item.priorityScore)}
                   </span>
                 )}
               </div>

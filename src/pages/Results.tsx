@@ -26,7 +26,6 @@ const Results: React.FC = () => {
   
   const { loading, resultsData, errorMessage, isFirstTest } = useResultsData(subject, sessionId);
   
-  // Handle loading and error states
   if (loading) {
     return <ResultsLoadingState loading={true} errorMessage={null} />;
   }
@@ -45,9 +44,7 @@ const Results: React.FC = () => {
 
   const subjectTitle = getSubjectTitle(subject as Subject);
   
-  // Create improvement resources from topic data
   const improvementResources = resultsData.topics.map(topic => {
-    // Generate resources based on the topic
     const resources = [
       {
         type: 'Video',
@@ -75,8 +72,6 @@ const Results: React.FC = () => {
       resources,
       progress: 0,
       totalActions: 3,
-      // Use optional chaining to prevent undefined errors
-      priorityScore: topic.improvementPriorityScore,
       difficultyLevel: topic.difficultyLevel,
       priorityLevel: topic.priorityLevel
     };
@@ -84,7 +79,6 @@ const Results: React.FC = () => {
 
   return (
     <ResultsLayout subjectTitle={subjectTitle}>
-      {/* Section 1: Results Overview */}
       <div className="mb-12">
         <SectionHeader 
           icon={CheckCircle2} 
@@ -103,7 +97,6 @@ const Results: React.FC = () => {
         />
       </div>
       
-      {/* Section 2: Time Analysis */}
       <div className="mb-12">
         <SectionHeader 
           icon={Clock} 
@@ -112,7 +105,6 @@ const Results: React.FC = () => {
         <TimeAnalysis timeAnalysis={resultsData.timeAnalysis} />
       </div>
       
-      {/* Section 3: Topic Breakdown */}
       <div className="mb-12">
         <SectionHeader 
           icon={BarChart} 
@@ -121,7 +113,6 @@ const Results: React.FC = () => {
         <TopicBreakdown topics={resultsData.topics} isFirstTest={isFirstTest} />
       </div>
       
-      {/* Section 5: Improvement Resources - Now with Prioritized Topics */}
       <div className="mb-12">
         <SectionHeader 
           icon={Book} 
@@ -130,7 +121,6 @@ const Results: React.FC = () => {
         <ImprovementResources resources={improvementResources} />
       </div>
       
-      {/* Next Steps */}
       <NextStepsSection />
     </ResultsLayout>
   );
