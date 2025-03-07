@@ -20,7 +20,7 @@ export const calculateTimeAnalysis = (
   // Calculate the ideal time from the question details
   let idealTimeSeconds = 0;
   questionMap.forEach(q => {
-    idealTimeSeconds += getTimeToSolve(q) || 60;
+    idealTimeSeconds += getTimeToSolve(q);
   });
   
   const idealTime = formatTime(idealTimeSeconds);
@@ -32,13 +32,15 @@ export const calculateTimeAnalysis = (
   // For generating time data for the chart, map each question to its actual and ideal time
   const timeData = userAnswers.map(answer => {
     const questionDetail = questionMap.get(answer.id);
-    const idealTime = questionDetail ? getTimeToSolve(questionDetail) : 60; // Values are already in seconds
+    // Use the actual time_to_solve value from the database without any default value
+    // The default value will only be applied if getTimeToSolve doesn't find a value
+    const idealTime = questionDetail ? getTimeToSolve(questionDetail) : 0;
     const actualTime = answer.timeTaken || 0;
     
     // Identify slow and quick questions based on actual vs ideal time
-    if (actualTime >= idealTime * 1.5) {
+    if (actualTime >= idealTime * 1.5 && idealTime > 0) {
       slowQuestions.push(answer.id);
-    } else if (actualTime <= idealTime * 0.5) {
+    } else if (actualTime <= idealTime * 0.5 && idealTime > 0) {
       quickQuestions.push(answer.id);
     }
     
