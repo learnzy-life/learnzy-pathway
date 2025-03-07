@@ -1,14 +1,13 @@
 
 import React from 'react'
+import { Info } from 'lucide-react'
 import { usePreAnalysisState } from './hooks/usePreAnalysisState'
 import QuestionDisplay from './components/QuestionDisplay'
 import NavigationButtons from './components/NavigationButtons'
+import { tagOptions } from './constants/tagOptions'
 
 const PreAnalysis: React.FC = () => {
   const {
-    subject,
-    sessionId,
-    navigate,
     questions,
     currentQuestionIndex,
     isLoading,
@@ -20,9 +19,11 @@ const PreAnalysis: React.FC = () => {
   } = usePreAnalysisState()
 
   const incorrectQuestions = questions.filter((q) => !q.isCorrect)
+  console.log('PreAnalysis: Incorrect questions:', incorrectQuestions.length)
 
   if (incorrectQuestions.length === 0 && !isLoading && questions.length > 0) {
-    navigate(`/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`)
+    console.log('PreAnalysis: No incorrect questions, navigating to results')
+    handleSubmitAnalysis()
     return null
   }
 
@@ -60,13 +61,7 @@ const PreAnalysis: React.FC = () => {
             Great job! Proceeding to your results.
           </p>
           <button
-            onClick={() =>
-              navigate(
-                `/results/${subject}${
-                  sessionId ? `?sessionId=${sessionId}` : ''
-                }`
-              )
-            }
+            onClick={handleSubmitAnalysis}
             className="button-primary"
           >
             View Results
@@ -89,19 +84,29 @@ const PreAnalysis: React.FC = () => {
           </p>
         </div>
 
-        <QuestionDisplay
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-sm font-medium px-3 py-1 bg-learnzy-purple/10 text-learnzy-purple rounded-full">
+            Question {currentQuestionIndex + 1} of {incorrectQuestions.length}
+          </span>
+
+          <div className="flex items-center text-sm text-muted-foreground">
+            <Info className="w-4 h-4 mr-1" />
+            <span>You can select multiple reasons</span>
+          </div>
+        </div>
+
+        <QuestionDisplay 
           currentQuestion={currentQuestion}
-          currentQuestionIndex={currentQuestionIndex}
-          incorrectQuestionsCount={incorrectQuestions.length}
+          tagOptions={tagOptions}
           onTagToggle={(tagId) => handleTagToggle(tagId, currentQuestion)}
         />
 
-        <NavigationButtons
-          canGoBack={currentQuestionIndex > 0}
-          isLastQuestion={currentQuestionIndex === incorrectQuestions.length - 1}
-          onPrevious={handlePrevQuestion}
-          onNext={() => handleNextQuestion(incorrectQuestions)}
-          onSkip={handleSubmitAnalysis}
+        <NavigationButtons 
+          currentQuestionIndex={currentQuestionIndex}
+          totalQuestions={incorrectQuestions.length}
+          onPrevQuestion={handlePrevQuestion}
+          onNextQuestion={() => handleNextQuestion(incorrectQuestions)}
+          onSubmitAnalysis={handleSubmitAnalysis}
         />
       </div>
     </div>
