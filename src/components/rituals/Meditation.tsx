@@ -105,36 +105,48 @@ const Meditation: React.FC<MeditationProps> = ({ isActive, timeLeft, audioError 
   
   const speakInstruction = (text: string, isFirst: boolean) => {
     if (window.speechSynthesis) {
-      // If currently speaking and not the first instruction, don't interrupt
-      if (speakingRef.current && !isFirst) return;
-      
-      // Cancel any ongoing speech
-      window.speechSynthesis.cancel();
-      speakingRef.current = true;
-      
-      // Create a new utterance with improved settings
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.8; // Slightly slower for better clarity
-      utterance.pitch = 0.9; // Adjusted for more natural sound
-      utterance.volume = 0.9; // Slightly higher volume
-      
-      // Track when speech ends
-      utterance.onend = () => {
+      try {
+        // If currently speaking and not the first instruction, don't interrupt
+        if (speakingRef.current && !isFirst) return;
+        
+        // Cancel any ongoing speech
+        window.speechSynthesis.cancel();
+        speakingRef.current = true;
+        
+        // Create a new utterance with improved settings
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.8; // Slightly slower for better clarity
+        utterance.pitch = 0.9; // Adjusted for more natural sound
+        utterance.volume = 1.0; // Full volume for mobile devices
+        
+        // Track when speech ends
+        utterance.onend = () => {
+          speakingRef.current = false;
+        };
+        
+        utterance.onerror = () => {
+          console.error("Speech synthesis error during meditation");
+          speakingRef.current = false;
+        };
+        
+        // Store reference
+        speechRef.current = utterance;
+        
+        // Workaround for mobile browsers that may pause speech synthesis
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.pause();
+          window.speechSynthesis.resume();
+        }
+        
+        // Add a slight delay to ensure smooth transitions
+        setTimeout(() => {
+          // Play the audio instruction
+          window.speechSynthesis.speak(utterance);
+        }, 300);
+      } catch (err) {
+        console.error("Speech synthesis error:", err);
         speakingRef.current = false;
-      };
-      
-      utterance.onerror = () => {
-        speakingRef.current = false;
-      };
-      
-      // Store reference
-      speechRef.current = utterance;
-      
-      // Add a slight delay to ensure smooth transitions
-      setTimeout(() => {
-        // Play the audio instruction
-        window.speechSynthesis.speak(utterance);
-      }, 300);
+      }
     }
   };
   

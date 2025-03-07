@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Cloud } from 'lucide-react';
 
@@ -54,27 +53,40 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
   
   useEffect(() => {
     if (isActive && window.speechSynthesis) {
-      // Cancel any ongoing speech when step changes
-      window.speechSynthesis.cancel();
-      
-      // Create a new utterance for the current step
-      const utterance = new SpeechSynthesisUtterance(audioInstructions[step as keyof typeof audioInstructions]);
-      utterance.rate = 0.8; // Slower for better clarity
-      utterance.pitch = 0.85; // Lower pitch for relaxation
-      utterance.volume = 0.9; // Slightly higher volume for clarity
-      
-      // Store reference to current utterance
-      speechRef.current = utterance;
-      
-      // Short delay to ensure animation and speech are in sync
-      const timer = setTimeout(() => {
-        // Play the audio instruction
-        window.speechSynthesis.speak(utterance);
-      }, 200);
-      
-      return () => {
-        clearTimeout(timer);
-      };
+      // Mobile Safari and some Android browsers need user interaction
+      // before allowing speech synthesis to work properly
+      try {
+        // Cancel any ongoing speech when step changes
+        window.speechSynthesis.cancel();
+        
+        // Create a new utterance for the current step
+        const utterance = new SpeechSynthesisUtterance(audioInstructions[step as keyof typeof audioInstructions]);
+        utterance.rate = 0.8; // Slower for better clarity
+        utterance.pitch = 0.85; // Lower pitch for relaxation
+        utterance.volume = 1.0; // Full volume for mobile devices
+        
+        // Store reference to current utterance
+        speechRef.current = utterance;
+        
+        // Short delay to ensure animation and speech are in sync
+        const timer = setTimeout(() => {
+          // Some mobile browsers pause speech synthesis when the app is in background
+          // This is a workaround to keep it active
+          if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.pause();
+            window.speechSynthesis.resume();
+          }
+          
+          // Play the audio instruction
+          window.speechSynthesis.speak(utterance);
+        }, 200);
+        
+        return () => {
+          clearTimeout(timer);
+        };
+      } catch (err) {
+        console.error("Speech synthesis error:", err);
+      }
     }
   }, [step, isActive, audioInstructions]);
   
