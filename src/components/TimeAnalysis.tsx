@@ -56,15 +56,20 @@ const TimeAnalysis: React.FC<TimeAnalysisProps> = ({ timeAnalysis }) => {
       return mockData
     }
     
-    // Use actual time data
+    // Use actual time data and transform it for the chart
     return timeAnalysis.timeData.map(item => ({
       question: `Q${item.questionId}`,
       yourTime: Math.round(item.actualTime), // Round to nearest second
       idealTime: Math.round(item.idealTime)
-    }));
+    })).sort((a, b) => {
+      // Extract the question number and sort numerically
+      const aNum = parseInt(a.question.substring(1));
+      const bNum = parseInt(b.question.substring(1));
+      return aNum - bNum;
+    });
   }
 
-  const timeData = formatTimeData()
+  const timeData = formatTimeData();
   
   // Format the custom tooltip for the chart
   const renderTimeTooltip = (props: any) => {

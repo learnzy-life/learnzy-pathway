@@ -22,20 +22,41 @@ export const useTestQuestions = (
         const loadedQuestions = await fetchQuestions(subject)
         
         // Ensure questions have all metadata fields with proper handling of lowercase column names for biology
-        const enhancedQuestions = loadedQuestions.map(q => ({
-          ...q,
-          Subject: q.Subject || subject,
-          Chapter_name: q.Chapter_name || 'Unknown Chapter',
-          Topic: q.Topic || 'General Topic',
-          Subtopic: q.Subtopic || 'General Subtopic',
-          Difficulty_Level: q.Difficulty_Level || 'Medium',
-          Question_Structure: q.Question_Structure || 'Multiple Choice',
-          Bloom_Taxonomy: q.Bloom_Taxonomy || 'Knowledge',
-          Priority_Level: q.Priority_Level || 'Medium',
-          Time_to_Solve: q.Time_to_Solve || 1.0,
-          Key_Concept_Tested: q.Key_Concept_Tested || 'General Knowledge',
-          Common_Pitfalls: q.Common_Pitfalls || 'None'
-        }))
+        const enhancedQuestions = loadedQuestions.map(q => {
+          // For biology, use lowercase properties
+          if (subject === 'biology') {
+            return {
+              ...q,
+              Subject: q.Subject || subject,
+              Chapter_name: q.chapter_name || 'Unknown Chapter',
+              Topic: q.topic || 'General Topic',
+              Subtopic: q.subtopic || 'General Subtopic',
+              Difficulty_Level: q.difficulty_level || 'Medium',
+              Question_Structure: q.question_structure || 'Multiple Choice',
+              Bloom_Taxonomy: q.bloom_taxonomy || 'Knowledge',
+              Priority_Level: q.priority_level || 'Medium',
+              Time_to_Solve: q.time_to_solve || 1.0,
+              Key_Concept_Tested: q.key_concept_tested || 'General Knowledge',
+              Common_Pitfalls: q.common_pitfalls || 'None'
+            }
+          } else {
+            // For other subjects, use original capitalized properties
+            return {
+              ...q,
+              Subject: q.Subject || subject,
+              Chapter_name: q.Chapter_name || 'Unknown Chapter',
+              Topic: q.Topic || 'General Topic',
+              Subtopic: q.Subtopic || 'General Subtopic',
+              Difficulty_Level: q.Difficulty_Level || 'Medium',
+              Question_Structure: q.Question_Structure || 'Multiple Choice',
+              Bloom_Taxonomy: q.Bloom_Taxonomy || 'Knowledge',
+              Priority_Level: q.Priority_Level || 'Medium',
+              Time_to_Solve: q.Time_to_Solve || 1.0,
+              Key_Concept_Tested: q.Key_Concept_Tested || 'General Knowledge',
+              Common_Pitfalls: q.Common_Pitfalls || 'None'
+            }
+          }
+        })
         
         console.log('Enhanced questions with metadata:', enhancedQuestions[0])
         

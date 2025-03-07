@@ -24,6 +24,18 @@ export interface Question {
   Time_to_Solve?: number
   Key_Concept_Tested?: string
   Common_Pitfalls?: string
+  // For biology (lowercase with underscores)
+  subject?: string
+  chapter_name?: string
+  topic?: string
+  subtopic?: string
+  difficulty_level?: string
+  question_structure?: string
+  bloom_taxonomy?: string
+  priority_level?: string
+  time_to_solve?: number
+  key_concept_tested?: string
+  common_pitfalls?: string
 }
 
 export type Subject = 'biology' | 'physics' | 'chemistry'
@@ -114,17 +126,17 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
               { id: 'D', text: q.option_d || 'Option D' },
             ],
             correctAnswer: q.correct_answer || '',
-            Subject: q.subject,
-            Chapter_name: q.chapter_name,
-            Topic: q.topic,
-            Subtopic: q.subtopic,
-            Difficulty_Level: q.difficulty_level,
-            Question_Structure: q.question_structure,
-            Bloom_Taxonomy: q.bloom_taxonomy,
-            Priority_Level: q.priority_level,
-            Time_to_Solve: q.time_to_solve,
-            Key_Concept_Tested: q.key_concept_tested,
-            Common_Pitfalls: q.common_pitfalls
+            subject: q.subject,
+            chapter_name: q.chapter_name,
+            topic: q.topic,
+            subtopic: q.subtopic,
+            difficulty_level: q.difficulty_level,
+            question_structure: q.question_structure,
+            bloom_taxonomy: q.bloom_taxonomy,
+            priority_level: q.priority_level,
+            time_to_solve: q.time_to_solve,
+            key_concept_tested: q.key_concept_tested,
+            common_pitfalls: q.common_pitfalls
           };
         } else {
           // Chemistry and Physics still use the original column names

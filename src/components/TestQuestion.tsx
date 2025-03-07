@@ -47,6 +47,7 @@ const TestQuestion: React.FC<QuestionProps> = ({
   };
 
   const handleAnswerClick = (answerId: string) => {
+    // Pass the exact time taken in seconds to parent component
     onAnswerSelected(id, answerId, timeSpent);
   };
 

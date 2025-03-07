@@ -76,8 +76,13 @@ export const useResultsData = (subject: Subject | undefined, sessionId: string |
         if (session && session.questions && session.questions.length > 0) {
           try {
             console.log(`Querying ${subject}_dt table for question details`);
+            
+            // Get table name based on subject
+            const tableName = `${subject}_dt`;
+            
+            // Query the appropriate table
             const { data, error } = await supabase
-              .from(`${subject}_dt`)
+              .from(tableName)
               .select('*');
               
             if (error) {

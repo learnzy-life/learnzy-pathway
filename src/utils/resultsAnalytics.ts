@@ -4,23 +4,42 @@ import { Subject } from '../services/questionService';
 
 export interface QueryResult {
   id: number;
-  Question_Text: string;
-  Option_A: string;
-  Option_B: string;
-  Option_C: string;
-  Option_D: string;
-  Correct_Answer: string;
-  Subject: string;
-  Chapter_name: string;
-  Topic: string;
-  Subtopic: string;
-  Difficulty_Level: string;
-  Question_Structure: string;
-  Bloom_Taxonomy: string;
-  Priority_Level: string;
-  Time_to_Solve: number;
-  Key_Concept_Tested: string;
-  Common_Pitfalls: string;
+  Question_Text?: string;
+  Option_A?: string;
+  Option_B?: string;
+  Option_C?: string;
+  Option_D?: string;
+  Correct_Answer?: string;
+  Subject?: string;
+  Chapter_name?: string;
+  Topic?: string;
+  Subtopic?: string;
+  Difficulty_Level?: string;
+  Question_Structure?: string;
+  Bloom_Taxonomy?: string;
+  Priority_Level?: string;
+  Time_to_Solve?: number;
+  Key_Concept_Tested?: string;
+  Common_Pitfalls?: string;
+  // For biology (lowercase with underscores)
+  question_text?: string;
+  option_a?: string;
+  option_b?: string;
+  option_c?: string;
+  option_d?: string;
+  correct_answer?: string;
+  subject?: string;
+  chapter_name?: string;
+  topic?: string;
+  subtopic?: string;
+  difficulty_level?: string;
+  question_structure?: string;
+  bloom_taxonomy?: string;
+  priority_level?: string;
+  time_to_solve?: number;
+  key_concept_tested?: string;
+  common_pitfalls?: string;
+  q_no?: number;
 }
 
 export interface ResultsData {
@@ -119,6 +138,29 @@ export interface ResultsData {
   };
 }
 
+// Helper function to get value regardless of case
+const getValueFromQuestion = (question: QueryResult, upperCaseKey: string, lowerCaseKey: string): any => {
+  return question[upperCaseKey as keyof QueryResult] !== undefined 
+    ? question[upperCaseKey as keyof QueryResult] 
+    : question[lowerCaseKey as keyof QueryResult];
+};
+
+// Helper function to get time_to_solve value from question detail
+const getTimeToSolve = (question: QueryResult): number => {
+  const upperCaseValue = question.Time_to_Solve;
+  const lowerCaseValue = question.time_to_solve;
+  
+  if (upperCaseValue !== undefined && upperCaseValue !== null) {
+    return upperCaseValue;
+  }
+  
+  if (lowerCaseValue !== undefined && lowerCaseValue !== null) {
+    return lowerCaseValue;
+  }
+  
+  return 60; // Default value: 1 minute
+};
+
 export const calculateAnalytics = (
   userAnswers: QuestionResult[], 
   questionDetails: QueryResult[],
@@ -127,9 +169,17 @@ export const calculateAnalytics = (
   console.log("Calculating analytics with:", userAnswers.length, "answers and", questionDetails.length, "question details");
   
   // Create a map of question details for easier lookup
-  const questionMap = new Map(
-    questionDetails.map(q => [q.id, q])
-  );
+  const questionMap = new Map<number, QueryResult>();
+  
+  // Populate the question map with different ways of accessing the question ID
+  questionDetails.forEach(q => {
+    const id = q.id || q.q_no;
+    if (id !== undefined) {
+      questionMap.set(id, q);
+    }
+  });
+  
+  console.log("Created question map with", questionMap.size, "entries");
   
   // Calculate correct, incorrect, and unattempted counts
   const correctAnswers = userAnswers.filter(q => q.isCorrect).length;
@@ -152,7 +202,11 @@ export const calculateAnalytics = (
   const timeSpent = `${hours}h ${minutes}m`;
   
   // Calculate the ideal time from the question details
-  const idealTimeSeconds = questionDetails.reduce((sum, q) => sum + (q.Time_to_Solve || 60), 0);
+  let idealTimeSeconds = 0;
+  questionDetails.forEach(q => {
+    idealTimeSeconds += getTimeToSolve(q) || 60;
+  });
+  
   const idealHours = Math.floor(idealTimeSeconds / 3600);
   const idealMinutes = Math.floor((idealTimeSeconds % 3600) / 60);
   const idealTime = `${idealHours}h ${idealMinutes}m`;
@@ -167,7 +221,9 @@ export const calculateAnalytics = (
     // If not found in the answer object, try to get it from questionMap
     if (chapter === 'Unknown') {
       const questionDetail = questionMap.get(answer.id);
-      chapter = questionDetail ? (questionDetail.Chapter_name || 'Unknown') : 'Unknown';
+      if (questionDetail) {
+        chapter = getValueFromQuestion(questionDetail, 'Chapter_name', 'chapter_name') || 'Unknown';
+      }
     }
     
     if (!chapterPerformance.has(chapter)) {
@@ -207,78 +263,82 @@ export const calculateAnalytics = (
   const slowQuestions: number[] = [];
   const quickQuestions: number[] = [];
   
-  userAnswers.forEach(answer => {
+  // For generating time data for the chart, map each question to its actual and ideal time
+  const timeData = userAnswers.map(answer => {
     const questionDetail = questionMap.get(answer.id);
-    if (!questionDetail || !questionDetail.Time_to_Solve) return;
-    
-    const idealTime = questionDetail.Time_to_Solve;
+    const idealTime = questionDetail ? getTimeToSolve(questionDetail) * 60 : 60; // Convert minutes to seconds
     const actualTime = answer.timeTaken || 0;
     
+    // Identify slow and quick questions based on actual vs ideal time
     if (actualTime >= idealTime * 1.5) {
       slowQuestions.push(answer.id);
     } else if (actualTime <= idealTime * 0.5) {
       quickQuestions.push(answer.id);
     }
+    
+    return {
+      questionId: answer.id,
+      actualTime: actualTime,
+      idealTime: idealTime
+    };
   });
   
   // Generate time management feedback
   let timeFeedback = "";
-  if (totalTimeSeconds > idealTimeSeconds * 1.2) {
+  const totalActualTime = timeData.reduce((sum, item) => sum + item.actualTime, 0);
+  const totalIdealTime = timeData.reduce((sum, item) => sum + item.idealTime, 0);
+  
+  if (totalActualTime > totalIdealTime * 1.2) {
     timeFeedback = "You're taking longer than the ideal time on most questions. Consider working on your time management and question-solving efficiency.";
-  } else if (totalTimeSeconds < idealTimeSeconds * 0.8) {
+  } else if (totalActualTime < totalIdealTime * 0.8) {
     timeFeedback = "You're moving quickly through questions, which is great for time management. Just ensure you're not rushing at the expense of accuracy.";
   } else {
     timeFeedback = "Your time management is well-balanced. You're taking an appropriate amount of time on most questions.";
   }
   
-  // For generating time data for the chart, map each question to its actual and ideal time
-  const timeData = userAnswers.map(answer => {
-    const questionDetail = questionMap.get(answer.id);
+  // Topic data
+  const topics = Array.from(new Set(
+    questionDetails.map(q => 
+      getValueFromQuestion(q, 'Topic', 'topic')
+    ).filter(Boolean)
+  )).map(topicName => {
+    const topicQuestions = userAnswers.filter(a => {
+      const detail = questionMap.get(a.id);
+      if (!detail) return false;
+      
+      const detailTopic = getValueFromQuestion(detail, 'Topic', 'topic');
+      return detailTopic === topicName;
+    });
+    
+    const correctCount = topicQuestions.filter(q => q.isCorrect).length;
+    const totalCount = topicQuestions.length;
+    const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+    
+    // Calculate average time per question for this topic
+    const totalTime = topicQuestions.reduce((sum, q) => sum + (q.timeTaken || 0), 0);
+    const avgTimeSeconds = totalCount > 0 ? Math.round(totalTime / totalCount) : 0;
+    const avgTimePerQuestion = `${Math.floor(avgTimeSeconds / 60)}m ${avgTimeSeconds % 60}s`;
+    
+    // Determine mastery level based on percentage
+    let masteryLevel: 'Excellent' | 'Good' | 'Average' | 'Needs Improvement';
+    if (percentage >= 90) masteryLevel = 'Excellent';
+    else if (percentage >= 75) masteryLevel = 'Good';
+    else if (percentage >= 60) masteryLevel = 'Average';
+    else masteryLevel = 'Needs Improvement';
+    
     return {
-      questionId: answer.id,
-      actualTime: answer.timeTaken || 60,
-      idealTime: questionDetail?.Time_to_Solve || 60
+      id: topicName as string,
+      name: topicName as string,
+      correctCount,
+      totalCount,
+      percentage,
+      // Mock a previous percentage for now
+      previousPercentage: percentage > 10 ? percentage - Math.floor(Math.random() * 15) : percentage,
+      masteryLevel,
+      avgTimePerQuestion,
+      needsAttention: percentage < 60
     };
   });
-  
-  // Topic data
-  const topics = Array.from(new Set(questionDetails.map(q => q.Topic)))
-    .filter(Boolean)
-    .map(topicName => {
-      const topicQuestions = userAnswers.filter(a => {
-        const detail = questionMap.get(a.id);
-        return detail && detail.Topic === topicName;
-      });
-      
-      const correctCount = topicQuestions.filter(q => q.isCorrect).length;
-      const totalCount = topicQuestions.length;
-      const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
-      
-      // Calculate average time per question for this topic
-      const totalTime = topicQuestions.reduce((sum, q) => sum + (q.timeTaken || 0), 0);
-      const avgTimeSeconds = totalCount > 0 ? Math.round(totalTime / totalCount) : 0;
-      const avgTimePerQuestion = `${Math.floor(avgTimeSeconds / 60)}m ${avgTimeSeconds % 60}s`;
-      
-      // Determine mastery level based on percentage
-      let masteryLevel: 'Excellent' | 'Good' | 'Average' | 'Needs Improvement';
-      if (percentage >= 90) masteryLevel = 'Excellent';
-      else if (percentage >= 75) masteryLevel = 'Good';
-      else if (percentage >= 60) masteryLevel = 'Average';
-      else masteryLevel = 'Needs Improvement';
-      
-      return {
-        id: topicName,
-        name: topicName,
-        correctCount,
-        totalCount,
-        percentage,
-        // Mock a previous percentage for now
-        previousPercentage: percentage > 10 ? percentage - Math.floor(Math.random() * 15) : percentage,
-        masteryLevel,
-        avgTimePerQuestion,
-        needsAttention: percentage < 60
-      };
-    });
   
   // Default data for cognitive insights to avoid errors
   const defaultCognitiveInsights = {
