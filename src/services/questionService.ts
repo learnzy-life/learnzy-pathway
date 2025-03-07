@@ -100,28 +100,58 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
       )
       console.log('Sample question:', data[0])
 
-      const formattedQuestions: Question[] = data.map((q: any) => ({
-        id: q.q_no || 0,
-        text: q.Question_Text || 'No question text available',
-        options: [
-          { id: 'A', text: q.Option_A || 'Option A' },
-          { id: 'B', text: q.Option_B || 'Option B' },
-          { id: 'C', text: q.Option_C || 'Option C' },
-          { id: 'D', text: q.Option_D || 'Option D' },
-        ],
-        correctAnswer: q.Correct_Answer || '',
-        Subject: q.Subject,
-        Chapter_name: q.Chapter_name,
-        Topic: q.Topic,
-        Subtopic: q.Subtopic,
-        Difficulty_Level: q.Difficulty_Level,
-        Question_Structure: q.Question_Structure,
-        Bloom_Taxonomy: q.Bloom_Taxonomy,
-        Priority_Level: q.Priority_Level,
-        Time_to_Solve: q.Time_to_Solve,
-        Key_Concept_Tested: q.Key_Concept_Tested,
-        Common_Pitfalls: q.Common_Pitfalls
-      }))
+      const formattedQuestions: Question[] = data.map((q: any) => {
+        // Handle differences in column naming between tables
+        if (subject === 'biology') {
+          // Biology now uses lowercase with underscores
+          return {
+            id: q.q_no || 0,
+            text: q.question_text || 'No question text available',
+            options: [
+              { id: 'A', text: q.option_a || 'Option A' },
+              { id: 'B', text: q.option_b || 'Option B' },
+              { id: 'C', text: q.option_c || 'Option C' },
+              { id: 'D', text: q.option_d || 'Option D' },
+            ],
+            correctAnswer: q.correct_answer || '',
+            Subject: q.subject,
+            Chapter_name: q.chapter_name,
+            Topic: q.topic,
+            Subtopic: q.subtopic,
+            Difficulty_Level: q.difficulty_level,
+            Question_Structure: q.question_structure,
+            Bloom_Taxonomy: q.bloom_taxonomy,
+            Priority_Level: q.priority_level,
+            Time_to_Solve: q.time_to_solve,
+            Key_Concept_Tested: q.key_concept_tested,
+            Common_Pitfalls: q.common_pitfalls
+          };
+        } else {
+          // Chemistry and Physics still use the original column names
+          return {
+            id: q.q_no || 0,
+            text: q.Question_Text || 'No question text available',
+            options: [
+              { id: 'A', text: q.Option_A || 'Option A' },
+              { id: 'B', text: q.Option_B || 'Option B' },
+              { id: 'C', text: q.Option_C || 'Option C' },
+              { id: 'D', text: q.Option_D || 'Option D' },
+            ],
+            correctAnswer: q.Correct_Answer || '',
+            Subject: q.Subject,
+            Chapter_name: q.Chapter_name,
+            Topic: q.Topic,
+            Subtopic: q.Subtopic,
+            Difficulty_Level: q.Difficulty_Level,
+            Question_Structure: q.Question_Structure,
+            Bloom_Taxonomy: q.Bloom_Taxonomy,
+            Priority_Level: q.Priority_Level,
+            Time_to_Solve: q.Time_to_Solve,
+            Key_Concept_Tested: q.Key_Concept_Tested,
+            Common_Pitfalls: q.Common_Pitfalls
+          };
+        }
+      });
 
       return formattedQuestions
     } else {

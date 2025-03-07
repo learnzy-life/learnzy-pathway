@@ -21,7 +21,7 @@ export const useTestQuestions = (
         // Load the questions first with full metadata
         const loadedQuestions = await fetchQuestions(subject)
         
-        // Ensure questions have all metadata fields
+        // Ensure questions have all metadata fields with proper handling of lowercase column names for biology
         const enhancedQuestions = loadedQuestions.map(q => ({
           ...q,
           Subject: q.Subject || subject,
