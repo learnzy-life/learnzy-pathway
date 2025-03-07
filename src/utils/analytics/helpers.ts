@@ -21,7 +21,7 @@ export const getTimeToSolve = (question: QueryResult): number => {
     return lowerCaseValue;
   }
   
-  return 60; // Default value: 1 minute
+  return 60; // Default value: 60 seconds
 };
 
 // Format time in hours and minutes

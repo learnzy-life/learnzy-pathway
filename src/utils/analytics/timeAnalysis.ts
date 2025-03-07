@@ -32,7 +32,7 @@ export const calculateTimeAnalysis = (
   // For generating time data for the chart, map each question to its actual and ideal time
   const timeData = userAnswers.map(answer => {
     const questionDetail = questionMap.get(answer.id);
-    const idealTime = questionDetail ? getTimeToSolve(questionDetail) * 60 : 60; // Convert minutes to seconds
+    const idealTime = questionDetail ? getTimeToSolve(questionDetail) : 60; // Values are already in seconds
     const actualTime = answer.timeTaken || 0;
     
     // Identify slow and quick questions based on actual vs ideal time
