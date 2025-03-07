@@ -224,41 +224,71 @@ export type Database = {
       }
       test_sessions: {
         Row: {
+          bloom_taxonomy: string | null
+          chapter_name: string | null
+          common_pitfalls: string | null
           created_at: string | null
+          difficulty_level: string | null
           end_time: string | null
           id: string
+          key_concept_tested: string | null
+          priority_level: string | null
+          question_structure: string | null
           questions: Json | null
           questions_data: Json | null
           score: number | null
           start_time: string | null
           subject: string
+          subtopic: string | null
           time_taken: number | null
+          time_to_solve: number | null
+          topic: string | null
           total_questions: number | null
           user_id: string | null
         }
         Insert: {
+          bloom_taxonomy?: string | null
+          chapter_name?: string | null
+          common_pitfalls?: string | null
           created_at?: string | null
+          difficulty_level?: string | null
           end_time?: string | null
           id?: string
+          key_concept_tested?: string | null
+          priority_level?: string | null
+          question_structure?: string | null
           questions?: Json | null
           questions_data?: Json | null
           score?: number | null
           start_time?: string | null
           subject: string
+          subtopic?: string | null
           time_taken?: number | null
+          time_to_solve?: number | null
+          topic?: string | null
           total_questions?: number | null
           user_id?: string | null
         }
         Update: {
+          bloom_taxonomy?: string | null
+          chapter_name?: string | null
+          common_pitfalls?: string | null
           created_at?: string | null
+          difficulty_level?: string | null
           end_time?: string | null
           id?: string
+          key_concept_tested?: string | null
+          priority_level?: string | null
+          question_structure?: string | null
           questions?: Json | null
           questions_data?: Json | null
           score?: number | null
           start_time?: string | null
           subject?: string
+          subtopic?: string | null
           time_taken?: number | null
+          time_to_solve?: number | null
+          topic?: string | null
           total_questions?: number | null
           user_id?: string | null
         }
