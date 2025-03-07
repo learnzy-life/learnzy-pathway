@@ -25,7 +25,7 @@ const Results: React.FC = () => {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('sessionId');
   
-  const { loading, resultsData, errorMessage } = useResultsData(subject, sessionId);
+  const { loading, resultsData, errorMessage, isFirstTest } = useResultsData(subject, sessionId);
   
   // Handle loading and error states
   if (loading) {
@@ -82,7 +82,7 @@ const Results: React.FC = () => {
           icon={BarChart} 
           title="Chapter Performance" 
         />
-        <TopicBreakdown topics={resultsData.topics} />
+        <TopicBreakdown topics={resultsData.topics} isFirstTest={isFirstTest} />
       </div>
       
       {/* Section 5: Improvement Resources */}

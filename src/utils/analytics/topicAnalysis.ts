@@ -36,14 +36,16 @@ export const calculateTopicAnalysis = (
     else if (percentage >= 60) masteryLevel = 'Average';
     else masteryLevel = 'Needs Improvement';
     
+    // For first-time users, we'll still provide a previousPercentage
+    // but the UI won't show it due to our isFirstTest flag
     return {
       id: topicName as string,
       name: topicName as string,
       correctCount,
       totalCount,
       percentage,
-      // Mock a previous percentage for now
-      previousPercentage: percentage > 10 ? percentage - Math.floor(Math.random() * 15) : percentage,
+      // Mock a previous percentage - the UI will hide this for first-time users
+      previousPercentage: percentage - Math.floor(Math.random() * 10),
       masteryLevel,
       avgTimePerQuestion,
       needsAttention: percentage < 60

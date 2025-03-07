@@ -16,9 +16,10 @@ interface TopicItem {
 
 interface TopicBreakdownProps {
   topics: TopicItem[];
+  isFirstTest?: boolean;
 }
 
-const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
+const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics, isFirstTest = false }) => {
   const getMasteryColor = (level: string) => {
     switch (level) {
       case 'Excellent': return 'bg-green-500';
@@ -58,6 +59,9 @@ const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
     }
   };
 
+  // Check if any topic has previous data
+  const hasPreviousData = !isFirstTest && topics.some(topic => topic.previousPercentage !== undefined);
+
   return (
     <div className="card-glass p-6">
       <div className="overflow-x-auto">
@@ -66,8 +70,12 @@ const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
             <tr className="bg-gray-50">
               <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Topic</th>
               <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Accuracy</th>
-              <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Previous</th>
-              <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Progress</th>
+              {hasPreviousData && (
+                <>
+                  <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Previous</th>
+                  <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Progress</th>
+                </>
+              )}
               <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Mastery</th>
               <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Avg. Time</th>
               <th className="py-3 px-4 border-b text-left text-sm font-medium text-gray-700">Action</th>
@@ -93,12 +101,16 @@ const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 px-4 border-b text-muted-foreground">
-                    {topic.previousPercentage}%
-                  </td>
-                  <td className="py-3 px-4 border-b">
-                    {getProgressIndicator(topic.percentage, topic.previousPercentage)}
-                  </td>
+                  {hasPreviousData && (
+                    <>
+                      <td className="py-3 px-4 border-b text-muted-foreground">
+                        {topic.previousPercentage}%
+                      </td>
+                      <td className="py-3 px-4 border-b">
+                        {getProgressIndicator(topic.percentage, topic.previousPercentage)}
+                      </td>
+                    </>
+                  )}
                   <td className="py-3 px-4 border-b">
                     <span className={`px-2 py-1 text-xs font-medium text-white rounded-full ${getMasteryColor(topic.masteryLevel)}`}>
                       {topic.masteryLevel}
@@ -120,7 +132,7 @@ const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="py-6 text-center text-muted-foreground">
+                <td colSpan={hasPreviousData ? 7 : 5} className="py-6 text-center text-muted-foreground">
                   No topic data available
                 </td>
               </tr>
@@ -132,7 +144,9 @@ const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics }) => {
       <div className="mt-8 bg-amber-50 p-4 rounded-lg border border-amber-100">
         <h4 className="font-medium text-amber-800 mb-2">Recommendations</h4>
         <p className="text-amber-700">
-          Focus on improving topics that show a decline in performance compared to previous tests.
+          {hasPreviousData 
+            ? "Focus on improving topics that show a decline in performance compared to previous tests."
+            : "This is your first test. Complete more tests to track your progress over time."}
         </p>
       </div>
     </div>
