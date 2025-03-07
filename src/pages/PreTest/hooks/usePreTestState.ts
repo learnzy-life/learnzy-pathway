@@ -1,7 +1,9 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from '../../../hooks/use-toast';
 import { Mood, PreRitual } from '../utils/subjectUtils';
+import { saveRitualActivity } from '../../../utils/ritualService';
+import { supabase } from '../../../lib/supabase';
 
 export const usePreTestState = () => {
   const [mood, setMood] = useState<Mood | undefined>(undefined);
@@ -10,9 +12,38 @@ export const usePreTestState = () => {
   const [showRitualActivity, setShowRitualActivity] = useState(false);
   const [showPostRitualInfo, setShowPostRitualInfo] = useState(false);
 
+  // Load previously selected mood if available
+  useEffect(() => {
+    const savedMood = localStorage.getItem('selected_mood');
+    if (savedMood) {
+      setMood(savedMood as Mood);
+    }
+  }, []);
+
+  const saveMoodData = async (selectedMood: Mood) => {
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // If logged in, save to Supabase (we'll use local storage as fallback)
+      if (user) {
+        await supabase.from('mood_tracking').insert({
+          user_id: user.id,
+          mood: selectedMood,
+          timestamp: new Date().toISOString(),
+          context: 'pre-test'
+        });
+        console.log('Mood data saved to Supabase');
+      }
+    } catch (error) {
+      console.error('Error saving mood data:', error);
+    }
+  };
+
   const handleMoodSelect = (selectedMood: Mood) => {
     setMood(selectedMood);
     localStorage.setItem('selected_mood', selectedMood);
+    saveMoodData(selectedMood);
   };
 
   const handleRitualSelect = (selectedRitual: PreRitual) => {
@@ -51,7 +82,18 @@ export const usePreTestState = () => {
     }
   };
 
-  const handleRitualComplete = () => {
+  const handleRitualComplete = async (duration?: number) => {
+    if (mood && ritual) {
+      // Save completed ritual data
+      await saveRitualActivity({
+        subject: 'unknown', // This will be updated with actual subject
+        ritual,
+        mood,
+        completedAt: new Date().toISOString(),
+        duration: duration || 0
+      });
+    }
+    
     setShowRitualActivity(false);
     setRitualCompleted(true);
     setShowPostRitualInfo(true);

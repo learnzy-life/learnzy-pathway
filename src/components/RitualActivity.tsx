@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Play, Pause, RotateCcw } from 'lucide-react';
+import { ArrowRight, Play, Pause, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
 import BreathingExercise from './rituals/BreathingExercise';
 import Meditation from './rituals/Meditation';
@@ -22,6 +22,8 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
   const [isActive, setIsActive] = useState<boolean>(false);
   const [step, setStep] = useState<number>(1);
   const [audioError, setAudioError] = useState<boolean>(false);
+  const [audioEnabled, setAudioEnabled] = useState<boolean>(true);
+  const [actualDuration, setActualDuration] = useState<number>(0);
   
   const {
     isSpeaking,
@@ -33,6 +35,12 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
   } = useSpeechRecognition();
   
   useEffect(() => {
+    // Test if speech synthesis is available
+    if (!window.speechSynthesis) {
+      setAudioError(true);
+      setAudioEnabled(false);
+    }
+    
     if (speechRecognitionError) {
       setAudioError(true);
     }
@@ -61,11 +69,14 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
               setStep(prevStep => (prevStep % 3) + 1);
             }
           }
+
+          // Track actual time spent on ritual
+          setActualDuration(prev => prev + 1);
           
           return newTime;
         });
       }, 1000);
-    } else if (timeLeft === 0) {
+    } else if (timeLeft === 0 && isActive) {
       handleComplete();
     }
     
@@ -76,7 +87,7 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
   
   const handleComplete = async () => {
     // Calculate duration (how long they actually took)
-    const actualDuration = initialTime - timeLeft;
+    const ritualDuration = actualDuration > 0 ? actualDuration : initialTime - timeLeft;
     
     // Save the ritual activity data
     await saveRitualActivity({
@@ -84,7 +95,7 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
       ritual,
       mood,
       completedAt: new Date().toISOString(),
-      duration: actualDuration
+      duration: ritualDuration
     });
     
     toast({
@@ -97,6 +108,11 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
   
   const toggleActivity = () => {
     setIsActive(!isActive);
+    
+    // If pausing, cancel any ongoing speech
+    if (isActive && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
   };
   
   const resetActivity = () => {
@@ -104,14 +120,29 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
     setIsActive(false);
     setStep(1);
     setAffirmationSpoken(false);
+    setActualDuration(0);
+    
+    // Cancel any ongoing speech
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+  };
+  
+  const toggleAudio = () => {
+    setAudioEnabled(!audioEnabled);
+    
+    if (audioEnabled && window.speechSynthesis) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+    }
   };
   
   const renderRitualContent = () => {
     switch (ritual) {
       case 'breathing':
-        return <BreathingExercise step={step} isActive={isActive} />;
+        return <BreathingExercise step={step} isActive={isActive && audioEnabled} />;
       case 'meditation':
-        return <Meditation isActive={isActive} timeLeft={timeLeft} audioError={audioError} />;
+        return <Meditation isActive={isActive && audioEnabled} timeLeft={timeLeft} audioError={audioError} />;
       case 'affirmation':
         return (
           <Affirmation 
@@ -143,6 +174,17 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
       <div className="flex justify-between items-center mb-4">
         <div className="text-2xl font-medium">{formatTime(timeLeft)}</div>
         <div className="flex gap-2">
+          <button 
+            onClick={toggleAudio}
+            className={`p-2 rounded-full transition-colors ${
+              audioEnabled 
+                ? 'bg-learnzy-purple/10 hover:bg-learnzy-purple/20' 
+                : 'bg-gray-200 hover:bg-gray-300'
+            }`}
+            title={audioEnabled ? "Mute audio guidance" : "Enable audio guidance"}
+          >
+            {audioEnabled ? <Volume2 className="w-6 h-6" /> : <VolumeX className="w-6 h-6" />}
+          </button>
           <button 
             onClick={toggleActivity}
             className="p-2 rounded-full bg-learnzy-purple/10 hover:bg-learnzy-purple/20 transition-colors"

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface BreathingExerciseProps {
   step: number;
@@ -12,6 +12,36 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
     "Hold your breath...",
     "Exhale slowly through your mouth..."
   ];
+  
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  const audioInstructions = {
+    1: "Breathe in deeply through your nose for 4 seconds",
+    2: "Now hold your breath for 4 seconds",
+    3: "Exhale slowly through your mouth for 4 seconds" 
+  };
+  
+  useEffect(() => {
+    if (isActive && window.speechSynthesis) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      // Create a new utterance for the current step
+      const utterance = new SpeechSynthesisUtterance(audioInstructions[step as keyof typeof audioInstructions]);
+      utterance.rate = 0.9; // Slightly slower than normal
+      utterance.pitch = 1;
+      
+      // Play the audio instruction
+      window.speechSynthesis.speak(utterance);
+    }
+    
+    return () => {
+      // Clean up on component unmount or step change
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [step, isActive]);
   
   return (
     <div className="text-center">
@@ -40,6 +70,10 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
           </p>
         </div>
       )}
+      
+      <audio ref={audioRef} className="hidden">
+        Your browser does not support the audio element.
+      </audio>
     </div>
   );
 };
