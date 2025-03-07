@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ArrowUp, ArrowDown, Lightbulb } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Cell, LabelList } from 'recharts';
 
 interface CognitiveInsightsProps {
   insights: {
@@ -39,6 +39,19 @@ interface CognitiveInsightsProps {
   };
 }
 
+// Custom tooltip component for Bloom's Taxonomy chart
+const BloomsTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white p-3 shadow-lg border border-gray-200 rounded-lg">
+        <p className="font-medium">{label}</p>
+        <p className="text-green-600">Accuracy: {payload[0].value}%</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 const CognitiveInsights: React.FC<CognitiveInsightsProps> = ({ insights }) => {
   const difficultyData = [
     { name: 'Easy', value: insights.difficultyAccuracy.easy },
@@ -70,6 +83,13 @@ const CognitiveInsights: React.FC<CognitiveInsightsProps> = ({ insights }) => {
     { category: 'Analyze', conceptual: 65, numerical: 45, application: 55 },
     { category: 'Evaluate', conceptual: 55, numerical: 35, application: 45 },
   ];
+  
+  // Helper function to determine color class based on score value
+  const getScoreColorClass = (score: number) => {
+    if (score >= 70) return 'text-green-600';
+    if (score >= 50) return 'text-amber-600';
+    return 'text-red-600';
+  };
 
   return (
     <div className="card-glass p-6">
@@ -142,21 +162,17 @@ const CognitiveInsights: React.FC<CognitiveInsightsProps> = ({ insights }) => {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={bloomsData}
-              margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
+              margin={{ top: 20, right: 20, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="name" />
               <YAxis domain={[0, 100]} />
-              <Tooltip
-                contentStyle={{ 
-                  backgroundColor: 'white',
-                  border: '1px solid #f1f1f1',
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                }}
-                formatter={(value: number) => [`${value}%`, 'Accuracy']}
-              />
-              <Bar dataKey="value" fill="#10B981" radius={[4, 4, 0, 0]} />
+              <Tooltip content={<BloomsTooltip />} />
+              <Bar dataKey="value" fill="#10B981" radius={[4, 4, 0, 0]}>
+                {bloomsData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill="#10B981" />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -178,25 +194,19 @@ const CognitiveInsights: React.FC<CognitiveInsightsProps> = ({ insights }) => {
               <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                 <td className="py-3 px-4 border-b text-sm font-medium text-gray-900">{row.category}</td>
                 <td className="py-3 px-4 border-b text-sm">
-                  <div className="flex items-center">
-                    <span className={`font-medium ${row.conceptual >= 70 ? 'text-green-600' : row.conceptual >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
-                      {row.conceptual}%
-                    </span>
-                  </div>
+                  <span className={`font-medium ${getScoreColorClass(row.conceptual)}`}>
+                    {row.conceptual}%
+                  </span>
                 </td>
                 <td className="py-3 px-4 border-b text-sm">
-                  <div className="flex items-center">
-                    <span className={`font-medium ${row.numerical >= 70 ? 'text-green-600' : row.numerical >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
-                      {row.numerical}%
-                    </span>
-                  </div>
+                  <span className={`font-medium ${getScoreColorClass(row.numerical)}`}>
+                    {row.numerical}%
+                  </span>
                 </td>
                 <td className="py-3 px-4 border-b text-sm">
-                  <div className="flex items-center">
-                    <span className={`font-medium ${row.application >= 70 ? 'text-green-600' : row.application >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
-                      {row.application}%
-                    </span>
-                  </div>
+                  <span className={`font-medium ${getScoreColorClass(row.application)}`}>
+                    {row.application}%
+                  </span>
                 </td>
               </tr>
             ))}
