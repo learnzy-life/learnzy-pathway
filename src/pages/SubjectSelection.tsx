@@ -11,7 +11,7 @@ const SubjectSelection: React.FC = () => {
       title: 'Biology',
       description: 'Test your knowledge in cell biology, genetics, human physiology, ecology, and evolution.',
       icon: '🧬',
-      color: 'bg-green-500',
+      color: 'bg-learnzy-amber',
       attempted: false,
       locked: false
     },
@@ -20,7 +20,7 @@ const SubjectSelection: React.FC = () => {
       title: 'Physics',
       description: 'Assess your understanding of mechanics, thermodynamics, electromagnetism, and modern physics.',
       icon: '⚛️',
-      color: 'bg-blue-500',
+      color: 'bg-learnzy-amber/80',
       attempted: false,
       locked: true
     },
@@ -29,7 +29,7 @@ const SubjectSelection: React.FC = () => {
       title: 'Chemistry',
       description: 'Evaluate your mastery in organic chemistry, inorganic chemistry, physical chemistry, and biochemistry.',
       icon: '⚗️',
-      color: 'bg-purple-500',
+      color: 'bg-learnzy-amber/90',
       attempted: false,
       locked: true
     }

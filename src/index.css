@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -7,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 40 100% 99%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -16,24 +15,24 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 252 80% 75%;
+    --primary: 39 100% 68%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96%;
+    --secondary: 39 100% 96%;
     --secondary-foreground: 222 47% 11%;
 
-    --muted: 210 40% 96%;
+    --muted: 39 20% 96%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 252 80% 97%;
+    --accent: 39 100% 97%;
     --accent-foreground: 222 47% 11%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 252 80% 75%;
+    --border: 39 30% 91%;
+    --input: 39 30% 91%;
+    --ring: 39 100% 68%;
 
     --radius: 1rem;
   }
@@ -76,28 +75,28 @@
   }
 
   .button-primary {
-    @apply bg-learnzy-purple text-white px-6 py-3 rounded-xl font-medium 
+    @apply bg-learnzy-amber text-white px-6 py-3 rounded-xl font-medium 
     shadow-sm hover:shadow-md transition-all duration-300 
-    hover:bg-learnzy-purple/90 focus:outline-none focus:ring-2 
-    focus:ring-learnzy-purple/30 active:scale-[0.98] flex items-center justify-center;
+    hover:bg-learnzy-amber-dark focus:outline-none focus:ring-2 
+    focus:ring-learnzy-amber/30 active:scale-[0.98] flex items-center justify-center;
   }
 
   .button-secondary {
     @apply bg-white text-learnzy-dark px-6 py-3 rounded-xl font-medium 
     shadow-sm hover:shadow-md transition-all duration-300 
     hover:bg-gray-50 focus:outline-none focus:ring-2 
-    focus:ring-learnzy-purple/30 active:scale-[0.98] border border-gray-100 flex items-center justify-center;
+    focus:ring-learnzy-amber/30 active:scale-[0.98] border border-gray-100 flex items-center justify-center;
   }
 
   .button-ghost {
     @apply bg-transparent text-learnzy-dark/80 px-6 py-3 rounded-xl font-medium 
     transition-all duration-300 hover:bg-gray-100/50 
-    focus:outline-none focus:ring-2 focus:ring-learnzy-purple/30 active:scale-[0.98] flex items-center justify-center;
+    focus:outline-none focus:ring-2 focus:ring-learnzy-amber/30 active:scale-[0.98] flex items-center justify-center;
   }
 
   .input-field {
     @apply bg-white/80 backdrop-blur-sm border border-gray-100 rounded-xl px-4 py-3
-    focus:outline-none focus:ring-2 focus:ring-learnzy-purple/30 
+    focus:outline-none focus:ring-2 focus:ring-learnzy-amber/30 
     focus:border-transparent transition-all duration-300 w-full;
   }
 
@@ -106,7 +105,7 @@
   }
 
   .text-gradient {
-    @apply bg-gradient-to-r from-learnzy-purple to-learnzy-blue text-transparent bg-clip-text;
+    @apply bg-gradient-to-r from-learnzy-amber to-learnzy-amber-dark text-transparent bg-clip-text;
   }
 }
 
@@ -262,7 +261,7 @@
 
 /* Improved accessibility */
 :focus {
-  @apply outline-none ring-2 ring-learnzy-purple/50;
+  @apply outline-none ring-2 ring-learnzy-amber/50;
 }
 
 /* Improve readability on small screens */

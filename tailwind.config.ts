@@ -66,10 +66,13 @@ export default {
 				// Custom Learnzy colors
 				learnzy: {
 					'blue': '#3b82f6',
-					'purple': '#9b87f5',
+					'purple': '#FFBD59', // Updated to brand color
 					'teal': '#14b8a6',
 					'neutral': '#f8fafc',
-					'dark': '#1a1f2c'
+					'dark': '#1a1f2c',
+					'amber': '#FFBD59', // Added brand color
+					'amber-light': '#FFF0D6', // Light shade of brand color
+					'amber-dark': '#E69D19', // Darker shade of brand color
 				}
 			},
 			borderRadius: {
@@ -179,7 +182,7 @@ export default {
 			boxShadow: {
 				'subtle': '0 2px 10px rgba(0, 0, 0, 0.03)',
 				'elevated': '0 10px 30px rgba(0, 0, 0, 0.08)',
-				'focus': '0 0 0 3px rgba(155, 135, 245, 0.3)',
+				'focus': '0 0 0 3px rgba(255, 189, 89, 0.3)', // Updated to brand color
 			},
 		}
 	},
