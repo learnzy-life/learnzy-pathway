@@ -1,6 +1,5 @@
 
 import React, { useEffect, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
 import useSpeechRecognition from '../hooks/useSpeechRecognition';
 import { getRitualDuration } from '../utils/ritualUtils';
@@ -109,14 +108,16 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
   };
   
   return (
-    <div className="card-glass p-8 animate-fade-in bg-gradient-to-b from-white to-gray-50">
-      <h2 className="text-xl font-medium text-learnzy-dark mb-6 text-center">
-        {ritual === 'breathing' ? 'Deep Breathing Exercise' : 
-         ritual === 'meditation' ? 'Mindfulness Meditation' : 
-         'Positive Affirmations'}
-      </h2>
+    <div className="card-glass p-0 animate-fade-in overflow-hidden bg-gradient-to-b from-gray-900 to-indigo-900">
+      <div className="p-6 pt-8">
+        <h2 className="text-xl font-medium text-white mb-6 text-center">
+          {ritual === 'breathing' ? 'Deep Breathing Exercise' : 
+           ritual === 'meditation' ? 'Mindfulness Meditation' : 
+           'Positive Affirmations'}
+        </h2>
+      </div>
       
-      <div className="mb-8">
+      <div className="min-h-[320px] mb-4 flex items-center justify-center relative">
         <RitualContent 
           ritual={ritual}
           step={step}
@@ -131,16 +132,18 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
         />
       </div>
       
-      <RitualControls 
-        timeLeft={timeLeft}
-        totalTime={getRitualDuration(ritual)}
-        isActive={isActive}
-        audioEnabled={audioEnabled}
-        toggleActivity={toggleActivity}
-        resetActivity={resetActivity}
-        toggleAudio={toggleAudio}
-        handleComplete={handleComplete}
-      />
+      <div className="p-6">
+        <RitualControls 
+          timeLeft={timeLeft}
+          totalTime={getRitualDuration(ritual)}
+          isActive={isActive}
+          audioEnabled={audioEnabled}
+          toggleActivity={toggleActivity}
+          resetActivity={resetActivity}
+          toggleAudio={toggleAudio}
+          handleComplete={handleComplete}
+        />
+      </div>
     </div>
   );
 };
