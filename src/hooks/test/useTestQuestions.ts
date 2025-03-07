@@ -18,7 +18,7 @@ export const useTestQuestions = (
       setIsLoading(true)
 
       try {
-        // Load the questions first
+        // Load the questions first with full metadata
         const loadedQuestions = await fetchQuestions(subject)
         
         // Get user mood and ritual data from localStorage

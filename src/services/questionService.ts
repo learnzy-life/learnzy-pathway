@@ -13,6 +13,17 @@ export interface Question {
   options: Option[]
   answer?: string
   correctAnswer?: string
+  Subject?: string
+  Chapter_name?: string
+  Topic?: string
+  Subtopic?: string
+  Difficulty_Level?: string
+  Question_Structure?: string
+  Bloom_Taxonomy?: string
+  Priority_Level?: string
+  Time_to_Solve?: number
+  Key_Concept_Tested?: string
+  Common_Pitfalls?: string
 }
 
 export type Subject = 'biology' | 'physics' | 'chemistry'
@@ -38,6 +49,17 @@ export const generateMockQuestions = (count: number): Question[] => {
         text: 'Sample option D to complete the four possible answers.',
       },
     ],
+    Subject: 'biology',
+    Chapter_name: 'Sample Chapter',
+    Topic: 'Sample Topic',
+    Subtopic: 'Sample Subtopic',
+    Difficulty_Level: 'Medium',
+    Question_Structure: 'Multiple Choice',
+    Bloom_Taxonomy: 'Comprehension',
+    Priority_Level: 'Medium',
+    Time_to_Solve: 1.0,
+    Key_Concept_Tested: 'Sample concept',
+    Common_Pitfalls: 'Common mistake'
   }))
 }
 
@@ -66,9 +88,7 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
 
     const { data, error } = await supabase
       .from(tableToQuery)
-      .select(
-        'q_no, Question_Text, Option_A, Option_B, Option_C, Option_D, Correct_Answer'
-      )
+      .select('*')
 
     if (error) {
       console.error('Error fetching questions:', error)
@@ -90,6 +110,17 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
           { id: 'D', text: q.Option_D || 'Option D' },
         ],
         correctAnswer: q.Correct_Answer || '',
+        Subject: q.Subject,
+        Chapter_name: q.Chapter_name,
+        Topic: q.Topic,
+        Subtopic: q.Subtopic,
+        Difficulty_Level: q.Difficulty_Level,
+        Question_Structure: q.Question_Structure,
+        Bloom_Taxonomy: q.Bloom_Taxonomy,
+        Priority_Level: q.Priority_Level,
+        Time_to_Solve: q.Time_to_Solve,
+        Key_Concept_Tested: q.Key_Concept_Tested,
+        Common_Pitfalls: q.Common_Pitfalls
       }))
 
       return formattedQuestions
