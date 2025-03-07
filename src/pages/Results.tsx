@@ -45,6 +45,43 @@ const Results: React.FC = () => {
   }
 
   const subjectTitle = getSubjectTitle(subject as Subject);
+  
+  // Create improvement resources from topic data
+  const improvementResources = resultsData.topics.map(topic => {
+    // Generate resources based on the topic
+    const resources = [
+      {
+        type: 'Video',
+        title: `Master ${topic.name} Concepts`,
+        url: `https://learnzy.com/resources/${subject}/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
+        description: 'A comprehensive video tutorial on this topic'
+      },
+      {
+        type: 'Practice',
+        title: `${topic.name} Practice Questions`,
+        url: `https://learnzy.com/practice/${subject}/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
+        description: 'Interactive practice questions'
+      },
+      {
+        type: 'Reading',
+        title: `${topic.name} Study Guide`,
+        url: `https://learnzy.com/guides/${subject}/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
+        description: 'A concise study guide'
+      }
+    ];
+    
+    return {
+      topic: topic.name,
+      accuracy: topic.percentage,
+      resources,
+      progress: 0,
+      totalActions: 3,
+      // Add priority information
+      priorityScore: topic.improvementPriorityScore,
+      difficultyLevel: topic.difficultyLevel as string,
+      priorityLevel: topic.priorityLevel as string
+    };
+  });
 
   return (
     <ResultsLayout subjectTitle={subjectTitle}>
@@ -85,13 +122,13 @@ const Results: React.FC = () => {
         <TopicBreakdown topics={resultsData.topics} isFirstTest={isFirstTest} />
       </div>
       
-      {/* Section 5: Improvement Resources */}
+      {/* Section 5: Improvement Resources - Now with Prioritized Topics */}
       <div className="mb-12">
         <SectionHeader 
           icon={Book} 
           title="Improve Before Your Next Mock" 
         />
-        <ImprovementResources resources={resultsData.improvementResources} />
+        <ImprovementResources resources={improvementResources} />
       </div>
       
       {/* Next Steps */}

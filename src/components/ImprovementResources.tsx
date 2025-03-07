@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ExternalLink, Play, FileText, CheckCircle, BookOpen, ChevronRight } from 'lucide-react';
+import { ExternalLink, Play, FileText, CheckCircle, BookOpen, ChevronRight, TrendingUp } from 'lucide-react';
 
 interface Resource {
   type: string;
@@ -15,6 +15,9 @@ interface ImprovementResourceItem {
   resources: Resource[];
   progress: number;
   totalActions: number;
+  priorityScore?: number;
+  difficultyLevel?: string;
+  priorityLevel?: string;
 }
 
 interface ImprovementResourcesProps {
@@ -22,6 +25,17 @@ interface ImprovementResourcesProps {
 }
 
 const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }) => {
+  // Sort resources by priority score if available
+  const sortedResources = [...resources].sort((a, b) => {
+    if (a.priorityScore !== undefined && b.priorityScore !== undefined) {
+      return b.priorityScore - a.priorityScore;
+    }
+    return b.accuracy - a.accuracy;
+  });
+  
+  // Limit to top 10 resources
+  const topResources = sortedResources.slice(0, 10);
+
   const getResourceIcon = (type: string) => {
     switch (type) {
       case 'Video':
@@ -40,11 +54,40 @@ const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }
     if (accuracy >= 60) return 'text-amber-600';
     return 'text-red-600';
   };
+  
+  const getDifficultyColor = (difficulty?: string) => {
+    if (!difficulty) return 'bg-gray-200 text-gray-700';
+    
+    const diff = difficulty.toLowerCase();
+    if (diff.includes('easy')) return 'bg-green-100 text-green-800';
+    if (diff.includes('hard')) return 'bg-red-100 text-red-800';
+    return 'bg-amber-100 text-amber-800';
+  };
+  
+  const getPriorityColor = (priority?: string) => {
+    if (!priority) return 'bg-gray-200 text-gray-700';
+    
+    const prio = priority.toLowerCase();
+    if (prio.includes('high')) return 'bg-purple-100 text-purple-800';
+    if (prio.includes('low')) return 'bg-blue-100 text-blue-800';
+    return 'bg-indigo-100 text-indigo-800';
+  };
 
   return (
     <div className="card-glass p-6">
+      <div className="mb-6">
+        <div className="flex items-center mb-4">
+          <TrendingUp className="w-5 h-5 text-learnzy-purple mr-2" />
+          <h3 className="text-lg font-medium">Topics With Highest Improvement Potential</h3>
+        </div>
+        <p className="text-muted-foreground text-sm mb-6">
+          We've identified these topics where focused study will have the greatest impact on your score. 
+          Topics are prioritized based on your current accuracy, difficulty level, and exam importance.
+        </p>
+      </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {resources.map((item, index) => (
+        {topResources.map((item, index) => (
           <div key={index} className="bg-white rounded-xl border border-gray-100 shadow-subtle overflow-hidden">
             <div className="p-5 border-b border-gray-100">
               <div className="flex justify-between items-center mb-2">
@@ -62,6 +105,25 @@ const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }
                   style={{ width: `${item.accuracy}%` }}
                 ></div>
               </div>
+              
+              <div className="flex flex-wrap gap-2 mb-3">
+                {item.difficultyLevel && (
+                  <span className={`text-xs px-2 py-1 rounded-full ${getDifficultyColor(item.difficultyLevel)}`}>
+                    {item.difficultyLevel}
+                  </span>
+                )}
+                {item.priorityLevel && (
+                  <span className={`text-xs px-2 py-1 rounded-full ${getPriorityColor(item.priorityLevel)}`}>
+                    {item.priorityLevel} Priority
+                  </span>
+                )}
+                {item.priorityScore !== undefined && (
+                  <span className="text-xs px-2 py-1 rounded-full bg-learnzy-purple/10 text-learnzy-purple">
+                    Score: {Math.round(item.priorityScore)}
+                  </span>
+                )}
+              </div>
+              
               <div className="text-sm text-muted-foreground">
                 {item.progress} of {item.totalActions} actions completed
               </div>
@@ -104,8 +166,10 @@ const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }
       
       <div className="flex items-center justify-center mt-8 p-4 bg-green-50 rounded-lg border border-green-100">
         <div className="text-center">
-          <div className="text-green-700 font-medium">Complete these resources before your next test to see improved results!</div>
-          <div className="text-sm text-green-600 mt-1">{resources.length} topics need your attention</div>
+          <div className="text-green-700 font-medium">Focus on these topics to maximize your score improvement!</div>
+          <div className="text-sm text-green-600 mt-1">
+            We've prioritized topics where you'll see the biggest gains with the least effort
+          </div>
         </div>
       </div>
     </div>
