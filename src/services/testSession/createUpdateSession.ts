@@ -28,17 +28,17 @@ export const createTestSession = async (
         isCorrect: false,
         timeTaken: 0,
         tags: [],
-        Subject: q.Subject,
-        Chapter_name: q.Chapter_name,
-        Topic: q.Topic,
-        Subtopic: q.Subtopic,
-        Difficulty_Level: q.Difficulty_Level,
-        Question_Structure: q.Question_Structure,
-        Bloom_Taxonomy: q.Bloom_Taxonomy,
-        Priority_Level: q.Priority_Level,
-        Time_to_Solve: q.Time_to_Solve,
-        Key_Concept_Tested: q.Key_Concept_Tested,
-        Common_Pitfalls: q.Common_Pitfalls
+        Subject: q.Subject || '',
+        Chapter_name: q.Chapter_name || '',
+        Topic: q.Topic || '',
+        Subtopic: q.Subtopic || '',
+        Difficulty_Level: q.Difficulty_Level || '',
+        Question_Structure: q.Question_Structure || '',
+        Bloom_Taxonomy: q.Bloom_Taxonomy || '',
+        Priority_Level: q.Priority_Level || '',
+        Time_to_Solve: q.Time_to_Solve || 0,
+        Key_Concept_Tested: q.Key_Concept_Tested || '',
+        Common_Pitfalls: q.Common_Pitfalls || ''
       })),
     }
 

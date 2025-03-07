@@ -17,12 +17,34 @@ export const completeTestSession = async (
     console.log('Completing test session:', sessionId, 'with score:', score)
     console.log('Questions data with metadata:', questions)
 
+    // Ensure all questions have the required metadata fields
+    const questionsWithMetadata = questions.map(q => ({
+      id: q.id,
+      text: q.text,
+      userAnswer: q.userAnswer,
+      correctAnswer: q.correctAnswer,
+      isCorrect: q.isCorrect,
+      timeTaken: q.timeTaken,
+      tags: q.tags || [],
+      Subject: q.Subject || '',
+      Chapter_name: q.Chapter_name || '',
+      Topic: q.Topic || '',
+      Subtopic: q.Subtopic || '',
+      Difficulty_Level: q.Difficulty_Level || '',
+      Question_Structure: q.Question_Structure || '',
+      Bloom_Taxonomy: q.Bloom_Taxonomy || '',
+      Priority_Level: q.Priority_Level || '',
+      Time_to_Solve: q.Time_to_Solve || 0,
+      Key_Concept_Tested: q.Key_Concept_Tested || '',
+      Common_Pitfalls: q.Common_Pitfalls || ''
+    }))
+
     const { error } = await supabase
       .from('test_sessions')
       .update({
         end_time: new Date().toISOString(),
         score,
-        questions_data: questions,
+        questions_data: questionsWithMetadata,
       })
       .eq('id', sessionId)
 

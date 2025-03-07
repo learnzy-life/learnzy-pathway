@@ -9,17 +9,17 @@ export interface QuestionResult {
   isCorrect: boolean
   timeTaken: number // in seconds
   tags: string[]
-  Subject?: string
-  Chapter_name?: string
-  Topic?: string
-  Subtopic?: string
-  Difficulty_Level?: string
-  Question_Structure?: string
-  Bloom_Taxonomy?: string
-  Priority_Level?: string
-  Time_to_Solve?: number
-  Key_Concept_Tested?: string
-  Common_Pitfalls?: string
+  Subject: string
+  Chapter_name: string
+  Topic: string
+  Subtopic: string
+  Difficulty_Level: string
+  Question_Structure: string
+  Bloom_Taxonomy: string
+  Priority_Level: string
+  Time_to_Solve: number
+  Key_Concept_Tested: string
+  Common_Pitfalls: string
 }
 
 export interface TestSession {
