@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ExternalLink, Play, FileText, CheckCircle, BookOpen, ChevronRight, TrendingUp } from 'lucide-react';
 
@@ -16,6 +17,7 @@ interface ImprovementResourceItem {
   totalActions: number;
   difficultyLevel?: string;
   priorityLevel?: string;
+  // priorityScore removed from the interface
 }
 
 interface ImprovementResourcesProps {

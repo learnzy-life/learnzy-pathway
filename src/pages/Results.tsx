@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { 
@@ -74,6 +75,7 @@ const Results: React.FC = () => {
       totalActions: 3,
       difficultyLevel: topic.difficultyLevel,
       priorityLevel: topic.priorityLevel
+      // priorityScore removed from the object
     };
   });
 
