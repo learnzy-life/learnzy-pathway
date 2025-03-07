@@ -2,8 +2,6 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Download, Share2 } from 'lucide-react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import Header from './Header';
 import { toast } from 'sonner';
 
@@ -19,31 +17,101 @@ const ResultsLayout: React.FC<ResultsLayoutProps> = ({ children, subjectTitle })
     if (!contentRef.current) return;
 
     try {
-      toast.info("Preparing your PDF...");
-
+      toast.info("Preparing your interactive report...");
+      
+      // Get the content
       const content = contentRef.current;
-      const canvas = await html2canvas(content, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-      });
-
-      const imgWidth = 210; // A4 width in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      pdf.save(`${subjectTitle.toLowerCase().replace(/\s+/g, '-')}-test-results.pdf`);
+      // Clone the styles
+      let styles = '';
+      document.querySelectorAll('style, link[rel="stylesheet"]').forEach(el => {
+        if (el instanceof HTMLStyleElement) {
+          styles += el.outerHTML;
+        } else if (el instanceof HTMLLinkElement) {
+          styles += el.outerHTML;
+        }
+      });
       
-      toast.success("Download complete!");
+      // Create an HTML document
+      const html = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${subjectTitle} Test Results</title>
+          ${styles}
+          <style>
+            body {
+              font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              padding: 2rem;
+              background-color: #f5f5f7;
+            }
+            .results-container {
+              max-width: 1200px;
+              margin: 0 auto;
+              background-color: white;
+              border-radius: 8px;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+              padding: 2rem;
+            }
+            h1 {
+              color: #333;
+              font-size: 2rem;
+              margin-bottom: 1rem;
+            }
+            .header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 2rem;
+              border-bottom: 1px solid #eee;
+              padding-bottom: 1rem;
+            }
+            .learnzy-brand {
+              font-weight: bold;
+              font-size: 1.5rem;
+              color: #9b87f5;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="results-container">
+            <div class="header">
+              <div class="learnzy-brand">Learnzy</div>
+              <div>Generated on ${new Date().toLocaleDateString()}</div>
+            </div>
+            <h1>${subjectTitle} Test Results</h1>
+            ${content.innerHTML}
+          </div>
+          <script>
+            // Add any interactive JavaScript here
+            document.addEventListener('DOMContentLoaded', function() {
+              console.log('Interactive report loaded');
+              // Any charts or interactive elements can be initialized here
+            });
+          </script>
+        </body>
+        </html>
+      `;
+      
+      // Create a blob and download it
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${subjectTitle.toLowerCase().replace(/\s+/g, '-')}-test-results.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+      
+      toast.success("Download complete! Open the HTML file in your browser for an interactive report.");
     } catch (error) {
-      console.error("Error generating PDF:", error);
+      console.error("Error generating report:", error);
       toast.error("Failed to download results. Please try again.");
     }
   };
@@ -75,7 +143,7 @@ const ResultsLayout: React.FC<ResultsLayoutProps> = ({ children, subjectTitle })
               >
                 <Download className="w-4 h-4 mr-2" /> Download
               </button>
-              <button className="button-secondary text-sm sm:text-base py-2 px-4 sm:px-6">
+              <button className="button-secondary text-sm sm:text-base py-2 px-4 sm:px-6 flex items-center">
                 <Share2 className="w-4 h-4 mr-2" /> Share
               </button>
             </div>
