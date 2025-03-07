@@ -5,10 +5,8 @@ import { Subject } from '../services/questionService';
 import { getTestSession } from '../services/testSession';
 import { supabase } from '../lib/supabase';
 import { calculateAnalytics, QueryResult, ResultsData } from '../utils/analytics';
-import { calculateMindsetMetrics, MindsetMetrics } from '../utils/mindsetMetricsService';
 
 export const useResultsData = (subject: Subject | undefined, sessionId: string | null) => {
-  const [mindsetMetrics, setMindsetMetrics] = useState<MindsetMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [resultsData, setResultsData] = useState<ResultsData | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -105,10 +103,6 @@ export const useResultsData = (subject: Subject | undefined, sessionId: string |
           const analyticsData = calculateAnalytics(session.questions, questionDetails, subject);
           console.log("Calculated analytics data:", analyticsData);
           setResultsData(analyticsData);
-          
-          // Calculate mindset metrics
-          const metrics = calculateMindsetMetrics(subject);
-          setMindsetMetrics(metrics);
         } else {
           setErrorMessage("No question data available");
         }
@@ -123,5 +117,5 @@ export const useResultsData = (subject: Subject | undefined, sessionId: string |
     fetchResults();
   }, [sessionId, subject]);
 
-  return { mindsetMetrics, loading, resultsData, errorMessage };
+  return { loading, resultsData, errorMessage };
 };

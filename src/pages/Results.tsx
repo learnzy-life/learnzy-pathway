@@ -5,9 +5,7 @@ import {
   CheckCircle2, 
   Clock, 
   BarChart, 
-  Brain, 
-  Book, 
-  Lightbulb 
+  Book
 } from 'lucide-react';
 
 import { getSubjectTitle } from '../data/mockResultsData';
@@ -15,9 +13,7 @@ import ResultsLayout from '../components/ResultsLayout';
 import ResultsOverview from '../components/ResultsOverview';
 import TopicBreakdown from '../components/TopicBreakdown';
 import TimeAnalysis from '../components/TimeAnalysis';
-import CognitiveInsights from '../components/CognitiveInsights';
 import ImprovementResources from '../components/ImprovementResources';
-import MindsetAnalysis from '../components/MindsetAnalysis';
 import SectionHeader from '../components/SectionHeader';
 import NextStepsSection from '../components/NextStepsSection';
 import ResultsLoadingState from '../components/ResultsLoadingState';
@@ -29,7 +25,7 @@ const Results: React.FC = () => {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('sessionId');
   
-  const { mindsetMetrics, loading, resultsData, errorMessage } = useResultsData(subject, sessionId);
+  const { loading, resultsData, errorMessage } = useResultsData(subject, sessionId);
   
   // Handle loading and error states
   if (loading) {
@@ -89,15 +85,6 @@ const Results: React.FC = () => {
         <TopicBreakdown topics={resultsData.topics} />
       </div>
       
-      {/* Section 4: Cognitive Insights */}
-      <div className="mb-12">
-        <SectionHeader 
-          icon={Brain} 
-          title="Deep Insights" 
-        />
-        <CognitiveInsights insights={resultsData.cognitiveInsights} />
-      </div>
-      
       {/* Section 5: Improvement Resources */}
       <div className="mb-12">
         <SectionHeader 
@@ -105,15 +92,6 @@ const Results: React.FC = () => {
           title="Improve Before Your Next Mock" 
         />
         <ImprovementResources resources={resultsData.improvementResources} />
-      </div>
-      
-      {/* Section 6: Mindset Analysis */}
-      <div className="mb-12">
-        <SectionHeader 
-          icon={Lightbulb} 
-          title="Your Mindset Performance" 
-        />
-        <MindsetAnalysis mindset={mindsetMetrics || resultsData.mindsetAnalysis} />
       </div>
       
       {/* Next Steps */}
