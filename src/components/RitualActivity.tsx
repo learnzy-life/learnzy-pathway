@@ -160,10 +160,10 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
   };
   
   return (
-    <div className="card-glass p-8 animate-fade-in">
+    <div className="card-glass p-8 animate-fade-in bg-gradient-to-b from-white to-gray-50">
       <h2 className="text-xl font-medium text-learnzy-dark mb-6 text-center">
         {ritual === 'breathing' ? 'Deep Breathing Exercise' : 
-         ritual === 'meditation' ? 'Quick Mindfulness Meditation' : 
+         ritual === 'meditation' ? 'Mindfulness Meditation' : 
          'Positive Affirmations'}
       </h2>
       
@@ -171,8 +171,8 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
         {renderRitualContent()}
       </div>
       
-      <div className="flex justify-between items-center mb-4">
-        <div className="text-2xl font-medium">{formatTime(timeLeft)}</div>
+      <div className="flex justify-between items-center mb-6">
+        <div className="text-2xl font-medium text-learnzy-dark">{formatTime(timeLeft)}</div>
         <div className="flex gap-2">
           <button 
             onClick={toggleAudio}
@@ -200,16 +200,16 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
         </div>
       </div>
       
-      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-8">
+      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-8 overflow-hidden">
         <div 
-          className="bg-learnzy-purple h-2.5 rounded-full transition-all duration-1000" 
+          className="bg-gradient-to-r from-learnzy-purple to-indigo-400 h-2.5 rounded-full transition-all duration-1000" 
           style={{ width: `${(timeLeft / getRitualDuration(ritual)) * 100}%` }}
         ></div>
       </div>
       
       <button 
         onClick={handleComplete}
-        className="button-secondary w-full flex justify-center items-center"
+        className="button-secondary w-full flex justify-center items-center transition-all duration-300 hover:bg-gray-100"
       >
         Skip to Test <ArrowRight className="ml-2 w-5 h-5" />
       </button>

@@ -20,6 +20,9 @@ export function getAffirmations(): string[] {
     "I can solve any problem that comes my way.",
     "My mind is clear, focused, and ready.",
     "I trust my knowledge and intelligence.",
-    "I will perform at my best today."
+    "I will perform at my best today.",
+    "I am calm and centered in the face of challenges.",
+    "Every breath fills me with clarity and confidence.",
+    "I have everything I need to succeed within me."
   ];
 }
