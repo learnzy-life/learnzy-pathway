@@ -66,7 +66,8 @@ export const useTestActions = (
         userAnswer: q.answer || null,
         correctAnswer: q.correctAnswer || '',
         isCorrect,
-        timeTaken: timeTaken / questions.length, // Default time distribution if not tracked per question
+        // Use the actual time spent on each question if available, otherwise distribute evenly
+        timeTaken: q.timeTaken || timeTaken / questions.length,
         tags: [],
         // Include all metadata fields
         Subject: q.Subject || '',

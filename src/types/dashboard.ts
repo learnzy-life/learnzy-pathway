@@ -13,3 +13,17 @@ export interface TestPreparation {
   mood: string;
   ritual: string;
 }
+
+export interface Question {
+  id: number;
+  text: string;
+  options: Option[];
+  correctAnswer?: string;
+  answer?: string;
+  timeTaken?: number;
+}
+
+export interface Option {
+  id: string;
+  text: string;
+}
