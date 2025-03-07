@@ -15,7 +15,7 @@ export const completeTestSession = async (
     const score = (correctAnswers.length / questions.length) * 100
 
     console.log('Completing test session:', sessionId, 'with score:', score)
-    console.log('Questions data:', questions)
+    console.log('Questions data with metadata:', questions)
 
     const { error } = await supabase
       .from('test_sessions')
@@ -32,7 +32,7 @@ export const completeTestSession = async (
       return false
     }
 
-    console.log('Test session completed successfully')
+    console.log('Test session completed successfully with all metadata fields')
     return true
   } catch (err) {
     console.error('Unexpected error completing test session:', err)
