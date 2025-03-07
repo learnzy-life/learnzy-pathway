@@ -39,12 +39,27 @@ export const completeTestSession = async (
       Common_Pitfalls: q.Common_Pitfalls || ''
     }))
 
+    // Get subject-level metadata from the first question (assuming all questions are from same subject)
+    const firstQuestion = questions[0] || {}
+    
+    // Update the session with both questions data and top-level metadata fields
     const { error } = await supabase
       .from('test_sessions')
       .update({
         end_time: new Date().toISOString(),
         score,
         questions_data: questionsWithMetadata,
+        // Save metadata at the session level too
+        chapter_name: firstQuestion.Chapter_name || null,
+        topic: firstQuestion.Topic || null,
+        subtopic: firstQuestion.Subtopic || null,
+        difficulty_level: firstQuestion.Difficulty_Level || null,
+        question_structure: firstQuestion.Question_Structure || null,
+        bloom_taxonomy: firstQuestion.Bloom_Taxonomy || null,
+        priority_level: firstQuestion.Priority_Level || null,
+        time_to_solve: firstQuestion.Time_to_Solve || null,
+        key_concept_tested: firstQuestion.Key_Concept_Tested || null,
+        common_pitfalls: firstQuestion.Common_Pitfalls || null
       })
       .eq('id', sessionId)
 
@@ -101,6 +116,17 @@ export const getTestSession = async (
       score: data.score || 0,
       totalQuestions: data.total_questions || questionsData.length,
       questions: questionsData,
+      // Include metadata fields
+      chapterName: data.chapter_name,
+      topic: data.topic,
+      subtopic: data.subtopic,
+      difficultyLevel: data.difficulty_level,
+      questionStructure: data.question_structure,
+      bloomTaxonomy: data.bloom_taxonomy,
+      priorityLevel: data.priority_level,
+      timeToSolve: data.time_to_solve,
+      keyConceptTested: data.key_concept_tested,
+      commonPitfalls: data.common_pitfalls
     }
   } catch (err) {
     console.error('Unexpected error fetching test session:', err)

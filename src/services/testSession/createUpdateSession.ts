@@ -13,6 +13,9 @@ export const createTestSession = async (
     const { data: { user } } = await supabase.auth.getUser()
     const userId = user?.id || null
 
+    // Get metadata from the first question
+    const firstQuestion = questions[0] || {}
+    
     const newSession = {
       user_id: userId,
       subject,
@@ -20,6 +23,18 @@ export const createTestSession = async (
       end_time: null,
       score: null,
       total_questions: questions.length,
+      // Add metadata at the session level
+      chapter_name: firstQuestion.Chapter_name || null,
+      topic: firstQuestion.Topic || null,
+      subtopic: firstQuestion.Subtopic || null,
+      difficulty_level: firstQuestion.Difficulty_Level || null,
+      question_structure: firstQuestion.Question_Structure || null,
+      bloom_taxonomy: firstQuestion.Bloom_Taxonomy || null,
+      priority_level: firstQuestion.Priority_Level || null,
+      time_to_solve: firstQuestion.Time_to_Solve || null,
+      key_concept_tested: firstQuestion.Key_Concept_Tested || null,
+      common_pitfalls: firstQuestion.Common_Pitfalls || null,
+      // Save all question data including metadata
       questions_data: questions.map((q) => ({
         id: q.id,
         text: q.text,
@@ -41,6 +56,8 @@ export const createTestSession = async (
         Common_Pitfalls: q.Common_Pitfalls || ''
       })),
     }
+
+    console.log('Creating test session with metadata:', newSession)
 
     const { data, error } = await supabase
       .from('test_sessions')

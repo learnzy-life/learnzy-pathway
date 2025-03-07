@@ -31,4 +31,15 @@ export interface TestSession {
   score: number | null
   totalQuestions: number
   questions: QuestionResult[]
+  // Add metadata fields at the session level
+  chapterName?: string | null
+  topic?: string | null
+  subtopic?: string | null
+  difficultyLevel?: string | null
+  questionStructure?: string | null
+  bloomTaxonomy?: string | null
+  priorityLevel?: string | null
+  timeToSolve?: number | null
+  keyConceptTested?: string | null
+  commonPitfalls?: string | null
 }
