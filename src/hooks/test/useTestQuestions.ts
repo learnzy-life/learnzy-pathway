@@ -21,12 +21,30 @@ export const useTestQuestions = (
         // Load the questions first with full metadata
         const loadedQuestions = await fetchQuestions(subject)
         
+        // Ensure questions have all metadata fields
+        const enhancedQuestions = loadedQuestions.map(q => ({
+          ...q,
+          Subject: q.Subject || subject,
+          Chapter_name: q.Chapter_name || 'Unknown Chapter',
+          Topic: q.Topic || 'General Topic',
+          Subtopic: q.Subtopic || 'General Subtopic',
+          Difficulty_Level: q.Difficulty_Level || 'Medium',
+          Question_Structure: q.Question_Structure || 'Multiple Choice',
+          Bloom_Taxonomy: q.Bloom_Taxonomy || 'Knowledge',
+          Priority_Level: q.Priority_Level || 'Medium',
+          Time_to_Solve: q.Time_to_Solve || 1.0,
+          Key_Concept_Tested: q.Key_Concept_Tested || 'General Knowledge',
+          Common_Pitfalls: q.Common_Pitfalls || 'None'
+        }))
+        
+        console.log('Enhanced questions with metadata:', enhancedQuestions[0])
+        
         // Get user mood and ritual data from localStorage
         const mood = localStorage.getItem('selected_mood') || 'unknown'
         const ritual = localStorage.getItem('selected_ritual') || 'none'
         
         // Then create a new test session with the loaded questions
-        const newSessionId = await createTestSession(subject, loadedQuestions)
+        const newSessionId = await createTestSession(subject, enhancedQuestions)
         setSessionId(newSessionId)
         
         if (newSessionId) {
@@ -49,7 +67,7 @@ export const useTestQuestions = (
         }
         
         setStartTime(Date.now())
-        setQuestions(loadedQuestions)
+        setQuestions(enhancedQuestions)
       } catch (error) {
         console.error('Error loading test:', error)
         toast.error('Failed to load questions. Using sample questions instead.')
