@@ -1,7 +1,7 @@
-
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Question, Subject } from '../../services/questionService'
+import { Subject } from '../../services/questionService'
+import { Question } from '../../types/dashboard'
 import { completeTestSession, updateQuestionAnswer } from '../../services/testSession'
 
 export const useTestActions = (
@@ -25,7 +25,6 @@ export const useTestActions = (
       prev.map((q) => (q.id === questionId ? { ...q, answer: answerId } : q))
     )
     
-    // Update the answer in the database if we have a session
     if (sessionId) {
       updateQuestionAnswer(sessionId, questionId, answerId, timeTaken)
         .catch(error => console.error('Error updating question answer:', error))
@@ -51,12 +50,9 @@ export const useTestActions = (
   const handleSubmitTest = () => {
     setIsSubmitting(true)
 
-    // Calculate time taken in seconds
     const timeTaken = Math.floor((Date.now() - startTime) / 1000)
 
-    // Prepare question results
     const questionResults = questions.map((q) => {
-      // Check if the answer is correct by comparing with correctAnswer
       const isCorrect =
         q.answer && q.correctAnswer ? q.answer === q.correctAnswer : false
 
@@ -66,10 +62,8 @@ export const useTestActions = (
         userAnswer: q.answer || null,
         correctAnswer: q.correctAnswer || '',
         isCorrect,
-        // Use the actual time spent on each question if available, otherwise distribute evenly
         timeTaken: q.timeTaken || timeTaken / questions.length,
         tags: [],
-        // Include all metadata fields
         Subject: q.Subject || '',
         Chapter_name: q.Chapter_name || '',
         Topic: q.Topic || '',
@@ -84,21 +78,17 @@ export const useTestActions = (
       }
     })
 
-    // Save to test session in database
     if (sessionId) {
       completeTestSession(sessionId, questionResults)
         .then(() => {
-          // Navigate to analysis page instead of results page
           navigate(`/analysis/${subject}?sessionId=${sessionId}`)
         })
         .catch((error) => {
           console.error('Error completing test session:', error)
-          // Fallback to localStorage if database save fails
           localStorage.setItem('testResults', JSON.stringify(questionResults))
           navigate(`/analysis/${subject}`)
         })
     } else {
-      // Fallback to localStorage if no session ID
       localStorage.setItem('testResults', JSON.stringify(questionResults))
       setTimeout(() => {
         navigate(`/analysis/${subject}`)
