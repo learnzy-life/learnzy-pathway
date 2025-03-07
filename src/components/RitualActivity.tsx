@@ -41,10 +41,20 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
     if (!window.speechSynthesis) {
       setAudioError(true);
       setAudioEnabled(false);
+      toast({
+        title: "Audio Guidance Unavailable",
+        description: "Your browser doesn't support voice guidance. Visual guidance will still work.",
+        variant: "destructive"
+      });
     }
     
     if (speechRecognitionError) {
       setAudioError(true);
+      toast({
+        title: "Speech Recognition Unavailable",
+        description: "Your browser doesn't support speech recognition for affirmations.",
+        variant: "destructive"
+      });
     }
   }, [speechRecognitionError]);
   
@@ -58,6 +68,11 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
   }, [ritual]);
   
   async function handleComplete() {
+    // Cancel any ongoing speech when completing
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    
     // Calculate duration (how long they actually took)
     const ritualDuration = actualDuration > 0 ? actualDuration : initialTime - timeLeft;
     
@@ -104,20 +119,25 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
     if (audioEnabled && window.speechSynthesis) {
       // Cancel any ongoing speech
       window.speechSynthesis.cancel();
+    } else if (!audioEnabled) {
+      toast({
+        title: "Audio Guidance Enabled",
+        description: "You'll now hear voice guidance for this ritual.",
+      });
     }
   };
   
   return (
     <div className="card-glass p-0 animate-fade-in overflow-hidden bg-gradient-to-b from-gray-900 to-indigo-900">
-      <div className="p-6 pt-8">
-        <h2 className="text-xl font-medium text-white mb-6 text-center">
+      <div className="p-4 md:p-6 pt-6 md:pt-8">
+        <h2 className="text-lg md:text-xl font-medium text-white mb-4 md:mb-6 text-center">
           {ritual === 'breathing' ? 'Deep Breathing Exercise' : 
            ritual === 'meditation' ? 'Mindfulness Meditation' : 
            'Positive Affirmations'}
         </h2>
       </div>
       
-      <div className="min-h-[320px] mb-4 flex items-center justify-center relative">
+      <div className="min-h-[260px] md:min-h-[320px] mb-2 md:mb-4 flex items-center justify-center relative">
         <RitualContent 
           ritual={ritual}
           step={step}
@@ -132,7 +152,7 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
         />
       </div>
       
-      <div className="p-6">
+      <div className="p-4 md:p-6">
         <RitualControls 
           timeLeft={timeLeft}
           totalTime={getRitualDuration(ritual)}

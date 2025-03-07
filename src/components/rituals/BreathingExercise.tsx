@@ -17,6 +17,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [animationSize, setAnimationSize] = useState<number>(100);
   const [glowIntensity, setGlowIntensity] = useState<number>(0);
+  const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
   
   const audioInstructions = {
     1: "Inhale slowly through your nose for 4 seconds",
@@ -41,28 +42,41 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
     }
   }, [step]);
   
+  // Improved syncing of voice with animations
+  useEffect(() => {
+    // Cancel any previous speech when step changes or component unmounts
+    return () => {
+      if (window.speechSynthesis && speechRef.current) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+  
   useEffect(() => {
     if (isActive && window.speechSynthesis) {
-      // Cancel any ongoing speech
+      // Cancel any ongoing speech when step changes
       window.speechSynthesis.cancel();
       
       // Create a new utterance for the current step
       const utterance = new SpeechSynthesisUtterance(audioInstructions[step as keyof typeof audioInstructions]);
-      utterance.rate = 0.7; // Slower for a calmer pace
+      utterance.rate = 0.8; // Slower for better clarity
       utterance.pitch = 0.85; // Lower pitch for relaxation
-      utterance.volume = 0.85; // Slightly lower volume for gentleness
+      utterance.volume = 0.9; // Slightly higher volume for clarity
       
-      // Play the audio instruction
-      window.speechSynthesis.speak(utterance);
+      // Store reference to current utterance
+      speechRef.current = utterance;
+      
+      // Short delay to ensure animation and speech are in sync
+      const timer = setTimeout(() => {
+        // Play the audio instruction
+        window.speechSynthesis.speak(utterance);
+      }, 200);
+      
+      return () => {
+        clearTimeout(timer);
+      };
     }
-    
-    return () => {
-      // Clean up on component unmount or step change
-      if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, [step, isActive]);
+  }, [step, isActive, audioInstructions]);
   
   return (
     <div className="text-center">
@@ -75,11 +89,11 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
         }}
       />
       
-      <div className="text-3xl font-light mb-6 text-white transition-all duration-500">
+      <div className="text-2xl md:text-3xl font-light mb-4 md:mb-6 text-white transition-all duration-500">
         {instructions[step - 1]}
       </div>
       
-      <div className="relative w-64 h-64 mx-auto mb-8">
+      <div className="relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-6 md:mb-8">
         {/* Floating clouds in background */}
         <div className="absolute inset-0 flex items-center justify-center opacity-20">
           <Cloud className="absolute w-12 h-12 text-white animate-float" 
@@ -90,7 +104,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
         
         {/* Main breathing orb */}
         <div 
-          className="absolute rounded-full transition-all duration-4000 ease-in-out"
+          className="absolute rounded-full transition-all ease-in-out"
           style={{
             top: '50%',
             left: '50%',
@@ -100,12 +114,14 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
             opacity: 0.8,
             background: 'radial-gradient(circle, rgba(221,238,255,0.8) 0%, rgba(155,135,245,0.4) 100%)',
             boxShadow: `0 0 ${glowIntensity}px ${glowIntensity/2}px rgba(155, 135, 245, 0.6)`,
-            transition: 'all 4s cubic-bezier(0.4, 0, 0.2, 1)'
+            transition: step === 1 ? 'all 4s cubic-bezier(0.4, 0, 0.2, 1)' : 
+                       step === 2 ? 'all 0.5s ease' : 
+                       'all 6s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         />
         
         {/* Central instruction text */}
-        <div className="absolute inset-0 flex items-center justify-center text-xl font-medium text-white">
+        <div className="absolute inset-0 flex items-center justify-center text-lg md:text-xl font-medium text-white">
           <span className="bg-black/10 backdrop-blur-sm px-5 py-2 rounded-full transition-all duration-300">
             {step === 1 ? "Inhale" : step === 2 ? "Hold" : "Exhale"}
           </span>
@@ -113,9 +129,9 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
       </div>
       
       {/* Progress indicator */}
-      <div className="w-48 h-1.5 bg-white/20 rounded-full mx-auto mb-6 overflow-hidden">
+      <div className="w-32 md:w-48 h-1.5 bg-white/20 rounded-full mx-auto mb-4 md:mb-6 overflow-hidden">
         <div 
-          className={`h-full bg-white transition-all duration-300 ${
+          className={`h-full bg-white transition-all ${
             step === 1 ? 'animate-[grow_4s_ease-in-out]' : 
             step === 2 ? 'w-full' : 
             'animate-[shrink_6s_ease-in-out]'
@@ -126,13 +142,9 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
         />
       </div>
       
-      <p className="text-white/80 mb-6 max-w-md mx-auto font-light">
+      <p className="text-white/80 mb-4 md:mb-6 max-w-xs md:max-w-md mx-auto text-sm md:text-base font-light">
         Focus on your breath and clear your mind. This exercise helps reduce anxiety and improve concentration.
       </p>
-      
-      <audio ref={audioRef} className="hidden">
-        Your browser does not support the audio element.
-      </audio>
     </div>
   );
 };
