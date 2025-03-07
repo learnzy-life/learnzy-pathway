@@ -75,20 +75,20 @@ export const useTestActions = (
     if (sessionId) {
       completeTestSession(sessionId, questionResults)
         .then(() => {
-          // Navigate to results page with session ID
-          navigate(`/results/${subject}?sessionId=${sessionId}`)
+          // Navigate to analysis page instead of results page
+          navigate(`/analysis/${subject}?sessionId=${sessionId}`)
         })
         .catch((error) => {
           console.error('Error completing test session:', error)
           // Fallback to localStorage if database save fails
           localStorage.setItem('testResults', JSON.stringify(questionResults))
-          navigate(`/results/${subject}`)
+          navigate(`/analysis/${subject}`)
         })
     } else {
       // Fallback to localStorage if no session ID
       localStorage.setItem('testResults', JSON.stringify(questionResults))
       setTimeout(() => {
-        navigate(`/results/${subject}`)
+        navigate(`/analysis/${subject}`)
       }, 1500)
     }
   }
