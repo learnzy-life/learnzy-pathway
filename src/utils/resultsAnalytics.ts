@@ -1,3 +1,4 @@
+
 import { QuestionResult } from '../services/testSession';
 import { Subject } from '../services/questionService';
 
@@ -160,8 +161,14 @@ export const calculateAnalytics = (
   const chapterPerformance = new Map();
   
   userAnswers.forEach(answer => {
-    const questionDetail = questionMap.get(answer.id);
-    const chapter = questionDetail ? (questionDetail.Chapter_name || 'Unknown') : 'Unknown';
+    // First try to get chapter from the answer object itself (which should now have all metadata)
+    let chapter = answer.Chapter_name || 'Unknown';
+    
+    // If not found in the answer object, try to get it from questionMap
+    if (chapter === 'Unknown') {
+      const questionDetail = questionMap.get(answer.id);
+      chapter = questionDetail ? (questionDetail.Chapter_name || 'Unknown') : 'Unknown';
+    }
     
     if (!chapterPerformance.has(chapter)) {
       chapterPerformance.set(chapter, { 
