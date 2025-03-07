@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { Subject } from '../services/questionService';
 import { getTestSession } from '../services/testSession';
 import { supabase } from '../lib/supabase';
-import { calculateAnalytics, QueryResult, ResultsData } from '../utils/resultsAnalytics';
+import { calculateAnalytics, QueryResult, ResultsData } from '../utils/analytics';
 import { calculateMindsetMetrics, MindsetMetrics } from '../utils/mindsetMetricsService';
 
 export const useResultsData = (subject: Subject | undefined, sessionId: string | null) => {
