@@ -32,8 +32,8 @@ const PreTestContent: React.FC<PreTestContentProps> = ({
     handleRitualComplete,
   } = usePreTestState();
 
-  // Filter out "Quick Mindful" from rituals
-  const rituals = getRitualOptions().filter(r => r.id !== 'quickMindful');
+  // Only show breathing, affirmation, and "none" options
+  const rituals = getRitualOptions().filter(r => r.id === 'breathing' || r.id === 'affirmation' || r.id === 'none');
 
   // Encouraging messages when users skip analysis
   const encouragingMessages = [

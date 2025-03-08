@@ -24,7 +24,7 @@ const BreathingInstructions: React.FC<BreathingInstructionsProps> = ({ step }) =
       </p>
       
       <div className="opacity-60 text-white text-sm px-3 py-1.5 bg-white/10 rounded-full inline-block">
-        Playing calming music 🎵
+        Calming music playing 🎵
       </div>
     </>
   );

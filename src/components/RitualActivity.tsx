@@ -33,16 +33,12 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
     setAffirmationSpoken
   } = useSpeechRecognition();
   
-  // Ritual completion hook
-  const { handleComplete } = useRitualCompletion({
-    ritual,
-    subject,
-    mood,
-    initialTime,
-    timeLeft,
-    actualDuration,
-    onComplete
-  });
+  // Define handleComplete callback
+  const handleComplete = () => {
+    if (ritual && mood) {
+      onComplete();
+    }
+  };
   
   // Custom timer hook
   const { timeLeft, step, actualDuration, resetTimer, initialTime } = useRitualTimer({

@@ -16,14 +16,23 @@ export const useBreathingMusic = ({ isActive }: UseBreathingMusicProps) => {
       audioRef.current.loop = true;
       audioRef.current.volume = 0.4;
       
-      // Mock URL - in production this would be a real calming music track
-      // Using a placeholder that doesn't actually play for this example
-      audioRef.current.src = "https://example.com/calming-music.mp3";
+      // Use an actual calming music file that exists (royalty-free from Mixkit)
+      audioRef.current.src = "https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3";
     }
     
     // Start music based on active state - music is non-optional
     if (isActive) {
-      audioRef.current.play().catch(e => console.log('Audio play error (expected in some browsers):', e));
+      const playPromise = audioRef.current.play();
+      
+      // Handle play() promise to prevent uncaught rejection errors
+      if (playPromise !== undefined) {
+        playPromise.catch(e => {
+          console.log('Audio play error (expected in some browsers):', e);
+        });
+      }
+    } else {
+      // Pause when not active
+      audioRef.current.pause();
     }
     
     return () => {
