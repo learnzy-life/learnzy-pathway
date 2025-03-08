@@ -33,13 +33,6 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
     setAffirmationSpoken
   } = useSpeechRecognition();
   
-  // Custom timer hook
-  const { timeLeft, step, actualDuration, resetTimer, initialTime } = useRitualTimer({
-    ritual,
-    isActive,
-    onComplete: handleComplete
-  });
-  
   // Ritual completion hook
   const { handleComplete } = useRitualCompletion({
     ritual,
@@ -49,6 +42,13 @@ const RitualActivity: React.FC<RitualActivityProps> = ({ ritual, mood, subject, 
     timeLeft,
     actualDuration,
     onComplete
+  });
+  
+  // Custom timer hook
+  const { timeLeft, step, actualDuration, resetTimer, initialTime } = useRitualTimer({
+    ritual,
+    isActive,
+    onComplete: handleComplete
   });
   
   // Start automatically after a short delay
