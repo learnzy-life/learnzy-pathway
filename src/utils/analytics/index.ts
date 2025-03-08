@@ -52,8 +52,8 @@ export const calculateAnalytics = (
   // Get topic analysis
   const topics = calculateTopicAnalysis(userAnswers, questionMap);
   
-  // Get time analysis
-  const timeAnalysis = calculateTimeAnalysis(userAnswers, questionMap);
+  // Get time analysis - pass the subject to ensure correct time limits
+  const timeAnalysis = calculateTimeAnalysis(userAnswers, questionMap, subj);
   
   // Get default data for other sections
   const cognitiveInsights = getDefaultCognitiveInsights();

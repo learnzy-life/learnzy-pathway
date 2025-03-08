@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import MoodSelector from '../../../components/MoodSelector';
 import PreRitualCard from '../../../components/PreRitualCard';
 import RitualActivity from '../../../components/RitualActivity';
@@ -8,6 +8,7 @@ import { Subject, PreRitual, getRitualOptions } from '../utils/subjectUtils';
 import { usePreTestState } from '../hooks/usePreTestState';
 import StartTestButton from './StartTestButton';
 import TestInformation from './TestInformation';
+import { toast } from 'sonner';
 
 interface PreTestContentProps {
   subject: Subject;
@@ -31,7 +32,33 @@ const PreTestContent: React.FC<PreTestContentProps> = ({
     handleRitualComplete,
   } = usePreTestState();
 
-  const rituals = getRitualOptions();
+  // Filter out "Quick Mindful" from rituals
+  const rituals = getRitualOptions().filter(r => r.id !== 'quickMindful');
+
+  // Encouraging messages when users skip analysis
+  const encouragingMessages = [
+    "90% of users felt more confident after completing a pre-test ritual.",
+    "Students who use breathing exercises score 15% higher on average!",
+    "Taking a moment for meditation can improve focus by up to 25%.",
+    "Positive affirmations have been shown to reduce test anxiety by 40%.",
+    "Over 75% of top performers use mental preparation techniques before tests."
+  ];
+
+  // Show a random encouraging message when user selects 'none'
+  const handleRitualSkip = (selectedRitual: PreRitual) => {
+    if (selectedRitual === 'none') {
+      const randomMessage = encouragingMessages[Math.floor(Math.random() * encouragingMessages.length)];
+      toast(
+        <div className="flex flex-col">
+          <h3 className="font-semibold mb-1">Pre-test ritual skipped</h3>
+          <p className="text-sm">{randomMessage}</p>
+          <p className="text-xs mt-2 opacity-75">You can always try a ritual before your next test!</p>
+        </div>
+      );
+    }
+    
+    handleRitualSelect(selectedRitual);
+  };
 
   return (
     <>
@@ -77,7 +104,7 @@ const PreTestContent: React.FC<PreTestContentProps> = ({
                 description={item.description}
                 icon={item.icon}
                 duration={item.duration}
-                onClick={() => handleRitualSelect(item.id as PreRitual)}
+                onClick={() => handleRitualSkip(item.id as PreRitual)}
                 selected={ritual === item.id}
               />
             ))}

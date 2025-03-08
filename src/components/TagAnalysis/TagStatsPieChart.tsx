@@ -3,18 +3,18 @@ import React from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
 import { tagOptions } from '../../pages/PreAnalysis/constants/tagOptions'
 
-// Define tag colors
+// Define tag colors with a new color scheme
 const COLORS = [
   '#FFBD59', // Our brand color
-  '#E6A64E',
-  '#CC8F43',
-  '#B37938',
-  '#996E3A',
-  '#805A31',
-  '#664627',
-  '#4D331E',
-  '#331F14',
-  '#1A0A0A',
+  '#F97316', // Bright Orange
+  '#F59E0B', // Amber
+  '#EAB308', // Yellow
+  '#84CC16', // Lime
+  '#10B981', // Emerald
+  '#06B6D4', // Cyan
+  '#0EA5E9', // Sky
+  '#8B5CF6', // Violet
+  '#D946EF', // Fuchsia
 ]
 
 interface TagStatsData {

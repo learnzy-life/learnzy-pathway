@@ -59,7 +59,7 @@ const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ topics, isFirstTest = f
     }
   };
 
-  // Check if any topic has previous data
+  // Check if any topic has previous data (and it's not the first test)
   const hasPreviousData = !isFirstTest && topics.some(topic => topic.previousPercentage !== undefined);
 
   return (
