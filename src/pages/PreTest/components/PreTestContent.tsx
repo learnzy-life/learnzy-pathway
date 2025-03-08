@@ -50,17 +50,38 @@ const PreTestContent: React.FC<PreTestContentProps> = ({
       const randomMessage = encouragingMessages[Math.floor(Math.random() * encouragingMessages.length)];
       toast(
         <div className="flex flex-col items-center">
-          <h3 className="font-semibold mb-2 text-lg text-center">Pre-test ritual skipped</h3>
+          <h3 className="font-semibold mb-2 text-xl text-center">Pre-test ritual skipped</h3>
           <p className="text-base text-center font-medium">{randomMessage}</p>
           <p className="text-sm mt-3 opacity-75 text-center">You can always try a ritual before your next test!</p>
+          <div className="flex gap-3 mt-4">
+            <button 
+              onClick={() => {
+                toast.dismiss();
+                handleRitualSelect('breathing');
+              }}
+              className="px-4 py-2 bg-learnzy-purple text-white rounded-md hover:bg-learnzy-purple/90 transition-colors"
+            >
+              Let's be confident!
+            </button>
+            <button
+              onClick={() => {
+                toast.dismiss();
+                handleRitualSelect('none');
+              }}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
+            >
+              Still skip
+            </button>
+          </div>
         </div>,
         {
-          duration: 5000,
+          duration: 10000,
           className: "max-w-md mx-auto",
           position: "top-center",
-          style: { padding: "1.25rem" }
+          style: { padding: "1.5rem" }
         }
       );
+      return; // Don't proceed with ritual selection yet until user confirms in the toast
     }
     
     handleRitualSelect(selectedRitual);

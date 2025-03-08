@@ -22,10 +22,11 @@ export const useRitualTimer = ({ ritual, isActive, onComplete }: UseRitualTimerP
         setTimeLeft(prevTime => {
           const newTime = prevTime - 1;
           
-          // For breathing exercise, change instructions every few seconds
+          // For breathing exercise, change instructions according to 4-4-4-4 pattern
           if (ritual === 'breathing') {
+            // Count down 4 seconds for each step in the box breathing pattern
             if (newTime % 4 === 0) {
-              setStep(prevStep => (prevStep % 3) + 1);
+              setStep(prevStep => (prevStep % 4) + 1);
             }
           }
 

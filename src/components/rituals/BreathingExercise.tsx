@@ -1,5 +1,6 @@
+
 import React, { useEffect, useRef, useState } from 'react';
-import { Cloud } from 'lucide-react';
+import { Cloud, Music } from 'lucide-react';
 
 interface BreathingExerciseProps {
   step: number;
@@ -10,32 +11,65 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
   const instructions = [
     "Inhale slowly...",
     "Hold gently...",
-    "Exhale completely..."
+    "Exhale completely...",
+    "Pause briefly..."
   ];
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [animationSize, setAnimationSize] = useState<number>(100);
   const [glowIntensity, setGlowIntensity] = useState<number>(0);
+  const [musicPlaying, setMusicPlaying] = useState<boolean>(true);
   const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
   
   const audioInstructions = {
-    1: "Inhale slowly through your nose for 4 seconds",
+    1: "Inhale deeply through your nose for 4 seconds",
     2: "Hold your breath gently for 4 seconds",
-    3: "Exhale completely through your mouth for 6 seconds" 
+    3: "Exhale completely through your mouth for 4 seconds",
+    4: "Pause for 4 seconds before beginning again"
   };
+  
+  // Initialize calming background music
+  useEffect(() => {
+    // Create audio element for background music
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.3;
+      
+      // Mock URL - in production this would be a real calming music track
+      // Using a placeholder that doesn't actually play for this example
+      audioRef.current.src = "https://example.com/calming-music.mp3";
+    }
+    
+    // Start or stop music based on active state and music setting
+    if (isActive && musicPlaying) {
+      audioRef.current.play().catch(e => console.log('Audio play error (expected in some browsers):', e));
+    }
+    
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, [isActive, musicPlaying]);
   
   // Control the breathing animation size and glow
   useEffect(() => {
     if (step === 1) {
       // Breathe in - expand with increasing glow
-      setAnimationSize(150);
-      setGlowIntensity(25);
+      setAnimationSize(160);
+      setGlowIntensity(30);
     } else if (step === 2) {
       // Hold - stay expanded with gentle pulse
-      setAnimationSize(150);
-      setGlowIntensity(20);
+      setAnimationSize(160);
+      setGlowIntensity(25);
     } else if (step === 3) {
       // Breathe out - contract with fading glow
+      setAnimationSize(100);
+      setGlowIntensity(15);
+    } else if (step === 4) {
+      // Pause - remain small with minimal glow
       setAnimationSize(100);
       setGlowIntensity(5);
     }
@@ -90,6 +124,18 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
     }
   }, [step, isActive, audioInstructions]);
   
+  const toggleMusic = () => {
+    setMusicPlaying(!musicPlaying);
+    
+    if (audioRef.current) {
+      if (musicPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(e => console.log('Audio play error:', e));
+      }
+    }
+  };
+  
   return (
     <div className="text-center">
       {/* Calm background with gradient */}
@@ -112,6 +158,8 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
             style={{ top: '15%', left: '20%', animationDelay: '0.5s' }} />
           <Cloud className="absolute w-10 h-10 text-white animate-float" 
             style={{ top: '60%', left: '70%', animationDelay: '1.2s' }} />
+          <Cloud className="absolute w-8 h-8 text-white animate-float" 
+            style={{ top: '30%', left: '50%', animationDelay: '2.5s' }} />
         </div>
         
         {/* Main breathing orb */}
@@ -128,14 +176,15 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
             boxShadow: `0 0 ${glowIntensity}px ${glowIntensity/2}px rgba(155, 135, 245, 0.6)`,
             transition: step === 1 ? 'all 4s cubic-bezier(0.4, 0, 0.2, 1)' : 
                        step === 2 ? 'all 0.5s ease' : 
-                       'all 6s cubic-bezier(0.4, 0, 0.2, 1)'
+                       step === 3 ? 'all 4s cubic-bezier(0.4, 0, 0.2, 1)' :
+                       'all 0.5s ease'
           }}
         />
         
         {/* Central instruction text */}
         <div className="absolute inset-0 flex items-center justify-center text-lg md:text-xl font-medium text-white">
           <span className="bg-black/10 backdrop-blur-sm px-5 py-2 rounded-full transition-all duration-300">
-            {step === 1 ? "Inhale" : step === 2 ? "Hold" : "Exhale"}
+            {step === 1 ? "Inhale" : step === 2 ? "Hold" : step === 3 ? "Exhale" : "Pause"}
           </span>
         </div>
       </div>
@@ -146,17 +195,27 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
           className={`h-full bg-white transition-all ${
             step === 1 ? 'animate-[grow_4s_ease-in-out]' : 
             step === 2 ? 'w-full' : 
-            'animate-[shrink_6s_ease-in-out]'
+            step === 3 ? 'animate-[shrink_4s_ease-in-out]' :
+            'w-0'
           }`}
           style={{ 
-            width: step === 1 ? '100%' : step === 2 ? '100%' : '0%',
+            width: step === 1 ? '100%' : step === 2 ? '100%' : step === 3 ? '0%' : '0%',
           }}
         />
       </div>
       
       <p className="text-white/80 mb-4 md:mb-6 max-w-xs md:max-w-md mx-auto text-sm md:text-base font-light">
-        Focus on your breath and clear your mind. This exercise helps reduce anxiety and improve concentration.
+        Follow the 4-4-4-4 box breathing technique. This calming exercise reduces anxiety and improves focus before your test.
       </p>
+      
+      {/* Music toggle button */}
+      <button 
+        onClick={toggleMusic}
+        className="flex items-center mx-auto bg-white/10 hover:bg-white/20 rounded-full px-3 py-1.5 text-white text-sm transition-colors"
+      >
+        <Music className="w-4 h-4 mr-1" />
+        {musicPlaying ? "Mute Music" : "Play Music"}
+      </button>
     </div>
   );
 };
