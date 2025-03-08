@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Cloud, Music } from 'lucide-react';
+import { Cloud } from 'lucide-react';
 
 interface BreathingExerciseProps {
   step: number;
@@ -18,15 +18,6 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [animationSize, setAnimationSize] = useState<number>(100);
   const [glowIntensity, setGlowIntensity] = useState<number>(0);
-  const [musicPlaying, setMusicPlaying] = useState<boolean>(true);
-  const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
-  
-  const audioInstructions = {
-    1: "Inhale deeply through your nose for 4 seconds",
-    2: "Hold your breath gently for 4 seconds",
-    3: "Exhale completely through your mouth for 4 seconds",
-    4: "Pause for 4 seconds before beginning again"
-  };
   
   // Initialize calming background music
   useEffect(() => {
@@ -34,15 +25,15 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
     if (!audioRef.current) {
       audioRef.current = new Audio();
       audioRef.current.loop = true;
-      audioRef.current.volume = 0.3;
+      audioRef.current.volume = 0.4;
       
       // Mock URL - in production this would be a real calming music track
       // Using a placeholder that doesn't actually play for this example
       audioRef.current.src = "https://example.com/calming-music.mp3";
     }
     
-    // Start or stop music based on active state and music setting
-    if (isActive && musicPlaying) {
+    // Start music based on active state - music is non-optional
+    if (isActive) {
       audioRef.current.play().catch(e => console.log('Audio play error (expected in some browsers):', e));
     }
     
@@ -52,7 +43,7 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
         audioRef.current.currentTime = 0;
       }
     };
-  }, [isActive, musicPlaying]);
+  }, [isActive]);
   
   // Control the breathing animation size and glow
   useEffect(() => {
@@ -74,67 +65,6 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
       setGlowIntensity(5);
     }
   }, [step]);
-  
-  // Improved syncing of voice with animations
-  useEffect(() => {
-    // Cancel any previous speech when step changes or component unmounts
-    return () => {
-      if (window.speechSynthesis && speechRef.current) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
-  
-  useEffect(() => {
-    if (isActive && window.speechSynthesis) {
-      // Mobile Safari and some Android browsers need user interaction
-      // before allowing speech synthesis to work properly
-      try {
-        // Cancel any ongoing speech when step changes
-        window.speechSynthesis.cancel();
-        
-        // Create a new utterance for the current step
-        const utterance = new SpeechSynthesisUtterance(audioInstructions[step as keyof typeof audioInstructions]);
-        utterance.rate = 0.8; // Slower for better clarity
-        utterance.pitch = 0.85; // Lower pitch for relaxation
-        utterance.volume = 1.0; // Full volume for mobile devices
-        
-        // Store reference to current utterance
-        speechRef.current = utterance;
-        
-        // Short delay to ensure animation and speech are in sync
-        const timer = setTimeout(() => {
-          // Some mobile browsers pause speech synthesis when the app is in background
-          // This is a workaround to keep it active
-          if (window.speechSynthesis.speaking) {
-            window.speechSynthesis.pause();
-            window.speechSynthesis.resume();
-          }
-          
-          // Play the audio instruction
-          window.speechSynthesis.speak(utterance);
-        }, 200);
-        
-        return () => {
-          clearTimeout(timer);
-        };
-      } catch (err) {
-        console.error("Speech synthesis error:", err);
-      }
-    }
-  }, [step, isActive, audioInstructions]);
-  
-  const toggleMusic = () => {
-    setMusicPlaying(!musicPlaying);
-    
-    if (audioRef.current) {
-      if (musicPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play().catch(e => console.log('Audio play error:', e));
-      }
-    }
-  };
   
   return (
     <div className="text-center">
@@ -208,14 +138,9 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
         Follow the 4-4-4-4 box breathing technique. This calming exercise reduces anxiety and improves focus before your test.
       </p>
       
-      {/* Music toggle button */}
-      <button 
-        onClick={toggleMusic}
-        className="flex items-center mx-auto bg-white/10 hover:bg-white/20 rounded-full px-3 py-1.5 text-white text-sm transition-colors"
-      >
-        <Music className="w-4 h-4 mr-1" />
-        {musicPlaying ? "Mute Music" : "Play Music"}
-      </button>
+      <div className="opacity-60 text-white text-sm px-3 py-1.5 bg-white/10 rounded-full inline-block">
+        Playing calming music 🎵
+      </div>
     </div>
   );
 };

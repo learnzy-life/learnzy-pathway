@@ -18,6 +18,8 @@ export const useRitualTimer = ({ ritual, isActive, onComplete }: UseRitualTimerP
     let interval: NodeJS.Timeout | null = null;
     
     if (isActive && timeLeft > 0) {
+      // For affirmations, we'll still track time but won't use it as a hard limit
+      // Instead, we'll rely on the user completing the affirmations
       interval = setInterval(() => {
         setTimeLeft(prevTime => {
           const newTime = prevTime - 1;
@@ -33,10 +35,18 @@ export const useRitualTimer = ({ ritual, isActive, onComplete }: UseRitualTimerP
           // Track actual time spent on ritual
           setActualDuration(prev => prev + 1);
           
+          // For affirmations, don't automatically complete - user completes by doing the affirmations
+          // For other rituals, complete when time is up
+          if (newTime <= 0 && ritual !== 'affirmation') {
+            if (interval) clearInterval(interval);
+            onComplete();
+            return 0;
+          }
+          
           return newTime;
         });
       }, 1000);
-    } else if (timeLeft === 0 && isActive) {
+    } else if (timeLeft === 0 && isActive && ritual !== 'affirmation') {
       onComplete();
     }
     
