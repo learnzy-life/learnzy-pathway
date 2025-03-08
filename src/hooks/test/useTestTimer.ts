@@ -1,11 +1,15 @@
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
+import { Subject } from '../../pages/PreTest/utils/subjectUtils';
 
 export const useTestTimer = (
   initialTime: number,
-  onTimeExpired: () => void
+  onTimeExpired: () => void,
+  subject?: Subject
 ): [number, (seconds: number) => string] => {
-  const [timeRemaining, setTimeRemaining] = useState(initialTime)
+  // Apply subject-based time limit if provided
+  const subjectBasedTime = subject === 'biology' ? 90 * 60 : initialTime;
+  const [timeRemaining, setTimeRemaining] = useState(subject ? subjectBasedTime : initialTime);
 
   useEffect(() => {
     const timer = setInterval(() => {

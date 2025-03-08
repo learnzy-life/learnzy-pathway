@@ -11,11 +11,15 @@ export interface TimeData {
 
 export const calculateTimeAnalysis = (
   userAnswers: QuestionResult[],
-  questionMap: Map<number, QueryResult>
+  questionMap: Map<number, QueryResult>,
+  subject?: string
 ) => {
   // Calculate total time spent
   const totalTimeSeconds = userAnswers.reduce((sum, q) => sum + (q.timeTaken || 0), 0);
   const timeSpent = formatTime(totalTimeSeconds);
+  
+  // Set the allowed time based on the subject
+  const allowedTime = subject === 'biology' ? "1h 30m" : "3h 0m";
   
   // Calculate the ideal time from the question details
   let idealTimeSeconds = 0;
@@ -70,7 +74,7 @@ export const calculateTimeAnalysis = (
   
   return {
     timeSpent,
-    allowedTime: "3h 0m", // Default test time
+    allowedTime,
     idealTime,
     timeSummary: "Your time management shows a good balance between speed and thoroughness.",
     slowQuestions,

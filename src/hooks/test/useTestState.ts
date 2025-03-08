@@ -28,7 +28,8 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
     handleSubmitClick,
   } = useTestActions(subject, questions, setQuestions, sessionId, startTime)
 
-  const [timeRemaining, formatTime] = useTestTimer(180 * 60, handleSubmitTest)
+  // Pass subject to useTestTimer to set the correct time limit
+  const [timeRemaining, formatTime] = useTestTimer(180 * 60, handleSubmitTest, subject)
 
   return [
     {
