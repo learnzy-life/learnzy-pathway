@@ -63,3 +63,41 @@ export const updateQuestionTags = async (
     return false
   }
 }
+
+// Get tag statistics from a test session
+export const getTagStatistics = async (sessionId: string): Promise<Record<string, number>> => {
+  try {
+    // First get the current session data
+    const { data: sessionData, error: fetchError } = await supabase
+      .from('test_sessions')
+      .select('questions_data')
+      .eq('id', sessionId)
+      .single()
+
+    if (fetchError) {
+      console.error('Error fetching test session:', fetchError)
+      return {}
+    }
+
+    // Ensure questions_data is an array
+    const questionsData = Array.isArray(sessionData.questions_data) 
+      ? sessionData.questions_data 
+      : []
+
+    // Count occurrences of each tag
+    const tagCounts: Record<string, number> = {}
+    
+    questionsData.forEach((question: QuestionResult) => {
+      if (Array.isArray(question.tags)) {
+        question.tags.forEach(tag => {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1
+        })
+      }
+    })
+
+    return tagCounts
+  } catch (err) {
+    console.error('Unexpected error getting tag statistics:', err)
+    return {}
+  }
+}

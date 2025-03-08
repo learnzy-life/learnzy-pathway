@@ -90,7 +90,7 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeAnalysis }) => 
             <Bar
               dataKey="yourTime"
               name="Your Time"
-              fill="#4F46E5"
+              fill="#FFBD59"
               radius={[4, 4, 0, 0]}
             />
             <Bar
@@ -114,7 +114,7 @@ const renderTimeTooltip = (props: any) => {
     return (
       <div className="bg-white p-3 border border-gray-200 shadow-lg rounded-md">
         <p className="font-medium">{payload[0].payload.question}</p>
-        <p className="text-sm text-indigo-600">Your Time: {payload[0].value} seconds</p>
+        <p className="text-sm text-amber-600">Your Time: {payload[0].value} seconds</p>
         <p className="text-sm text-green-600">Ideal Time: {payload[1].value} seconds</p>
       </div>
     );

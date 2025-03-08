@@ -34,8 +34,10 @@ export const calculateTimeAnalysis = (
     const questionDetail = questionMap.get(answer.id);
     // Use the actual time_to_solve value from the database without any default value
     // The default value will only be applied if getTimeToSolve doesn't find a value
-    const idealTime = questionDetail ? getTimeToSolve(questionDetail) : 0;
+    const idealTime = questionDetail ? getTimeToSolve(questionDetail) : 60;
     const actualTime = answer.timeTaken || 0;
+    
+    console.log(`Question ${answer.id}: actualTime=${actualTime}, idealTime=${idealTime}`);
     
     // Identify slow and quick questions based on actual vs ideal time
     if (actualTime >= idealTime * 1.5 && idealTime > 0) {
@@ -50,6 +52,8 @@ export const calculateTimeAnalysis = (
       idealTime: idealTime
     };
   });
+  
+  console.log("Generated timeData:", timeData);
   
   // Generate time management feedback
   let timeFeedback = "";

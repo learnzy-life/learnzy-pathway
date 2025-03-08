@@ -5,7 +5,8 @@ import {
   CheckCircle2, 
   Clock, 
   BarChart, 
-  Book
+  Book,
+  PieChart
 } from 'lucide-react';
 
 import { getSubjectTitle } from '../data/mockResultsData';
@@ -17,6 +18,7 @@ import ImprovementResources from '../components/ImprovementResources';
 import SectionHeader from '../components/SectionHeader';
 import NextStepsSection from '../components/NextStepsSection';
 import ResultsLoadingState from '../components/ResultsLoadingState';
+import TagAnalysis from '../components/TagAnalysis';
 import { useResultsData } from '../hooks/useResultsData';
 import { Subject } from '../services/questionService';
 
@@ -75,7 +77,6 @@ const Results: React.FC = () => {
       totalActions: 3,
       difficultyLevel: topic.difficultyLevel,
       priorityLevel: topic.priorityLevel
-      // priorityScore removed from the object
     };
   });
 
@@ -105,6 +106,14 @@ const Results: React.FC = () => {
           title="Time Management" 
         />
         <TimeAnalysis timeAnalysis={resultsData.timeAnalysis} />
+      </div>
+      
+      <div className="mb-12">
+        <SectionHeader 
+          icon={PieChart} 
+          title="Mistake Pattern Analysis" 
+        />
+        <TagAnalysis sessionId={sessionId} />
       </div>
       
       <div className="mb-12">
