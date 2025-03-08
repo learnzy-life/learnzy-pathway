@@ -49,11 +49,17 @@ const PreTestContent: React.FC<PreTestContentProps> = ({
     if (selectedRitual === 'none') {
       const randomMessage = encouragingMessages[Math.floor(Math.random() * encouragingMessages.length)];
       toast(
-        <div className="flex flex-col">
-          <h3 className="font-semibold mb-1">Pre-test ritual skipped</h3>
-          <p className="text-sm">{randomMessage}</p>
-          <p className="text-xs mt-2 opacity-75">You can always try a ritual before your next test!</p>
-        </div>
+        <div className="flex flex-col items-center">
+          <h3 className="font-semibold mb-2 text-lg text-center">Pre-test ritual skipped</h3>
+          <p className="text-base text-center font-medium">{randomMessage}</p>
+          <p className="text-sm mt-3 opacity-75 text-center">You can always try a ritual before your next test!</p>
+        </div>,
+        {
+          duration: 5000,
+          className: "max-w-md mx-auto",
+          position: "top-center",
+          style: { padding: "1.25rem" }
+        }
       );
     }
     

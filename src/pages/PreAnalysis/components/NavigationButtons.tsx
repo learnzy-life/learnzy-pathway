@@ -31,7 +31,7 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
 
       <button
         onClick={onSubmitAnalysis}
-        className="button-secondary ml-auto mr-2"
+        className="button-secondary ml-auto mr-2 hover:bg-learnzy-amber/10"
       >
         Skip Analysis
       </button>
