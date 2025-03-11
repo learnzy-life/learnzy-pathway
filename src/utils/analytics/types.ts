@@ -141,4 +141,6 @@ export interface ResultsData {
     insights: string[];
     improvements: string[];
   };
+  // Add the questions property to store test question data for review
+  questions?: QuestionResult[];
 }
