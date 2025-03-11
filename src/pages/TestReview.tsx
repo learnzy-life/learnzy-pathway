@@ -28,30 +28,35 @@ const TestReview: React.FC = () => {
       setLoading(true)
       
       if (sessionId) {
-        const session = await getTestSession(sessionId)
-        if (session && session.questions) {
-          // Sort questions by ID for ascending numerical order
-          const sortedQuestions = [...session.questions].sort((a, b) => a.id - b.id)
-          
-          // Add options to each question based on the A, B, C, D format
-          const questionsWithOptions = sortedQuestions.map(q => {
-            // Create options array for each question
-            const options: QuestionOption[] = [
-              { id: 'A', text: q.Option_A || '' },
-              { id: 'B', text: q.Option_B || '' },
-              { id: 'C', text: q.Option_C || '' },
-              { id: 'D', text: q.Option_D || '' },
-            ].filter(option => option.text !== ''); // Filter out empty options
+        try {
+          const session = await getTestSession(sessionId)
+          if (session && session.questions) {
+            // Sort questions by ID for ascending numerical order
+            const sortedQuestions = [...session.questions].sort((a, b) => a.id - b.id)
             
-            return {
-              ...q,
-              options
-            };
-          });
-          
-          setQuestions(questionsWithOptions)
-          setLoading(false)
-          return
+            // Add options to each question based on the A, B, C, D format
+            const questionsWithOptions = sortedQuestions.map(q => {
+              // Create options array for each question
+              const options: QuestionOption[] = [
+                { id: 'A', text: q.Option_A || '' },
+                { id: 'B', text: q.Option_B || '' },
+                { id: 'C', text: q.Option_C || '' },
+                { id: 'D', text: q.Option_D || '' },
+              ].filter(option => option.text !== ''); // Filter out empty options
+              
+              return {
+                ...q,
+                options
+              };
+            });
+            
+            setQuestions(questionsWithOptions)
+            setLoading(false)
+            return
+          }
+        } catch (error) {
+          console.error('Error fetching test session:', error)
+          // Continue to fallback method
         }
       }
 
