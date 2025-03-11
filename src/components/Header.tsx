@@ -24,8 +24,7 @@ const Header: React.FC = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Subjects', path: '/subjects' },
-    { name: 'Dashboard', path: '/dashboard' }
+    { name: 'Subjects', path: '/subjects' }
   ]
 
   return (
