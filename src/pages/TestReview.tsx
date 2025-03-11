@@ -8,6 +8,12 @@ import { getTestSession, QuestionResult } from '../services/testSession'
 import { Subject } from '../services/questionService'
 import { getSubjectTitle } from '../data/mockResultsData'
 
+// Define a local interface for question options
+interface QuestionOption {
+  id: string;
+  text: string;
+}
+
 const TestReview: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>()
   const [searchParams] = useSearchParams()
@@ -25,7 +31,24 @@ const TestReview: React.FC = () => {
         if (session && session.questions) {
           // Sort questions by ID for ascending numerical order
           const sortedQuestions = [...session.questions].sort((a, b) => a.id - b.id)
-          setQuestions(sortedQuestions)
+          
+          // Add options to each question based on the A, B, C, D format
+          const questionsWithOptions = sortedQuestions.map(q => {
+            // Create options array for each question
+            const options: QuestionOption[] = [
+              { id: 'A', text: q.Option_A || '' },
+              { id: 'B', text: q.Option_B || '' },
+              { id: 'C', text: q.Option_C || '' },
+              { id: 'D', text: q.Option_D || '' },
+            ].filter(option => option.text !== ''); // Filter out empty options
+            
+            return {
+              ...q,
+              options
+            };
+          });
+          
+          setQuestions(questionsWithOptions)
           setLoading(false)
           return
         }
@@ -37,7 +60,24 @@ const TestReview: React.FC = () => {
         try {
           const parsedResults = JSON.parse(storedResults)
           const sortedQuestions = [...parsedResults].sort((a, b) => a.id - b.id)
-          setQuestions(sortedQuestions)
+          
+          // Add options to each question from localStorage
+          const questionsWithOptions = sortedQuestions.map(q => {
+            // Create options array for each question
+            const options: QuestionOption[] = [
+              { id: 'A', text: q.Option_A || '' },
+              { id: 'B', text: q.Option_B || '' },
+              { id: 'C', text: q.Option_C || '' },
+              { id: 'D', text: q.Option_D || '' },
+            ].filter(option => option.text !== ''); // Filter out empty options
+            
+            return {
+              ...q,
+              options
+            };
+          });
+          
+          setQuestions(questionsWithOptions)
         } catch (error) {
           console.error('Error parsing stored results:', error)
           setQuestions([])

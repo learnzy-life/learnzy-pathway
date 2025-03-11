@@ -20,6 +20,13 @@ export interface QuestionResult {
   Time_to_Solve: number
   Key_Concept_Tested: string
   Common_Pitfalls: string
+  // Add option fields
+  Option_A?: string
+  Option_B?: string
+  Option_C?: string
+  Option_D?: string
+  // Add options array
+  options?: { id: string; text: string }[]
 }
 
 export interface TestSession {

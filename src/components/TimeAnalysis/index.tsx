@@ -31,7 +31,7 @@ const TimeAnalysis: React.FC<TimeAnalysisProps> = ({ timeAnalysis }) => {
 
       <TimeSummary summary={timeAnalysis.timeSummary} />
 
-      <TimeChartSection timeAnalysis={timeAnalysis} />
+      <TimeChartSection timeData={timeAnalysis.timeData || []} />
 
       <TimeBreakdownCards 
         slowQuestions={timeAnalysis.slowQuestions}

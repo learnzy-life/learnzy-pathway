@@ -3,6 +3,7 @@ import React from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ZAxis, Cell } from 'recharts';
 import { ArrowLeft, Clock, EyeIcon } from 'lucide-react';
+import { TimeData } from './types';
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
@@ -39,11 +40,7 @@ const formatTime = (seconds: number) => {
 };
 
 interface TimeChartSectionProps {
-  timeData: {
-    questionId: number;
-    actualTime: number;
-    idealTime: number;
-  }[];
+  timeData: TimeData[];
 }
 
 const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
@@ -51,22 +48,25 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('sessionId');
   
-  // Generate stats
-  const totalActualTime = timeData.reduce((sum, item) => sum + item.actualTime, 0);
-  const totalIdealTime = timeData.reduce((sum, item) => sum + item.idealTime, 0);
-  const avgTimePerQuestion = totalActualTime / (timeData.length || 1);
+  // Check if timeData exists and has elements
+  const hasTimeData = Array.isArray(timeData) && timeData.length > 0;
   
-  const slowerQuestions = timeData.filter(q => q.actualTime > q.idealTime).length;
-  const fasterQuestions = timeData.filter(q => q.actualTime <= q.idealTime).length;
+  // Generate stats safely
+  const totalActualTime = hasTimeData ? timeData.reduce((sum, item) => sum + item.actualTime, 0) : 0;
+  const totalIdealTime = hasTimeData ? timeData.reduce((sum, item) => sum + item.idealTime, 0) : 0;
+  const avgTimePerQuestion = hasTimeData ? totalActualTime / timeData.length : 0;
+  
+  const slowerQuestions = hasTimeData ? timeData.filter(q => q.actualTime > q.idealTime).length : 0;
+  const fasterQuestions = hasTimeData ? timeData.filter(q => q.actualTime <= q.idealTime).length : 0;
   
   // Find the extremes
-  const extremeQuestions = timeData
+  const extremeQuestions = hasTimeData ? timeData
     .map(q => ({
       ...q,
       timeDiff: q.actualTime - q.idealTime
     }))
     .sort((a, b) => Math.abs(b.timeDiff) - Math.abs(a.timeDiff))
-    .slice(0, 3);
+    .slice(0, 3) : [];
 
   return (
     <div className="card-glass p-6">
@@ -81,7 +81,7 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
       </div>
 
       <div className="h-72 mb-6">
-        {timeData.length > 0 ? (
+        {hasTimeData ? (
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart
               margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
