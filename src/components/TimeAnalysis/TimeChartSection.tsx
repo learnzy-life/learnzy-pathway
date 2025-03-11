@@ -78,9 +78,19 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({
 
   return (
     <>
-      <h4 className="text-base font-medium text-learnzy-dark mb-4">
-        Time Spent per Question
-      </h4>
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="text-base font-medium text-learnzy-dark">
+          Time Spent per Question
+        </h4>
+        <button
+          onClick={() => window.history.back()}
+          className="button-secondary text-sm flex items-center"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Review Test
+        </button>
+      </div>
+      
       <div className="h-72 mb-8">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart

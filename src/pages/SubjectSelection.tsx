@@ -1,10 +1,9 @@
-
 import React from 'react';
 import Header from '../components/Header';
 import SubjectCard from '../components/SubjectCard';
+import { format, addDays } from 'date-fns';
 
 const SubjectSelection: React.FC = () => {
-  // In a real app, this data would come from an API or context
   const subjects = [
     {
       id: 'biology',
@@ -35,6 +34,25 @@ const SubjectSelection: React.FC = () => {
     }
   ];
 
+  const mockTests = Array.from({ length: 20 }).map((_, index) => {
+    let unlockDate = null;
+    let isLocked = true;
+
+    if (index < 5) {
+      const dates = ['2024-03-22', '2024-03-24', '2024-03-26', '2024-03-28', '2024-03-30', '2024-04-01'];
+      unlockDate = dates[index];
+    } else {
+      isLocked = true;
+    }
+
+    return {
+      id: `mock-${index + 1}`,
+      title: `Mock Test ${index + 1}`,
+      isLocked,
+      unlockDate
+    };
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -50,7 +68,7 @@ const SubjectSelection: React.FC = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             {subjects.map((subject) => (
               <SubjectCard
                 key={subject.id}
@@ -63,6 +81,33 @@ const SubjectSelection: React.FC = () => {
                 locked={subject.locked}
               />
             ))}
+          </div>
+
+          <div className="mt-16">
+            <h2 className="text-2xl font-display font-bold text-center mb-8">
+              Mock Tests
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {mockTests.map((mock) => (
+                <div
+                  key={mock.id}
+                  className="bg-white rounded-lg p-4 border border-gray-100 hover:border-learnzy-purple/30 transition-all duration-200"
+                >
+                  <h3 className="font-medium text-learnzy-dark mb-2">{mock.title}</h3>
+                  {mock.unlockDate ? (
+                    <p className="text-sm text-amber-600">
+                      Unlocks on {format(new Date(mock.unlockDate), 'MMM dd, yyyy')}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      <span className="inline-flex items-center">
+                        🔒 Locked
+                      </span>
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </main>

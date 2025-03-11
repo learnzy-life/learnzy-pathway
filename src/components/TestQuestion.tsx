@@ -25,20 +25,24 @@ const TestQuestion: React.FC<QuestionProps> = ({
   isCurrentQuestion,
 }) => {
   const [timeSpent, setTimeSpent] = useState(0);
-  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    
     if (isCurrentQuestion) {
-      const interval = setInterval(() => {
+      // Reset timer when switching to a new question
+      setTimeSpent(0);
+      interval = setInterval(() => {
         setTimeSpent(prev => prev + 1);
       }, 1000);
-      setTimer(interval);
-      return () => clearInterval(interval);
-    } else if (timer) {
-      clearInterval(timer);
-      setTimer(null);
     }
-  }, [isCurrentQuestion]);
+    
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isCurrentQuestion, id]); // Added id to dependencies to reset on question change
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

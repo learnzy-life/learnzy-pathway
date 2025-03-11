@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Subject } from '../../services/questionService'
@@ -22,7 +23,7 @@ export const useTestActions = (
     timeTaken: number
   ) => {
     setQuestions((prev) =>
-      prev.map((q) => (q.id === questionId ? { ...q, answer: answerId } : q))
+      prev.map((q) => (q.id === questionId ? { ...q, answer: answerId, timeTaken } : q))
     )
     
     if (sessionId) {
