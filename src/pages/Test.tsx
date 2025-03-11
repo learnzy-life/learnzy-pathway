@@ -1,3 +1,4 @@
+
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import QuestionNavigation from '../components/QuestionNavigation'
@@ -31,8 +32,11 @@ const Test: React.FC = () => {
     },
   ] = useTestState(subject as Subject)
 
-  const currentQuestion = questions[currentQuestionIndex]
-  const answeredCount = questions.filter((q) => q.answer).length
+  // Sort questions by their ID to ensure numerical ascending order
+  const sortedQuestions = [...questions].sort((a, b) => a.id - b.id)
+  
+  const currentQuestion = sortedQuestions[currentQuestionIndex]
+  const answeredCount = sortedQuestions.filter((q) => q.answer).length
 
   if (isLoading) {
     return (
@@ -43,7 +47,7 @@ const Test: React.FC = () => {
     )
   }
 
-  if (questions.length === 0) {
+  if (sortedQuestions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         No questions available. Please try again later.
@@ -68,21 +72,21 @@ const Test: React.FC = () => {
       <TestHeader
         subject={subject || ''}
         answeredCount={answeredCount}
-        totalQuestions={questions.length}
+        totalQuestions={sortedQuestions.length}
         timeRemaining={timeRemaining}
         formatTime={formatTime}
       />
 
       <div className="flex flex-1 overflow-hidden">
         <QuestionNavigation
-          questions={questions}
+          questions={sortedQuestions}
           currentQuestionIndex={currentQuestionIndex}
           onJumpToQuestion={handleJumpToQuestion}
         />
 
         <div className="flex-1 overflow-y-auto pb-32">
           <div className="container mx-auto px-6 py-8 max-w-3xl">
-            {questions.map((question, index) => (
+            {sortedQuestions.map((question, index) => (
               <TestQuestion
                 key={question.id}
                 id={question.id}
@@ -99,7 +103,7 @@ const Test: React.FC = () => {
 
       <TestFooter
         currentQuestionIndex={currentQuestionIndex}
-        questionsLength={questions.length}
+        questionsLength={sortedQuestions.length}
         onPrevQuestion={handlePrevQuestion}
         onNextQuestion={handleNextQuestion}
         onSubmitClick={handleSubmitClick}
@@ -108,7 +112,7 @@ const Test: React.FC = () => {
       {showWarning && (
         <SubmitWarningDialog
           answeredCount={answeredCount}
-          totalQuestions={questions.length}
+          totalQuestions={sortedQuestions.length}
           onContinue={() => setShowWarning(false)}
           onSubmit={handleSubmitTest}
         />

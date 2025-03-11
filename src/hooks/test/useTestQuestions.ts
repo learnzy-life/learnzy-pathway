@@ -21,8 +21,11 @@ export const useTestQuestions = (
         // Load the questions first with full metadata
         const loadedQuestions = await fetchQuestions(subject)
         
+        // Sort questions by their ID to ensure numerical ascending order
+        const sortedQuestions = [...loadedQuestions].sort((a, b) => a.id - b.id)
+        
         // Ensure questions have all metadata fields with proper handling of lowercase column names for biology
-        const enhancedQuestions = loadedQuestions.map(q => {
+        const enhancedQuestions = sortedQuestions.map(q => {
           // For biology, use lowercase properties
           if (subject === 'biology') {
             return {

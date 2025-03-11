@@ -17,6 +17,9 @@ export const useTestActions = (
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showWarning, setShowWarning] = useState(false)
 
+  // Always work with sorted questions to ensure consistent ordering
+  const sortedQuestions = [...questions].sort((a, b) => a.id - b.id)
+
   const handleAnswerSelected = (
     questionId: number,
     answerId: string,
@@ -33,7 +36,7 @@ export const useTestActions = (
   }
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
+    if (currentQuestionIndex < sortedQuestions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1)
     }
   }
@@ -53,7 +56,7 @@ export const useTestActions = (
 
     const timeTaken = Math.floor((Date.now() - startTime) / 1000)
 
-    const questionResults = questions.map((q) => {
+    const questionResults = sortedQuestions.map((q) => {
       const isCorrect =
         q.answer && q.correctAnswer ? q.answer === q.correctAnswer : false
 
@@ -63,7 +66,7 @@ export const useTestActions = (
         userAnswer: q.answer || null,
         correctAnswer: q.correctAnswer || '',
         isCorrect,
-        timeTaken: q.timeTaken || timeTaken / questions.length,
+        timeTaken: q.timeTaken || timeTaken / sortedQuestions.length,
         tags: [],
         Subject: q.Subject || '',
         Chapter_name: q.Chapter_name || '',
@@ -98,8 +101,8 @@ export const useTestActions = (
   }
 
   const handleSubmitClick = () => {
-    const answeredCount = questions.filter((q) => q.answer).length
-    if (answeredCount < questions.length * 0.5) {
+    const answeredCount = sortedQuestions.filter((q) => q.answer).length
+    if (answeredCount < sortedQuestions.length * 0.5) {
       setShowWarning(true)
     } else {
       handleSubmitTest()
