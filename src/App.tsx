@@ -10,6 +10,7 @@ import PreTest from "./pages/PreTest";
 import Test from "./pages/Test";
 import PreAnalysis from "./pages/PreAnalysis";
 import Results from "./pages/Results";
+import TestReview from "./pages/TestReview";
 import NotFound from "./pages/NotFound";
 import LearnMore from "./pages/LearnMore";
 import Auth from "./pages/Auth";
@@ -48,6 +49,11 @@ const App = () => (
             <Route path="/results/:subject" element={
               <ProtectedRoute>
                 <Results />
+              </ProtectedRoute>
+            } />
+            <Route path="/test-review/:subject" element={
+              <ProtectedRoute>
+                <TestReview />
               </ProtectedRoute>
             } />
             <Route path="/dashboard" element={

@@ -1,10 +1,11 @@
 
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Clock, Book, User, ArrowLeft } from 'lucide-react'
+import { Clock, Book, User, ArrowLeft, Share2 } from 'lucide-react'
 import Header from '../components/Header'
 import { supabase } from '../lib/supabase'
 import { Subject } from '../services/questionService'
+import { toast } from 'sonner'
 
 interface TestSession {
   id: string
@@ -19,6 +20,7 @@ const Profile: React.FC = () => {
   const [testSessions, setTestSessions] = useState<TestSession[]>([])
   const [loading, setLoading] = useState(true)
   const [userName, setUserName] = useState('User')
+  const [sharedCount, setSharedCount] = useState(0)
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -42,6 +44,12 @@ const Profile: React.FC = () => {
           } else if (data) {
             setTestSessions(data as TestSession[])
           }
+
+          // Get share count from localStorage
+          const storedSharedCount = localStorage.getItem('sharedCount')
+          if (storedSharedCount) {
+            setSharedCount(parseInt(storedSharedCount, 10))
+          }
         } else {
           // If not logged in, try to get data from localStorage
           const storedSessions = localStorage.getItem('previousTests')
@@ -59,6 +67,12 @@ const Profile: React.FC = () => {
             } catch (e) {
               console.error('Error parsing local sessions:', e)
             }
+          }
+
+          // Get share count from localStorage
+          const storedSharedCount = localStorage.getItem('sharedCount')
+          if (storedSharedCount) {
+            setSharedCount(parseInt(storedSharedCount, 10))
           }
         }
       } catch (err) {
@@ -90,6 +104,56 @@ const Profile: React.FC = () => {
       physics: 'Physics',
       chemistry: 'Chemistry'
     }[subject] || subject
+  }
+
+  const handleShare = () => {
+    // Create share message
+    const shareText = "Check out Learnzy - an amazing platform that helped me ace my exams! It provides diagnostic tests with detailed analytics to boost your performance. Join me at https://learnzy.app"
+    
+    // Try to use the Web Share API if available
+    if (navigator.share) {
+      navigator.share({
+        title: 'Join me on Learnzy!',
+        text: shareText,
+        url: 'https://learnzy.app',
+      })
+      .then(() => {
+        incrementShareCount()
+        toast.success('Thanks for sharing Learnzy!')
+      })
+      .catch((error) => {
+        console.error('Error sharing:', error)
+        // Fallback to clipboard if sharing fails
+        copyToClipboard(shareText)
+      })
+    } else {
+      // Fallback for browsers that don't support the Web Share API
+      copyToClipboard(shareText)
+    }
+  }
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        incrementShareCount()
+        toast.success('Invitation link copied to clipboard!')
+      })
+      .catch((error) => {
+        console.error('Error copying to clipboard:', error)
+        toast.error('Could not copy invitation link')
+      })
+  }
+
+  const incrementShareCount = () => {
+    const newCount = sharedCount + 1
+    setSharedCount(newCount)
+    localStorage.setItem('sharedCount', newCount.toString())
+    
+    if (newCount === 5) {
+      toast.success('Congratulations! You have unlocked Physics and Chemistry tests!', {
+        duration: 5000,
+      })
+    }
   }
 
   return (
@@ -172,12 +236,29 @@ const Profile: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium text-learnzy-dark">Your progress</h3>
-                  <p className="text-sm text-muted-foreground">0/5 friends invited</p>
+                  <p className="text-sm text-muted-foreground">{sharedCount}/5 friends invited</p>
+                  
+                  {sharedCount >= 5 && (
+                    <p className="text-green-600 text-sm mt-1 font-medium">
+                      🎉 Physics and Chemistry tests unlocked!
+                    </p>
+                  )}
                 </div>
-                <button className="button-primary text-sm py-2 px-4">
-                  Share Now
+                <button 
+                  className="button-primary text-sm py-2 px-4 flex items-center"
+                  onClick={handleShare}
+                >
+                  <Share2 className="w-4 h-4 mr-2" /> Share Now
                 </button>
               </div>
+              
+              {sharedCount > 0 && sharedCount < 5 && (
+                <div className="mt-3 bg-white p-2 rounded-md border border-amber-200">
+                  <p className="text-sm text-amber-800">
+                    Keep sharing! Only {5 - sharedCount} more {5 - sharedCount === 1 ? 'share' : 'shares'} to unlock all tests.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
