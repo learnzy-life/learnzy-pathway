@@ -1,4 +1,3 @@
-
 import { toast } from 'sonner'
 import { supabase } from '../lib/supabase'
 
@@ -71,7 +70,7 @@ export const generateMockQuestions = (count: number): Question[] => {
     Priority_Level: 'Medium',
     Time_to_Solve: 1.0,
     Key_Concept_Tested: 'Sample concept',
-    Common_Pitfalls: 'Common mistake'
+    Common_Pitfalls: 'Common mistake',
   }))
 }
 
@@ -98,9 +97,7 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
     // Log Supabase URL for debugging (don't log the key)
     console.log(`Using Supabase URL: ${import.meta.env.VITE_SUPABASE_URL}`)
 
-    const { data, error } = await supabase
-      .from(tableToQuery)
-      .select('*')
+    const { data, error } = await supabase.from(tableToQuery).select('*')
 
     if (error) {
       console.error('Error fetching questions:', error)
@@ -136,8 +133,8 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
             priority_level: q.priority_level,
             time_to_solve: q.time_to_solve,
             key_concept_tested: q.key_concept_tested,
-            common_pitfalls: q.common_pitfalls
-          };
+            common_pitfalls: q.common_pitfalls,
+          }
         } else {
           // Chemistry and Physics still use the original column names
           return {
@@ -160,10 +157,10 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
             Priority_Level: q.Priority_Level,
             Time_to_Solve: q.Time_to_Solve,
             Key_Concept_Tested: q.Key_Concept_Tested,
-            Common_Pitfalls: q.Common_Pitfalls
-          };
+            Common_Pitfalls: q.Common_Pitfalls,
+          }
         }
-      });
+      })
 
       return formattedQuestions
     } else {

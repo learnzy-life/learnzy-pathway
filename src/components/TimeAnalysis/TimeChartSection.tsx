@@ -1,5 +1,6 @@
+'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Bar,
   BarChart,
@@ -9,7 +10,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { TimeData, ChartData } from './types'
+import { ChartData, TimeData } from './types'
 
 interface TimeChartSectionProps {
   timeAnalysis: {
@@ -19,10 +20,20 @@ interface TimeChartSectionProps {
   }
 }
 
-const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeAnalysis }) => {
+const TimeChartSection: React.FC<TimeChartSectionProps> = ({
+  timeAnalysis,
+}) => {
+  // Add debugging logs to see what data is being received
+  useEffect(() => {
+    console.log('TimeChartSection received timeData:', timeAnalysis.timeData)
+    console.log('Slow questions:', timeAnalysis.slowQuestions)
+    console.log('Quick questions:', timeAnalysis.quickQuestions)
+  }, [timeAnalysis])
+
   // Format the time data for the chart
   const formatTimeData = (): ChartData[] => {
     if (!timeAnalysis.timeData || timeAnalysis.timeData.length === 0) {
+      console.log('No time data available, generating mock data')
       // Generate mock data if no time data is available
       const mockData = []
       for (let i = 1; i <= 20; i++) {
@@ -44,22 +55,27 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeAnalysis }) => 
       }
       return mockData
     }
-    
+
     // Use actual time data and transform it for the chart
-    return timeAnalysis.timeData.map(item => ({
-      question: `Q${item.questionId}`,
-      yourTime: Math.round(item.actualTime), // Round to nearest second
-      idealTime: Math.round(item.idealTime)
-    })).sort((a, b) => {
-      // Extract the question number and sort numerically
-      const aNum = parseInt(a.question.substring(1));
-      const bNum = parseInt(b.question.substring(1));
-      return aNum - bNum;
-    });
+    console.log('Formatting time data for chart:', timeAnalysis.timeData)
+
+    return timeAnalysis.timeData
+      .map((item) => ({
+        question: `Q${item.questionId}`,
+        yourTime: Math.round(item.actualTime), // Round to nearest second
+        idealTime: Math.round(item.idealTime),
+      }))
+      .sort((a, b) => {
+        // Extract the question number and sort numerically
+        const aNum = parseInt(a.question.substring(1))
+        const bNum = parseInt(b.question.substring(1))
+        return aNum - bNum
+      })
   }
 
-  const timeData = formatTimeData();
-  
+  const timeData = formatTimeData()
+  console.log('Formatted chart data:', timeData)
+
   return (
     <>
       <h4 className="text-base font-medium text-learnzy-dark mb-4">
@@ -108,19 +124,23 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeAnalysis }) => 
 
 // Format the custom tooltip for the chart
 const renderTimeTooltip = (props: any) => {
-  const { active, payload } = props;
-  
+  const { active, payload } = props
+
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-3 border border-gray-200 shadow-lg rounded-md">
         <p className="font-medium">{payload[0].payload.question}</p>
-        <p className="text-sm text-amber-600">Your Time: {payload[0].value} seconds</p>
-        <p className="text-sm text-green-600">Ideal Time: {payload[1].value} seconds</p>
+        <p className="text-sm text-amber-600">
+          Your Time: {payload[0].value} seconds
+        </p>
+        <p className="text-sm text-green-600">
+          Ideal Time: {payload[1].value} seconds
+        </p>
       </div>
-    );
+    )
   }
-  
-  return null;
-};
+
+  return null
+}
 
 export default TimeChartSection
