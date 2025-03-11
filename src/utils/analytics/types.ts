@@ -1,4 +1,7 @@
 
+// Import the QuestionResult type from testSession types
+import { QuestionResult } from '../../services/testSession/types';
+
 export interface QueryResult {
   id: number;
   Question_Text?: string;

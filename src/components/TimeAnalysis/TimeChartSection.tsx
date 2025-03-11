@@ -1,3 +1,4 @@
+
 'use client'
 
 import React, { useEffect } from 'react'
@@ -10,6 +11,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { ArrowLeft } from 'lucide-react'
 import { ChartData, TimeData } from './types'
 
 interface TimeChartSectionProps {
