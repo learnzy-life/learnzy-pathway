@@ -66,6 +66,12 @@ export interface SubjectScores {
   overallDifficultyPerformance: DifficultyPerformance;
 }
 
+export interface BioResource {
+  chapter_name: string;
+  video_link: string | null;
+  ncert_link: string | null;
+}
+
 export interface ResultsData {
   totalScore: number;
   maxScore: number;
@@ -161,4 +167,6 @@ export interface ResultsData {
   };
   // Add the questions property to store test question data for review
   questions?: QuestionResult[];
+  // Add the bioResources property
+  bioResources?: BioResource[];
 }

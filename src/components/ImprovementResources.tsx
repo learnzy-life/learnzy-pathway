@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { ExternalLink, Play, BookOpen, ChevronRight, TrendingUp } from 'lucide-react';
+import { BioResource } from '../utils/analytics/types';
 
 interface Resource {
   type: string;
@@ -21,9 +22,10 @@ interface ImprovementResourceItem {
 
 interface ImprovementResourcesProps {
   resources: ImprovementResourceItem[];
+  bioResources?: BioResource[];
 }
 
-const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }) => {
+const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources, bioResources }) => {
   // Sort resources by accuracy gap (lower accuracy first)
   const sortedResources = [...resources].sort((a, b) => {
     return a.accuracy - b.accuracy;
@@ -81,56 +83,91 @@ const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {topResources.map((item, index) => (
-          <div key={index} className="bg-white rounded-xl border border-gray-100 shadow-subtle overflow-hidden">
-            <div className="p-5 border-b border-gray-100">
-              <div className="flex justify-between items-center mb-3">
-                <h4 className="font-medium text-learnzy-dark">{item.topic}</h4>
-                <span className={`text-sm font-medium ${getAccuracyColor(item.accuracy)}`}>
-                  {item.accuracy}%
-                </span>
+        {topResources.map((item, index) => {
+          // Find matching resource from bioResources if available
+          const matchingResource = bioResources?.find(resource => 
+            resource.chapter_name && item.topic.toLowerCase().includes(resource.chapter_name.toLowerCase())
+          );
+
+          return (
+            <div key={index} className="bg-white rounded-xl border border-gray-100 shadow-subtle overflow-hidden">
+              <div className="p-5 border-b border-gray-100">
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-medium text-learnzy-dark">{item.topic}</h4>
+                  <span className={`text-sm font-medium ${getAccuracyColor(item.accuracy)}`}>
+                    {item.accuracy}%
+                  </span>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {item.difficultyLevel && (
+                    <span className={`text-xs px-2 py-1 rounded-full ${getDifficultyColor(item.difficultyLevel)}`}>
+                      {item.difficultyLevel}
+                    </span>
+                  )}
+                  {item.priorityLevel && (
+                    <span className={`text-xs px-2 py-1 rounded-full ${getPriorityColor(item.priorityLevel)}`}>
+                      {item.priorityLevel} Priority
+                    </span>
+                  )}
+                </div>
               </div>
               
-              <div className="flex flex-wrap gap-2 mb-3">
-                {item.difficultyLevel && (
-                  <span className={`text-xs px-2 py-1 rounded-full ${getDifficultyColor(item.difficultyLevel)}`}>
-                    {item.difficultyLevel}
-                  </span>
-                )}
-                {item.priorityLevel && (
-                  <span className={`text-xs px-2 py-1 rounded-full ${getPriorityColor(item.priorityLevel)}`}>
-                    {item.priorityLevel} Priority
-                  </span>
-                )}
+              <div className="px-5 py-3">
+                <h5 className="text-sm font-medium text-learnzy-dark mb-3">Recommended Resources</h5>
+                <ul className="space-y-3">
+                  {item.resources.map((resource, idx) => {
+                    // Determine if the resource is available or needs self-study
+                    const isNCERT = resource.type === 'NCERT';
+                    const isVideo = resource.type === 'Video';
+                    const unavailableNCERT = isNCERT && matchingResource?.ncert_link === 'NA';
+                    const unavailableVideo = isVideo && matchingResource?.video_link === 'NA';
+                    
+                    // Use actual resource URL from bioResources if available
+                    let resourceUrl = resource.url;
+                    if (isNCERT && matchingResource?.ncert_link && matchingResource.ncert_link !== 'NA') {
+                      resourceUrl = matchingResource.ncert_link;
+                    } else if (isVideo && matchingResource?.video_link && matchingResource.video_link !== 'NA') {
+                      resourceUrl = matchingResource.video_link;
+                    }
+
+                    return (
+                      <li key={idx}>
+                        {unavailableNCERT || unavailableVideo ? (
+                          <div className="flex items-start p-2 rounded-lg bg-gray-50">
+                            <div className="p-1.5 bg-gray-200 rounded-md mr-3">
+                              {getResourceIcon(resource.type)}
+                            </div>
+                            <div className="flex-1">
+                              <div className="text-sm font-medium text-learnzy-dark">Self-study recommended</div>
+                              <div className="text-xs text-muted-foreground">{resource.type}</div>
+                            </div>
+                          </div>
+                        ) : (
+                          <a 
+                            href={resourceUrl} 
+                            className="flex items-start p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <div className="p-1.5 bg-learnzy-purple/10 rounded-md mr-3">
+                              {getResourceIcon(resource.type)}
+                            </div>
+                            <div className="flex-1">
+                              <div className="text-sm font-medium text-learnzy-dark">{resource.title}</div>
+                              <div className="text-xs text-muted-foreground">{resource.type}</div>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-muted-foreground self-center" />
+                          </a>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
             </div>
-            
-            <div className="px-5 py-3">
-              <h5 className="text-sm font-medium text-learnzy-dark mb-3">Recommended Resources</h5>
-              <ul className="space-y-3">
-                {item.resources.map((resource, idx) => (
-                  <li key={idx}>
-                    <a 
-                      href={resource.url} 
-                      className="flex items-start p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <div className="p-1.5 bg-learnzy-purple/10 rounded-md mr-3">
-                        {getResourceIcon(resource.type)}
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-sm font-medium text-learnzy-dark">{resource.title}</div>
-                        <div className="text-xs text-muted-foreground">{resource.type}</div>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground self-center" />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       
       <div className="flex items-center justify-center mt-8 p-4 bg-green-50 rounded-lg border border-green-100">

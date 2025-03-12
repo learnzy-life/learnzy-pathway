@@ -9,6 +9,27 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bio_resources: {
+        Row: {
+          chapter_name: string | null
+          ncert_link: string | null
+          s_no: number
+          video_link: string | null
+        }
+        Insert: {
+          chapter_name?: string | null
+          ncert_link?: string | null
+          s_no: number
+          video_link?: string | null
+        }
+        Update: {
+          chapter_name?: string | null
+          ncert_link?: string | null
+          s_no?: number
+          video_link?: string | null
+        }
+        Relationships: []
+      }
       biology_dt: {
         Row: {
           bloom_taxonomy: string | null

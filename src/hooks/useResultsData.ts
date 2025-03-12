@@ -1,172 +1,81 @@
 
 import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
+import { useSearchParams } from 'react-router-dom';
 import { Subject } from '../services/questionService';
 import { getTestSession } from '../services/testSession';
+import { calculateAnalytics } from '../utils/analytics';
 import { supabase } from '../lib/supabase';
-import { calculateAnalytics, QueryResult, ResultsData } from '../utils/analytics';
-import { useAuth } from '../context/AuthContext';
 
-export const useResultsData = (subject: Subject | undefined, sessionId: string | null) => {
+export const useResultsData = (subject?: Subject, sessionId?: string | null) => {
   const [loading, setLoading] = useState(true);
-  const [resultsData, setResultsData] = useState<ResultsData | null>(null);
+  const [resultsData, setResultsData] = useState(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isFirstTest, setIsFirstTest] = useState(true);
-  const { user } = useAuth();
+  const [isFirstTest, setIsFirstTest] = useState(false);
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const fetchResults = async () => {
+    const getResultsData = async () => {
+      setLoading(true);
+      setErrorMessage(null);
+
       try {
-        console.log("Fetching results with sessionId:", sessionId, "and subject:", subject);
+        const id = sessionId || searchParams.get('sessionId');
+        
+        if (!id) {
+          throw new Error('No session ID provided');
+        }
         
         if (!subject) {
-          setErrorMessage("Missing subject parameter");
-          setLoading(false);
-          return;
+          throw new Error('No subject provided');
+        }
+
+        // Fetch session data
+        const sessionData = await getTestSession(id);
+        
+        if (!sessionData) {
+          throw new Error('No session data found');
         }
         
-        let questionDetails: QueryResult[] = [];
-        let session = null;
+        // Check if this is the user's first test in this subject
+        const { data: { user } } = await supabase.auth.getUser();
         
-        // Try to fetch test session data if we have a sessionId
-        if (sessionId) {
-          console.log("Fetching test session:", sessionId);
-          session = await getTestSession(sessionId);
-          console.log("Session data:", session);
-          
-          if (!session) {
-            console.warn("Could not find test session, will try to use local storage");
-          }
-        }
-        
-        // If no session from database, try localStorage
-        if (!session) {
-          console.log("Using localStorage for test results");
-          const storedResults = localStorage.getItem('testResults');
-          
-          if (!storedResults) {
-            setErrorMessage("No test data found");
-            setLoading(false);
-            return;
-          }
-          
-          try {
-            const questions = JSON.parse(storedResults);
-            console.log("Loaded questions from localStorage:", questions);
-            
-            // Create mock session with the parsed questions
-            session = {
-              id: 'local-session',
-              userId: 'local-user',
-              subject: subject,
-              startTime: new Date().toISOString(),
-              endTime: new Date().toISOString(),
-              score: 0, // Will be calculated later
-              totalQuestions: questions.length,
-              questions: questions
-            };
-          } catch (error) {
-            console.error("Error parsing stored results:", error);
-            setErrorMessage("Error loading test data");
-            setLoading(false);
-            return;
-          }
-        }
-        
-        // Check if user has previous tests in this subject
         if (user) {
-          const { data, error } = await supabase
+          const { data: previousTests, error: previousTestsError } = await supabase
             .from('test_sessions')
             .select('id')
             .eq('user_id', user.id)
             .eq('subject', subject)
-            .order('end_time', { ascending: false })
-            .limit(10);
+            .not('id', 'eq', id)
+            .limit(1);
             
-          if (!error && data) {
-            // If we have more than 1 test session or the only session is not the current one,
-            // then this is not the first test
-            if (data.length > 1 || (data.length === 1 && data[0].id !== sessionId)) {
-              setIsFirstTest(false);
-            }
-          }
-        } else {
-          // If not logged in, check localStorage for previous tests
-          const previousTests = localStorage.getItem('previousTests');
-          if (previousTests) {
-            try {
-              const tests = JSON.parse(previousTests);
-              if (tests && tests.some((test: any) => test.subject === subject)) {
-                setIsFirstTest(false);
-              }
-            } catch (e) {
-              console.error("Error parsing previous tests from localStorage:", e);
-            }
+          if (previousTestsError) {
+            console.error('Error checking for previous tests:', previousTestsError);
+          } else {
+            setIsFirstTest(previousTests?.length === 0);
           }
         }
         
-        // Fetch question details if we have session data
-        if (session && session.questions && session.questions.length > 0) {
-          try {
-            console.log(`Querying ${subject}_dt table for question details`);
-            
-            // Get table name based on subject
-            const tableName = `${subject}_dt`;
-            
-            // Query the appropriate table
-            const { data, error } = await supabase
-              .from(tableName)
-              .select('*');
-              
-            if (error) {
-              console.error("Error fetching question details:", error);
-              // Continue without detailed question data
-              questionDetails = [];
-              toast.error("Could not fetch question details");
-            } else {
-              questionDetails = data || [];
-              console.log("Loaded question details:", questionDetails);
-            }
-          } catch (err) {
-            console.error("Error fetching question details:", err);
-            questionDetails = [];
-          }
-        }
+        // Calculate analytics
+        const analytics = await calculateAnalytics(
+          sessionData.questions_data, 
+          sessionData.questions_data,
+          subject
+        );
         
-        // Calculate analytics with available data
-        if (session && session.questions) {
-          const analyticsData = calculateAnalytics(session.questions, questionDetails, subject);
-          console.log("Calculated analytics data:", analyticsData);
-          setResultsData(analyticsData);
-
-          // If not logged in, store this test in localStorage for future reference
-          if (!user) {
-            try {
-              const previousTests = localStorage.getItem('previousTests');
-              const tests = previousTests ? JSON.parse(previousTests) : [];
-              tests.push({
-                subject,
-                timestamp: new Date().toISOString(),
-                score: analyticsData.accuracy
-              });
-              localStorage.setItem('previousTests', JSON.stringify(tests));
-            } catch (e) {
-              console.error("Error storing test in localStorage:", e);
-            }
-          }
-        } else {
-          setErrorMessage("No question data available");
-        }
+        // Add questions for review if needed
+        analytics.questions = sessionData.questions_data;
+        
+        setResultsData(analytics);
       } catch (error) {
-        console.error("Error in results page:", error);
-        setErrorMessage("An unexpected error occurred");
+        console.error('Error fetching results data:', error);
+        setErrorMessage(error.message || 'Failed to load results data');
       } finally {
         setLoading(false);
       }
     };
-    
-    fetchResults();
-  }, [sessionId, subject, user]);
+
+    getResultsData();
+  }, [subject, sessionId, searchParams]);
 
   return { loading, resultsData, errorMessage, isFirstTest };
 };

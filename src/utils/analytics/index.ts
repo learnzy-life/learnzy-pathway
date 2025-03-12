@@ -7,12 +7,13 @@ import { calculateTimeAnalysis } from './timeAnalysis';
 import { calculateTopicAnalysis } from './topicAnalysis';
 import { calculateSubjectScores } from './subjectScores';
 import { getDefaultCognitiveInsights, getDefaultImprovementResources, getDefaultMindsetAnalysis } from './defaultData';
+import { supabase } from '../../lib/supabase';
 
-export const calculateAnalytics = (
+export const calculateAnalytics = async (
   userAnswers: QuestionResult[], 
   questionDetails: QueryResult[],
   subj: string
-): ResultsData => {
+): Promise<ResultsData> => {
   console.log("Calculating analytics with:", userAnswers.length, "answers and", questionDetails.length, "question details");
   
   // Create a map of question details for easier lookup
@@ -76,6 +77,25 @@ export const calculateAnalytics = (
     }
   };
   
+  // Fetch resources from the bio_resources table if subject is biology
+  let resources = [];
+  if (subj === 'biology') {
+    try {
+      const { data, error } = await supabase
+        .from('bio_resources')
+        .select('chapter_name, video_link, ncert_link');
+      
+      if (error) {
+        console.error('Error fetching bio resources:', error);
+      } else {
+        resources = data || [];
+        console.log('Fetched resources:', resources);
+      }
+    } catch (err) {
+      console.error('Error in Supabase query:', err);
+    }
+  }
+  
   return {
     totalScore,
     maxScore,
@@ -101,7 +121,8 @@ export const calculateAnalytics = (
     timeAnalysis,
     cognitiveInsights,
     improvementResources,
-    mindsetAnalysis
+    mindsetAnalysis,
+    bioResources: resources
   };
 };
 

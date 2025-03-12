@@ -48,22 +48,23 @@ const Results: React.FC = () => {
   const subjectTitle = getSubjectTitle(subject as Subject)
 
   const improvementResources = resultsData.topics.map((topic) => {
+    // Find matching resource from bioResources if available
+    const matchingResource = resultsData.bioResources?.find(resource => 
+      resource.chapter_name && topic.name.toLowerCase().includes(resource.chapter_name.toLowerCase())
+    );
+    
     const resources = [
       {
         type: 'NCERT',
         title: `${topic.name} NCERT Highlights`,
-        url: `https://learnzy.com/resources/${subject}/ncert/${topic.name
-          .toLowerCase()
-          .replace(/\s+/g, '-')}`,
-        description: 'Toppers-highlighted NCERT pages for this topic',
+        url: matchingResource?.ncert_link || `https://learnzy.com/resources/${subject}/ncert/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
+        description: matchingResource?.ncert_link === 'NA' ? 'Self-study recommended for this chapter' : 'Toppers-highlighted NCERT pages for this topic',
       },
       {
         type: 'Video',
         title: `${topic.name} Video Lecture`,
-        url: `https://learnzy.com/resources/${subject}/video/${topic.name
-          .toLowerCase()
-          .replace(/\s+/g, '-')}`,
-        description: 'Expert video tutorial for this topic',
+        url: matchingResource?.video_link || `https://learnzy.com/resources/${subject}/video/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
+        description: matchingResource?.video_link === 'NA' ? 'Self-study recommended for this chapter' : 'Expert video tutorial for this topic',
       },
     ]
 
@@ -121,7 +122,10 @@ const Results: React.FC = () => {
 
       <div className="mb-12">
         <SectionHeader icon={Book} title="Improve Before Your Next Mock" />
-        <ImprovementResources resources={improvementResources} />
+        <ImprovementResources 
+          resources={improvementResources} 
+          bioResources={resultsData.bioResources}
+        />
       </div>
 
       <NextStepsSection />
