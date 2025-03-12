@@ -42,6 +42,30 @@ export interface QueryResult {
   q_no?: number;
 }
 
+export interface ChapterPerformance {
+  name: string;
+  score: number;
+  total: number;
+  correct: number;
+  incorrect: number;
+  difficultyPerformance?: {
+    easy: { total: number; correct: number; percentage: number; };
+    medium: { total: number; correct: number; percentage: number; };
+    hard: { total: number; correct: number; percentage: number; };
+  };
+}
+
+export interface DifficultyPerformance {
+  easy: { total: number; correct: number; percentage: number; };
+  medium: { total: number; correct: number; percentage: number; };
+  hard: { total: number; correct: number; percentage: number; };
+}
+
+export interface SubjectScores {
+  chapters: ChapterPerformance[];
+  overallDifficultyPerformance: DifficultyPerformance;
+}
+
 export interface ResultsData {
   totalScore: number;
   maxScore: number;
@@ -50,13 +74,7 @@ export interface ResultsData {
   unattempted: number;
   accuracy: number;
   timeSpent: string;
-  subjectScores: {
-    name: string;
-    score: number;
-    total: number;
-    correct: number;
-    incorrect: number;
-  }[];
+  subjectScores: SubjectScores;
   topics: {
     id: string;
     name: string;

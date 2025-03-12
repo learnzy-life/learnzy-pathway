@@ -1,7 +1,7 @@
 
 import { QuestionResult } from '../../services/testSession';
 import { Subject } from '../../services/questionService';
-import { QueryResult, ResultsData } from './types';
+import { QueryResult, ResultsData, SubjectScores } from './types';
 import { formatTime } from './helpers';
 import { calculateTimeAnalysis } from './timeAnalysis';
 import { calculateTopicAnalysis } from './topicAnalysis';
@@ -59,6 +59,22 @@ export const calculateAnalytics = (
   const cognitiveInsights = getDefaultCognitiveInsights();
   const improvementResources = getDefaultImprovementResources();
   const mindsetAnalysis = getDefaultMindsetAnalysis();
+
+  // Create default subjectScores if not available
+  const defaultSubjectScores: SubjectScores = {
+    chapters: [{ 
+      name: 'All Questions', 
+      score: accuracy, 
+      total: userAnswers.length, 
+      correct: correctAnswers, 
+      incorrect: incorrectAnswers 
+    }],
+    overallDifficultyPerformance: {
+      easy: { total: 0, correct: 0, percentage: 0 },
+      medium: { total: 0, correct: 0, percentage: 0 },
+      hard: { total: 0, correct: 0, percentage: 0 }
+    }
+  };
   
   return {
     totalScore,
@@ -68,7 +84,7 @@ export const calculateAnalytics = (
     unattempted,
     accuracy,
     timeSpent,
-    subjectScores: subjectScores.length > 0 ? subjectScores : [{ name: 'All Questions', score: accuracy, total: userAnswers.length, correct: correctAnswers, incorrect: incorrectAnswers }],
+    subjectScores: subjectScores || defaultSubjectScores,
     topics: topics.length > 0 ? topics : [
       {
         id: 'general',

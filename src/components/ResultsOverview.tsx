@@ -3,6 +3,7 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Share2, Award, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
+import { ChapterPerformance } from '../utils/analytics/types';
 
 interface ResultsOverviewProps {
   subject: string;
@@ -13,13 +14,7 @@ interface ResultsOverviewProps {
   unattempted: number;
   accuracy: number;
   timeSpent: string; // in format "2h 15m"
-  subjectScores: {
-    name: string;
-    score: number;
-    total: number;
-    correct: number;
-    incorrect: number;
-  }[];
+  subjectScores: ChapterPerformance[];
 }
 
 const ResultsOverview: React.FC<ResultsOverviewProps> = ({
