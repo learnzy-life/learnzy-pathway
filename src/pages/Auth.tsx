@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react'
-import { ArrowRight, Mail, Phone, LogIn } from 'lucide-react'
+import { ArrowRight, Mail, LogIn } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import { useAuth } from '../context/AuthContext'
@@ -9,13 +10,9 @@ const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [phone, setPhone] = useState('')
-  const [verificationCode, setVerificationCode] = useState('')
-  const [isPhoneAuth, setIsPhoneAuth] = useState(false)
-  const [isVerifying, setIsVerifying] = useState(false)
   const [loading, setLoading] = useState(false)
   
-  const { signIn, signUp, signInWithGoogle, signInWithOTP, verifyOTP } = useAuth()
+  const { signIn, signUp, signInWithGoogle } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,22 +20,12 @@ const Auth: React.FC = () => {
     setLoading(true)
     
     try {
-      if (isPhoneAuth) {
-        if (isVerifying) {
-          await verifyOTP(phone, verificationCode)
-          navigate('/')
-        } else {
-          await signInWithOTP(phone)
-          setIsVerifying(true)
-        }
+      if (isLogin) {
+        await signIn(email, password)
+        navigate('/')
       } else {
-        if (isLogin) {
-          await signIn(email, password)
-          navigate('/')
-        } else {
-          await signUp(email, password)
-          // Stay on page so user can check email
-        }
+        await signUp(email, password)
+        // Stay on page so user can check email
       }
     } catch (error) {
       console.error('Authentication error:', error)
@@ -78,8 +65,6 @@ const Auth: React.FC = () => {
                   className={`px-4 py-2 ${isLogin ? 'bg-learnzy-purple text-white' : 'bg-white text-muted-foreground'}`}
                   onClick={() => {
                     setIsLogin(true)
-                    setIsPhoneAuth(false)
-                    setIsVerifying(false)
                   }}
                 >
                   Login
@@ -88,8 +73,6 @@ const Auth: React.FC = () => {
                   className={`px-4 py-2 ${!isLogin ? 'bg-learnzy-purple text-white' : 'bg-white text-muted-foreground'}`}
                   onClick={() => {
                     setIsLogin(false)
-                    setIsPhoneAuth(false)
-                    setIsVerifying(false)
                   }}
                 >
                   Sign Up
@@ -97,106 +80,35 @@ const Auth: React.FC = () => {
               </div>
             </div>
 
-            <div className="mb-6">
-              <div className="flex justify-center space-x-3 mb-4">
-                <button
-                  type="button"
-                  className={`flex items-center justify-center px-3 py-2 rounded-md border ${!isPhoneAuth ? 'border-learnzy-purple bg-learnzy-purple/10' : 'border-gray-200'}`}
-                  onClick={() => {
-                    setIsPhoneAuth(false)
-                    setIsVerifying(false)
-                  }}
-                >
-                  <Mail className="w-4 h-4 mr-2" />
-                  Email
-                </button>
-                <button
-                  type="button"
-                  className={`flex items-center justify-center px-3 py-2 rounded-md border ${isPhoneAuth ? 'border-learnzy-purple bg-learnzy-purple/10' : 'border-gray-200'}`}
-                  onClick={() => {
-                    setIsPhoneAuth(true)
-                    setIsVerifying(false)
-                  }}
-                >
-                  <Phone className="w-4 h-4 mr-2" />
-                  Phone
-                </button>
-              </div>
-            </div>
-
             <form onSubmit={handleSubmit}>
-              {isPhoneAuth ? (
-                <>
-                  {!isVerifying ? (
-                    <div className="mb-4">
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                        Phone Number
-                      </label>
-                      <input
-                        id="phone"
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+1234567890"
-                        required
-                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-learnzy-purple"
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Enter your phone number with country code (e.g., +1 for US)
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="mb-4">
-                      <label htmlFor="otp" className="block text-sm font-medium text-gray-700 mb-1">
-                        Verification Code
-                      </label>
-                      <input
-                        id="otp"
-                        type="text"
-                        value={verificationCode}
-                        onChange={(e) => setVerificationCode(e.target.value)}
-                        placeholder="123456"
-                        required
-                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-learnzy-purple"
-                      />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Enter the verification code sent to your phone
-                      </p>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  <div className="mb-4">
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                      Email
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      required
-                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-learnzy-purple"
-                    />
-                  </div>
-                  <div className="mb-6">
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                      Password
-                    </label>
-                    <input
-                      id="password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      required
-                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-learnzy-purple"
-                    />
-                  </div>
-                </>
-              )}
+              <div className="mb-4">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-learnzy-purple"
+                />
+              </div>
+              <div className="mb-6">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-learnzy-purple"
+                />
+              </div>
 
               <button
                 type="submit"
@@ -206,9 +118,7 @@ const Auth: React.FC = () => {
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
                 ) : null}
-                {isPhoneAuth 
-                  ? (isVerifying ? 'Verify Code' : 'Send Verification Code') 
-                  : (isLogin ? 'Sign In' : 'Create Account')}
+                {isLogin ? 'Sign In' : 'Create Account'}
               </button>
             </form>
 
@@ -238,8 +148,6 @@ const Auth: React.FC = () => {
                     type="button"
                     onClick={() => {
                       setIsLogin(false)
-                      setIsPhoneAuth(false)
-                      setIsVerifying(false)
                     }}
                     className="text-learnzy-purple hover:underline"
                   >
@@ -253,8 +161,6 @@ const Auth: React.FC = () => {
                     type="button"
                     onClick={() => {
                       setIsLogin(true)
-                      setIsPhoneAuth(false)
-                      setIsVerifying(false)
                     }}
                     className="text-learnzy-purple hover:underline"
                   >

@@ -11,8 +11,6 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string) => Promise<void>
   signInWithGoogle: () => Promise<void>
-  signInWithOTP: (phone: string) => Promise<void>
-  verifyOTP: (phone: string, token: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -91,40 +89,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const signInWithOTP = async (phone: string) => {
-    try {
-      setIsLoading(true)
-      const { error } = await supabase.auth.signInWithOtp({
-        phone,
-      })
-      if (error) throw error
-      toast.success('Check your phone for the verification code!')
-    } catch (error) {
-      toast.error(error.message || 'Error sending OTP')
-      throw error
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const verifyOTP = async (phone: string, token: string) => {
-    try {
-      setIsLoading(true)
-      const { error } = await supabase.auth.verifyOtp({
-        phone,
-        token,
-        type: 'sms',
-      })
-      if (error) throw error
-      toast.success('Successfully verified!')
-    } catch (error) {
-      toast.error(error.message || 'Error verifying OTP')
-      throw error
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   const signOut = async () => {
     try {
       setIsLoading(true)
@@ -144,8 +108,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signIn,
     signUp,
     signInWithGoogle,
-    signInWithOTP,
-    verifyOTP,
     signOut,
   }
 
