@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ExternalLink, Play, FileText, CheckCircle, BookOpen, ChevronRight, TrendingUp } from 'lucide-react';
+import { ExternalLink, Play, BookOpen, ChevronRight, TrendingUp } from 'lucide-react';
 
 interface Resource {
   type: string;
@@ -17,7 +17,6 @@ interface ImprovementResourceItem {
   totalActions: number;
   difficultyLevel?: string;
   priorityLevel?: string;
-  // priorityScore removed from the interface
 }
 
 interface ImprovementResourcesProps {
@@ -27,7 +26,7 @@ interface ImprovementResourcesProps {
 const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }) => {
   // Sort resources by accuracy gap (lower accuracy first)
   const sortedResources = [...resources].sort((a, b) => {
-    return b.accuracy - a.accuracy;
+    return a.accuracy - b.accuracy;
   });
   
   // Limit to top 10 resources
@@ -37,9 +36,7 @@ const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }
     switch (type) {
       case 'Video':
         return <Play className="w-4 h-4 text-learnzy-purple" />;
-      case 'Practice':
-        return <FileText className="w-4 h-4 text-learnzy-purple" />;
-      case 'Reading':
+      case 'NCERT':
         return <BookOpen className="w-4 h-4 text-learnzy-purple" />;
       default:
         return <ExternalLink className="w-4 h-4 text-learnzy-purple" />;
@@ -87,20 +84,11 @@ const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }
         {topResources.map((item, index) => (
           <div key={index} className="bg-white rounded-xl border border-gray-100 shadow-subtle overflow-hidden">
             <div className="p-5 border-b border-gray-100">
-              <div className="flex justify-between items-center mb-2">
+              <div className="flex justify-between items-center mb-3">
                 <h4 className="font-medium text-learnzy-dark">{item.topic}</h4>
                 <span className={`text-sm font-medium ${getAccuracyColor(item.accuracy)}`}>
                   {item.accuracy}%
                 </span>
-              </div>
-              <div className="w-full bg-gray-100 rounded-full h-2 mb-4">
-                <div 
-                  className={`h-2 rounded-full ${
-                    item.accuracy >= 80 ? 'bg-green-500' : 
-                    item.accuracy >= 60 ? 'bg-amber-500' : 'bg-red-500'
-                  }`} 
-                  style={{ width: `${item.accuracy}%` }}
-                ></div>
               </div>
               
               <div className="flex flex-wrap gap-2 mb-3">
@@ -114,10 +102,6 @@ const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }
                     {item.priorityLevel} Priority
                   </span>
                 )}
-              </div>
-              
-              <div className="text-sm text-muted-foreground">
-                {item.progress} of {item.totalActions} actions completed
               </div>
             </div>
             
@@ -144,13 +128,6 @@ const ImprovementResources: React.FC<ImprovementResourcesProps> = ({ resources }
                   </li>
                 ))}
               </ul>
-            </div>
-            
-            <div className="px-5 py-3 bg-gray-50 border-t border-gray-100">
-              <button className="w-full py-2 text-sm font-medium text-learnzy-purple flex items-center justify-center">
-                <CheckCircle className="w-4 h-4 mr-2" />
-                Mark All Complete
-              </button>
             </div>
           </div>
         ))}

@@ -1,3 +1,4 @@
+
 import { BarChart, Book, CheckCircle2, Clock, PieChart } from 'lucide-react'
 import React from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
@@ -49,28 +50,20 @@ const Results: React.FC = () => {
   const improvementResources = resultsData.topics.map((topic) => {
     const resources = [
       {
+        type: 'NCERT',
+        title: `${topic.name} NCERT Highlights`,
+        url: `https://learnzy.com/resources/${subject}/ncert/${topic.name
+          .toLowerCase()
+          .replace(/\s+/g, '-')}`,
+        description: 'Toppers-highlighted NCERT pages for this topic',
+      },
+      {
         type: 'Video',
-        title: `Master ${topic.name} Concepts`,
-        url: `https://learnzy.com/resources/${subject}/${topic.name
+        title: `${topic.name} Video Lecture`,
+        url: `https://learnzy.com/resources/${subject}/video/${topic.name
           .toLowerCase()
           .replace(/\s+/g, '-')}`,
-        description: 'A comprehensive video tutorial on this topic',
-      },
-      {
-        type: 'Practice',
-        title: `${topic.name} Practice Questions`,
-        url: `https://learnzy.com/practice/${subject}/${topic.name
-          .toLowerCase()
-          .replace(/\s+/g, '-')}`,
-        description: 'Interactive practice questions',
-      },
-      {
-        type: 'Reading',
-        title: `${topic.name} Study Guide`,
-        url: `https://learnzy.com/guides/${subject}/${topic.name
-          .toLowerCase()
-          .replace(/\s+/g, '-')}`,
-        description: 'A concise study guide',
+        description: 'Expert video tutorial for this topic',
       },
     ]
 
@@ -79,7 +72,7 @@ const Results: React.FC = () => {
       accuracy: topic.percentage,
       resources,
       progress: 0,
-      totalActions: 3,
+      totalActions: 2,
       difficultyLevel: topic.difficultyLevel,
       priorityLevel: topic.priorityLevel,
     }
@@ -98,7 +91,7 @@ const Results: React.FC = () => {
           unattempted={resultsData.unattempted}
           accuracy={resultsData.accuracy}
           timeSpent={resultsData.timeSpent}
-          subjectScores={resultsData.subjectScores}
+          subjectScores={resultsData.subjectScores.chapters}
         />
       </div>
 
@@ -119,7 +112,11 @@ const Results: React.FC = () => {
 
       <div className="mb-12">
         <SectionHeader icon={BarChart} title="Chapter Performance" />
-        <TopicBreakdown topics={resultsData.topics} isFirstTest={isFirstTest} />
+        <TopicBreakdown 
+          topics={resultsData.topics} 
+          isFirstTest={isFirstTest} 
+          overallDifficultyPerformance={resultsData.subjectScores.overallDifficultyPerformance}
+        />
       </div>
 
       <div className="mb-12">
