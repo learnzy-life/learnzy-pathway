@@ -21,19 +21,34 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
       try {
         const id = sessionId || searchParams.get('sessionId');
         
+        // Handle case when no session ID is provided
         if (!id) {
-          throw new Error('No session ID provided');
+          setErrorMessage('No session ID provided');
+          setLoading(false);
+          return;
         }
         
+        // Handle case when no subject is provided
         if (!subject) {
-          throw new Error('No subject provided');
+          setErrorMessage('No subject provided');
+          setLoading(false);
+          return;
         }
 
         // Fetch session data
         const sessionData = await getTestSession(id);
         
         if (!sessionData) {
-          throw new Error('No session data found');
+          setErrorMessage('No session data found');
+          setLoading(false);
+          return;
+        }
+
+        // Check if sessionData.questions exists and is an array
+        if (!sessionData.questions || !Array.isArray(sessionData.questions) || sessionData.questions.length === 0) {
+          setErrorMessage('No question data available');
+          setLoading(false);
+          return;
         }
         
         // Check if this is the user's first test in this subject
@@ -57,6 +72,7 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
         
         // Calculate analytics
         // Access the 'questions' property from the TestSession type
+        // Make sure we're passing valid arrays to calculateAnalytics
         const analytics = await calculateAnalytics(
           sessionData.questions, 
           sessionData.questions,
