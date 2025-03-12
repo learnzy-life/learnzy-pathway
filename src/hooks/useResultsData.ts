@@ -56,14 +56,15 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
         }
         
         // Calculate analytics
+        // Access the 'questions' property from the TestSession type
         const analytics = await calculateAnalytics(
-          sessionData.questions_data, 
-          sessionData.questions_data,
+          sessionData.questions, 
+          sessionData.questions,
           subject
         );
         
         // Add questions for review if needed
-        analytics.questions = sessionData.questions_data;
+        analytics.questions = sessionData.questions;
         
         setResultsData(analytics);
       } catch (error) {
