@@ -20,18 +20,22 @@ export const useTestReview = (sessionId: string | null) => {
             
             // Add options to each question based on the A, B, C, D format
             const questionsWithOptions = sortedQuestions.map(q => {
-              // Create options array for each question
-              const options = [
-                { id: 'A', text: q.Option_A || '' },
-                { id: 'B', text: q.Option_B || '' },
-                { id: 'C', text: q.Option_C || '' },
-                { id: 'D', text: q.Option_D || '' },
-              ].filter(option => option.text !== ''); // Filter out empty options
-              
-              return {
-                ...q,
-                options
-              };
+              // Only create options array if it doesn't exist
+              if (!q.options) {
+                // Create options array for each question
+                const options = [
+                  { id: 'A', text: q.Option_A || '' },
+                  { id: 'B', text: q.Option_B || '' },
+                  { id: 'C', text: q.Option_C || '' },
+                  { id: 'D', text: q.Option_D || '' },
+                ].filter(option => option.text !== ''); // Filter out empty options
+                
+                return {
+                  ...q,
+                  options
+                };
+              }
+              return q;
             });
             
             setQuestions(questionsWithOptions);

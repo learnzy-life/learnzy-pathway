@@ -27,15 +27,45 @@ export const calculateSubjectScores = (
         total: 0, 
         correct: 0,
         incorrect: 0,
-        score: 0 
+        score: 0,
+        // Add counters for difficulty levels
+        easy: { total: 0, correct: 0 },
+        medium: { total: 0, correct: 0 },
+        hard: { total: 0, correct: 0 }
       });
     }
     
     const chapterData = chapterPerformance.get(chapter);
     chapterData.total += 1;
     
+    // Get difficulty level for this question
+    let difficultyLevel = answer.Difficulty_Level || '';
+    
+    if (!difficultyLevel) {
+      const questionDetail = questionMap.get(answer.id);
+      if (questionDetail) {
+        difficultyLevel = getValueFromQuestion(questionDetail, 'Difficulty_Level', 'difficulty_level') || 'Medium';
+      } else {
+        difficultyLevel = 'Medium'; // Default
+      }
+    }
+    
+    // Normalize difficulty level
+    const normalizedDifficulty = difficultyLevel.toLowerCase();
+    let difficultyCategory = 'medium';
+    
+    if (normalizedDifficulty.includes('easy')) {
+      difficultyCategory = 'easy';
+    } else if (normalizedDifficulty.includes('hard')) {
+      difficultyCategory = 'hard';
+    }
+    
+    // Update difficulty counters
+    chapterData[difficultyCategory].total += 1;
+    
     if (answer.isCorrect) {
       chapterData.correct += 1;
+      chapterData[difficultyCategory].correct += 1;
     } else if (answer.userAnswer !== null) {
       chapterData.incorrect += 1;
     }
@@ -51,6 +81,24 @@ export const calculateSubjectScores = (
     score: data.score,
     total: data.total,
     correct: data.correct,
-    incorrect: data.incorrect
+    incorrect: data.incorrect,
+    // Add difficulty level data
+    difficultyPerformance: {
+      easy: {
+        total: data.easy.total,
+        correct: data.easy.correct,
+        percentage: data.easy.total > 0 ? Math.round((data.easy.correct / data.easy.total) * 100) : 0
+      },
+      medium: {
+        total: data.medium.total,
+        correct: data.medium.correct,
+        percentage: data.medium.total > 0 ? Math.round((data.medium.correct / data.medium.total) * 100) : 0
+      },
+      hard: {
+        total: data.hard.total,
+        correct: data.hard.correct,
+        percentage: data.hard.total > 0 ? Math.round((data.hard.correct / data.hard.total) * 100) : 0
+      }
+    }
   }));
 };

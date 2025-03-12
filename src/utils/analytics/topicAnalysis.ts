@@ -40,37 +40,74 @@ export const calculateTopicAnalysis = (
   userAnswers: QuestionResult[],
   questionMap: Map<number, QueryResult>
 ) => {
-  // Get unique topics from question details
-  const topicsSet = new Set<string>();
+  // Get unique chapters and organize topics by chapter
+  const chaptersMap = new Map<string, {
+    topics: Map<string, { correctCount: number, totalCount: number, questions: QuestionResult[] }>,
+    correctCount: number,
+    totalCount: number,
+    questions: QuestionResult[]
+  }>();
   
-  // Get all topics from questions
-  Array.from(questionMap.values()).forEach(q => {
-    const topicName = getValueFromQuestion(q, 'Topic', 'topic');
-    if (topicName) {
-      topicsSet.add(topicName);
+  // Process each user answer to collect chapter and topic data
+  userAnswers.forEach(answer => {
+    // Get chapter and topic from question metadata or question map
+    let chapter = answer.Chapter_name || '';
+    let topic = answer.Topic || '';
+    
+    // If not found in the answer object, try to get it from questionMap
+    if (!chapter || !topic) {
+      const questionDetail = questionMap.get(answer.id);
+      if (questionDetail) {
+        // Try both casing patterns (camelCase and lowercase_with_underscores)
+        chapter = getValueFromQuestion(questionDetail, 'Chapter_name', 'chapter_name') || 'General';
+        topic = getValueFromQuestion(questionDetail, 'Topic', 'topic') || 'General Topic';
+      }
     }
+    
+    // Ensure we have a valid chapter name
+    chapter = chapter || 'General';
+    topic = topic || 'General Topic';
+    
+    // Create or update chapter data
+    if (!chaptersMap.has(chapter)) {
+      chaptersMap.set(chapter, {
+        topics: new Map(),
+        correctCount: 0,
+        totalCount: 0,
+        questions: []
+      });
+    }
+    
+    const chapterData = chaptersMap.get(chapter)!;
+    chapterData.totalCount += 1;
+    if (answer.isCorrect) {
+      chapterData.correctCount += 1;
+    }
+    chapterData.questions.push(answer);
+    
+    // Create or update topic data within the chapter
+    if (!chapterData.topics.has(topic)) {
+      chapterData.topics.set(topic, {
+        correctCount: 0,
+        totalCount: 0,
+        questions: []
+      });
+    }
+    
+    const topicData = chapterData.topics.get(topic)!;
+    topicData.totalCount += 1;
+    if (answer.isCorrect) {
+      topicData.correctCount += 1;
+    }
+    topicData.questions.push(answer);
   });
   
-  // Calculate performance for each topic
-  const topicsAnalysis = Array.from(topicsSet).map(topicName => {
-    // Get questions for this topic
-    const topicQuestions = userAnswers.filter(a => {
-      const detail = questionMap.get(a.id);
-      if (!detail) return false;
-      
-      const detailTopic = getValueFromQuestion(detail, 'Topic', 'topic');
-      return detailTopic === topicName;
-    });
-    
-    // Basic statistics
-    const correctCount = topicQuestions.filter(q => q.isCorrect).length;
-    const totalCount = topicQuestions.length;
-    const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
-    
-    // Calculate average time per question for this topic
-    const totalTime = topicQuestions.reduce((sum, q) => sum + (q.timeTaken || 0), 0);
-    const avgTimeSeconds = totalCount > 0 ? Math.round(totalTime / totalCount) : 0;
-    const avgTimePerQuestion = `${Math.floor(avgTimeSeconds / 60)}m ${avgTimeSeconds % 60}s`;
+  // Convert chapters map to the expected output format
+  const chaptersAnalysis = Array.from(chaptersMap.entries()).map(([chapterName, chapterData]) => {
+    // Calculate chapter accuracy
+    const percentage = chapterData.totalCount > 0 
+      ? Math.round((chapterData.correctCount / chapterData.totalCount) * 100) 
+      : 0;
     
     // Determine mastery level based on percentage
     let masteryLevel: 'Excellent' | 'Good' | 'Average' | 'Needs Improvement';
@@ -79,22 +116,45 @@ export const calculateTopicAnalysis = (
     else if (percentage >= 60) masteryLevel = 'Average';
     else masteryLevel = 'Needs Improvement';
     
-    // Get difficulty and priority levels from the first question of this topic
-    // (assuming all questions in a topic have the same difficulty and priority)
-    const firstQuestionDetail = topicQuestions.length > 0 
-      ? questionMap.get(topicQuestions[0].id) 
-      : null;
+    // Calculate average time per question for this chapter
+    const totalTime = chapterData.questions.reduce((sum, q) => sum + (q.timeTaken || 0), 0);
+    const avgTimeSeconds = chapterData.totalCount > 0 ? Math.round(totalTime / chapterData.totalCount) : 0;
+    const avgTimePerQuestion = `${Math.floor(avgTimeSeconds / 60)}m ${avgTimeSeconds % 60}s`;
     
-    const difficultyLevel = firstQuestionDetail 
-      ? getValueFromQuestion(firstQuestionDetail, 'Difficulty_Level', 'difficulty_level')
-      : 'Medium';
+    // Get difficulty level of the chapter (using the mode of the difficulty levels of all questions in this chapter)
+    const questionDifficultyLevels = chapterData.questions.map(q => {
+      const detail = questionMap.get(q.id);
+      return detail ? getValueFromQuestion(detail, 'Difficulty_Level', 'difficulty_level') : null;
+    }).filter(Boolean) as string[];
+    
+    // Simple mode calculation for difficulty level
+    const difficultyLevelCounts = new Map<string, number>();
+    questionDifficultyLevels.forEach(level => {
+      if (level) {
+        difficultyLevelCounts.set(level, (difficultyLevelCounts.get(level) || 0) + 1);
+      }
+    });
+    
+    let difficultyLevel = 'Medium';
+    let maxCount = 0;
+    difficultyLevelCounts.forEach((count, level) => {
+      if (count > maxCount) {
+        maxCount = count;
+        difficultyLevel = level;
+      }
+    });
+    
+    // Calculate the accuracy gap (1 - accuracy percentage as decimal)
+    const accuracyGap = 1 - (percentage / 100);
+    
+    // Get the first question's priority level as a fallback
+    const firstQuestionDetail = chapterData.questions.length > 0 
+      ? questionMap.get(chapterData.questions[0].id) 
+      : null;
     
     const priorityLevel = firstQuestionDetail
       ? getValueFromQuestion(firstQuestionDetail, 'Priority_Level', 'priority_level')
       : 'Medium';
-    
-    // Calculate the accuracy gap (1 - accuracy percentage as decimal)
-    const accuracyGap = 1 - (percentage / 100);
     
     // Calculate the priority score for improvement
     const improvementPriorityScore = calculatePriorityScore(
@@ -103,13 +163,20 @@ export const calculateTopicAnalysis = (
       priorityLevel
     );
     
+    // Convert topics map to array for the chapter
+    const topicsArray = Array.from(chapterData.topics.entries()).map(([topicName, topicData]) => ({
+      name: topicName,
+      correctCount: topicData.correctCount,
+      totalCount: topicData.totalCount
+    }));
+    
     // For first-time users, we'll still provide a previousPercentage
     // but the UI won't show it due to our isFirstTest flag
     return {
-      id: topicName as string,
-      name: topicName as string,
-      correctCount,
-      totalCount,
+      id: chapterName,
+      name: chapterName,
+      correctCount: chapterData.correctCount,
+      totalCount: chapterData.totalCount,
       percentage,
       // Mock a previous percentage - the UI will hide this for first-time users
       previousPercentage: percentage - Math.floor(Math.random() * 10),
@@ -120,10 +187,12 @@ export const calculateTopicAnalysis = (
       accuracyGap,
       difficultyLevel,
       priorityLevel,
-      improvementPriorityScore
+      improvementPriorityScore,
+      // Add topics array
+      topics: topicsArray
     };
   });
   
-  // Return the sorted topics array with highest priority scores first
-  return topicsAnalysis.sort((a, b) => b.improvementPriorityScore - a.improvementPriorityScore);
+  // Return the sorted chapters array with highest priority scores first
+  return chaptersAnalysis.sort((a, b) => b.improvementPriorityScore - a.improvementPriorityScore);
 };
