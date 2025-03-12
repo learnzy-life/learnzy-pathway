@@ -1,6 +1,8 @@
 
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Session, User } from '@supabase/supabase-js'
+import { supabase } from '../lib/supabase'
+import { toast } from 'sonner'
 
 type AuthContextType = {
   user: User | null
@@ -8,30 +10,147 @@ type AuthContextType = {
   isLoading: boolean
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string) => Promise<void>
+  signInWithGoogle: () => Promise<void>
+  signInWithOTP: (phone: string) => Promise<void>
+  verifyOTP: (phone: string, token: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  // Provide dummy auth values
-  const dummyAuthValues: AuthContextType = {
-    user: null,
-    session: null,
-    isLoading: false,
-    signIn: async () => {
-      console.log('Sign in functionality removed temporarily')
-    },
-    signUp: async () => {
-      console.log('Sign up functionality removed temporarily')
-    },
-    signOut: async () => {
-      console.log('Sign out functionality removed temporarily')
+  const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      setUser(session?.user || null)
+      setIsLoading(false)
+    })
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session)
+        setUser(session?.user || null)
+        setIsLoading(false)
+      }
+    )
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const signIn = async (email: string, password: string) => {
+    try {
+      setIsLoading(true)
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+      if (error) throw error
+    } catch (error) {
+      toast.error(error.message || 'Error signing in')
+      throw error
+    } finally {
+      setIsLoading(false)
     }
   }
 
+  const signUp = async (email: string, password: string) => {
+    try {
+      setIsLoading(true)
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      })
+      if (error) throw error
+      toast.success('Check your email for the confirmation link!')
+    } catch (error) {
+      toast.error(error.message || 'Error signing up')
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const signInWithGoogle = async () => {
+    try {
+      setIsLoading(true)
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+      })
+      if (error) throw error
+    } catch (error) {
+      toast.error(error.message || 'Error signing in with Google')
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const signInWithOTP = async (phone: string) => {
+    try {
+      setIsLoading(true)
+      const { error } = await supabase.auth.signInWithOtp({
+        phone,
+      })
+      if (error) throw error
+      toast.success('Check your phone for the verification code!')
+    } catch (error) {
+      toast.error(error.message || 'Error sending OTP')
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const verifyOTP = async (phone: string, token: string) => {
+    try {
+      setIsLoading(true)
+      const { error } = await supabase.auth.verifyOtp({
+        phone,
+        token,
+        type: 'sms',
+      })
+      if (error) throw error
+      toast.success('Successfully verified!')
+    } catch (error) {
+      toast.error(error.message || 'Error verifying OTP')
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const signOut = async () => {
+    try {
+      setIsLoading(true)
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+    } catch (error) {
+      toast.error(error.message || 'Error signing out')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const value = {
+    user,
+    session,
+    isLoading,
+    signIn,
+    signUp,
+    signInWithGoogle,
+    signInWithOTP,
+    verifyOTP,
+    signOut,
+  }
+
   return (
-    <AuthContext.Provider value={dummyAuthValues}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )

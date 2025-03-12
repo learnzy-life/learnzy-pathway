@@ -62,7 +62,7 @@ const Header: React.FC = () => {
                   className="flex items-center text-learnzy-dark hover:text-learnzy-purple transition-colors"
                 >
                   <User className="w-5 h-5 mr-1" />
-                  <span>Profile</span>
+                  <span>{user.email?.split('@')[0] || 'Profile'}</span>
                 </Link>
                 <button
                   onClick={handleSignOut}
