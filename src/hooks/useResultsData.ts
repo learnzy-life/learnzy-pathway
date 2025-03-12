@@ -19,34 +19,41 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
       setErrorMessage(null);
 
       try {
+        // Get session ID from params or prop
         const id = sessionId || searchParams.get('sessionId');
         
         // Handle case when no session ID is provided
         if (!id) {
-          setErrorMessage('No session ID provided');
+          console.error('No session ID provided for results page');
+          setErrorMessage('No session ID provided. Please start a test first.');
           setLoading(false);
           return;
         }
         
         // Handle case when no subject is provided
         if (!subject) {
-          setErrorMessage('No subject provided');
+          console.error('No subject provided for results page');
+          setErrorMessage('No subject selected. Please choose a subject and start a test.');
           setLoading(false);
           return;
         }
+
+        console.log(`Fetching session data for ID: ${id} and subject: ${subject}`);
 
         // Fetch session data
         const sessionData = await getTestSession(id);
         
         if (!sessionData) {
-          setErrorMessage('No session data found');
+          console.error('No session data found for ID:', id);
+          setErrorMessage('No test data found. Please try taking the test again.');
           setLoading(false);
           return;
         }
 
         // Check if sessionData.questions exists and is an array
         if (!sessionData.questions || !Array.isArray(sessionData.questions) || sessionData.questions.length === 0) {
-          setErrorMessage('No question data available');
+          console.error('No question data available in session:', id);
+          setErrorMessage('No question data available for this test session.');
           setLoading(false);
           return;
         }
@@ -70,9 +77,8 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
           }
         }
         
-        // Calculate analytics
-        // Access the 'questions' property from the TestSession type
-        // Make sure we're passing valid arrays to calculateAnalytics
+        // Calculate analytics with the questions from sessionData
+        console.log(`Calculating analytics for ${sessionData.questions.length} questions`);
         const analytics = await calculateAnalytics(
           sessionData.questions, 
           sessionData.questions,
@@ -85,7 +91,7 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
         setResultsData(analytics);
       } catch (error) {
         console.error('Error fetching results data:', error);
-        setErrorMessage(error.message || 'Failed to load results data');
+        setErrorMessage(error.message || 'Failed to load results data. Please try again.');
       } finally {
         setLoading(false);
       }

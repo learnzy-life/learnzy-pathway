@@ -1,7 +1,7 @@
 
 import { BarChart, Book, CheckCircle2, Clock, PieChart } from 'lucide-react'
 import React from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 
 import ImprovementResources from '../components/ImprovementResources'
 import NextStepsSection from '../components/NextStepsSection'
@@ -32,17 +32,30 @@ const Results: React.FC = () => {
   }
 
   if (errorMessage) {
-    return <ResultsLoadingState loading={false} errorMessage={errorMessage} />
+    return (
+      <ResultsLoadingState 
+        loading={false} 
+        errorMessage={errorMessage} 
+      />
+    )
   }
 
   if (!resultsData) {
     return (
-      <ResultsLoadingState loading={false} errorMessage="No data available" />
+      <ResultsLoadingState 
+        loading={false} 
+        errorMessage="No data available. Please try taking a test first." 
+      />
     )
   }
 
   if (!subject) {
-    return <div>Invalid subject</div>
+    return (
+      <ResultsLoadingState
+        loading={false}
+        errorMessage="Subject not specified. Please select a subject."
+      />
+    )
   }
 
   const subjectTitle = getSubjectTitle(subject as Subject)
@@ -57,14 +70,22 @@ const Results: React.FC = () => {
       {
         type: 'NCERT',
         title: `${topic.name} NCERT Highlights`,
-        url: matchingResource?.ncert_link || `https://learnzy.com/resources/${subject}/ncert/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
-        description: matchingResource?.ncert_link === 'NA' ? 'Self-study recommended for this chapter' : 'Toppers-highlighted NCERT pages for this topic',
+        url: matchingResource?.ncert_link && matchingResource.ncert_link !== 'NA' 
+          ? matchingResource.ncert_link 
+          : `https://learnzy.com/resources/${subject}/ncert/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
+        description: matchingResource?.ncert_link === 'NA' 
+          ? 'Self-study recommended for this chapter' 
+          : 'Toppers-highlighted NCERT pages for this topic',
       },
       {
         type: 'Video',
         title: `${topic.name} Video Lecture`,
-        url: matchingResource?.video_link || `https://learnzy.com/resources/${subject}/video/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
-        description: matchingResource?.video_link === 'NA' ? 'Self-study recommended for this chapter' : 'Expert video tutorial for this topic',
+        url: matchingResource?.video_link && matchingResource.video_link !== 'NA'
+          ? matchingResource.video_link
+          : `https://learnzy.com/resources/${subject}/video/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
+        description: matchingResource?.video_link === 'NA' 
+          ? 'Self-study recommended for this chapter' 
+          : 'Expert video tutorial for this topic',
       },
     ]
 
