@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react'
-import { ArrowRight, Mail, Phone, Google } from 'lucide-react'
+import { ArrowRight, Mail, Phone, LogIn } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import { useAuth } from '../context/AuthContext'
@@ -226,7 +225,7 @@ const Auth: React.FC = () => {
                 onClick={handleGoogleSignIn}
                 className="w-full py-2 px-4 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center"
               >
-                <Google className="w-5 h-5 mr-2 text-red-500" />
+                <LogIn className="w-5 h-5 mr-2 text-red-500" />
                 Continue with Google
               </button>
             </div>
