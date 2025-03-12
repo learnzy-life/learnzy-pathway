@@ -1,4 +1,3 @@
-
 import { BarChart, Book, CheckCircle2, Clock, PieChart } from 'lucide-react'
 import React from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
@@ -15,7 +14,6 @@ import TopicBreakdown from '../components/TopicBreakdown'
 import { getSubjectTitle } from '../data/mockResultsData'
 import { useResultsData } from '../hooks/useResultsData'
 import { Subject } from '../services/questionService'
-import { processTimeAnalysisData } from '../services/testSession'
 
 const Results: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>()
@@ -120,10 +118,7 @@ const Results: React.FC = () => {
       <div className="mb-12">
         <SectionHeader icon={Clock} title="Time Management" />
         <TimeAnalysis
-          timeAnalysis={{
-            ...resultsData.timeAnalysis,
-            ...processTimeAnalysisData(resultsData.questions || []),
-          }}
+          timeAnalysis={resultsData.timeAnalysis}
         />
       </div>
 

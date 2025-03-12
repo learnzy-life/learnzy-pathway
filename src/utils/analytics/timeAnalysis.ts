@@ -29,26 +29,11 @@ export const calculateTimeAnalysis = (
   
   const idealTime = formatTime(idealTimeSeconds);
   
-  // Identify slow and quick questions
-  const slowQuestions: number[] = [];
-  const quickQuestions: number[] = [];
-  
   // For generating time data for the chart, map each question to its actual and ideal time
   const timeData = userAnswers.map(answer => {
     const questionDetail = questionMap.get(answer.id);
-    // Use the actual time_to_solve value from the database without any default value
-    // The default value will only be applied if getTimeToSolve doesn't find a value
     const idealTime = questionDetail ? getTimeToSolve(questionDetail) : 60;
     const actualTime = answer.timeTaken || 0;
-    
-    console.log(`Question ${answer.id}: actualTime=${actualTime}, idealTime=${idealTime}`);
-    
-    // Identify slow and quick questions based on actual vs ideal time
-    if (actualTime >= idealTime * 1.5 && idealTime > 0) {
-      slowQuestions.push(answer.id);
-    } else if (actualTime <= idealTime * 0.5 && idealTime > 0) {
-      quickQuestions.push(answer.id);
-    }
     
     return {
       questionId: answer.id,
@@ -57,7 +42,14 @@ export const calculateTimeAnalysis = (
     };
   });
   
-  console.log("Generated timeData:", timeData);
+  // Identify slow and quick questions based on actual vs ideal time
+  const slowQuestions = timeData
+    .filter(item => item.actualTime >= item.idealTime * 1.5 && item.idealTime > 0)
+    .map(item => item.questionId);
+    
+  const quickQuestions = timeData
+    .filter(item => item.actualTime <= item.idealTime * 0.5 && item.idealTime > 0)
+    .map(item => item.questionId);
   
   // Generate time management feedback
   let timeFeedback = "";

@@ -217,21 +217,21 @@ const LearnMore: React.FC = () => {
             <div className="card-glass p-6">
               <div className="mb-4">
                 <h4 className="font-medium text-lg">Rahul, Delhi</h4>
-                <p className="text-sm text-muted-foreground">NEET Score Improved by 120 points</p>
+                <p className="text-sm text-muted-foreground">NEET Score Improved by 120 marks</p>
               </div>
               <p className="italic text-muted-foreground mb-4">
                 "The pre-test breathing exercises helped me stay calm during the exam. I also focused my study time on weak areas that the analytics showed me."
               </p>
               <div className="flex items-center">
                 <Medal className="w-5 h-5 text-amber-500 mr-2" />
-                <span className="text-sm font-medium">Ranked in top 5% nationally</span>
+                <span className="text-sm font-medium">Significant improvement in overall performance</span>
               </div>
             </div>
             
             <div className="card-glass p-6">
               <div className="mb-4">
                 <h4 className="font-medium text-lg">Priya, Mumbai</h4>
-                <p className="text-sm text-muted-foreground">NEET Score Improved by 150 points</p>
+                <p className="text-sm text-muted-foreground">NEET Score Improved by 150 marks</p>
               </div>
               <p className="italic text-muted-foreground mb-4">
                 "I used to freeze during tests despite knowing the material. The mindfulness techniques really helped me stay focused and calm during my exam."
@@ -245,7 +245,7 @@ const LearnMore: React.FC = () => {
             <div className="card-glass p-6">
               <div className="mb-4">
                 <h4 className="font-medium text-lg">Ajay, Chennai</h4>
-                <p className="text-sm text-muted-foreground">NEET Score Improved by 95 points</p>
+                <p className="text-sm text-muted-foreground">NEET Score Improved by 95 marks</p>
               </div>
               <p className="italic text-muted-foreground mb-4">
                 "The detailed topic breakdown helped me focus on my weak areas in Biology. The resources were exactly what I needed to understand difficult concepts."
