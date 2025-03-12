@@ -13,14 +13,24 @@ const Auth: React.FC = () => {
   const location = useLocation()
   
   // Check if coming from a specific page that requires auth
-  const from = location.state?.from?.pathname || '/'
+  const from = location.state?.from || '/'
   
-  // If the user is already logged in, redirect to home page
+  // If the user is already logged in, redirect to home page or the page they came from
   useEffect(() => {
     if (user && !isLoading) {
       navigate(from, { replace: true })
     }
   }, [user, isLoading, navigate, from])
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-learnzy-purple/30 border-t-learnzy-purple rounded-full animate-spin mb-4"></div>
+        <p className="ml-3 text-lg">Loading...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">

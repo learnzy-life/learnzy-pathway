@@ -26,14 +26,18 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
     try {
       if (isLogin) {
         await signIn(email, password)
+        // Navigate only if sign-in was successful
         navigate('/')
       } else {
         await signUp(email, password)
-        toast.success('Check your email for the confirmation link!')
-        // Stay on page so user can check email
+        // Show success message but don't navigate - let user check email or sign in
+        toast.success('Account created successfully! You can now sign in.')
+        // Switch to login view after successful registration
+        setIsLogin(true)
       }
     } catch (error) {
       console.error('Authentication error:', error)
+      // Error handling already in signIn/signUp methods in AuthContext
     } finally {
       setLoading(false)
     }

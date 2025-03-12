@@ -50,7 +50,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password,
       })
       
-      if (error) throw error
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          throw new Error('Invalid email or password. Please try again.')
+        } else {
+          throw error
+        }
+      }
       
       if (data?.user) {
         toast.success('Successfully signed in!')
@@ -66,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string) => {
     try {
       setIsLoading(true)
-      const { error, data } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -74,15 +80,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       })
       
-      if (error) throw error
-      
-      if (data?.user?.identities?.length === 0) {
-        // User already exists
-        toast.error('An account with this email already exists. Please sign in instead.')
-        throw new Error('User already exists')
+      if (error) {
+        if (error.message.includes('User already registered')) {
+          throw new Error('An account with this email already exists. Please sign in instead.')
+        } else {
+          throw error
+        }
       }
       
-      toast.success('Check your email for the confirmation link!')
+      toast.success('Account created! You can now sign in.')
     } catch (error) {
       toast.error(error.message || 'Error signing up')
       throw error
@@ -116,6 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         redirectTo: window.location.origin + '/auth',
       })
       if (error) throw error
+      toast.success('Password reset email sent. Please check your inbox.')
     } catch (error) {
       toast.error(error.message || 'Error resetting password')
       throw error
