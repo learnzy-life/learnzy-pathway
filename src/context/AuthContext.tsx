@@ -12,6 +12,7 @@ type AuthContextType = {
   signUp: (email: string, password: string) => Promise<void>
   signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
+  resetPassword: (email: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -44,11 +45,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     try {
       setIsLoading(true)
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
+      
       if (error) throw error
+      
+      if (data?.user) {
+        toast.success('Successfully signed in!')
+      }
     } catch (error) {
       toast.error(error.message || 'Error signing in')
       throw error
@@ -60,11 +66,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string) => {
     try {
       setIsLoading(true)
-      const { error } = await supabase.auth.signUp({
+      const { error, data } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: window.location.origin + '/auth'
+        }
       })
+      
       if (error) throw error
+      
+      if (data?.user?.identities?.length === 0) {
+        // User already exists
+        toast.error('An account with this email already exists. Please sign in instead.')
+        throw new Error('User already exists')
+      }
+      
       toast.success('Check your email for the confirmation link!')
     } catch (error) {
       toast.error(error.message || 'Error signing up')
@@ -79,10 +96,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true)
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
+        options: {
+          redirectTo: window.location.origin + '/auth'
+        }
       })
       if (error) throw error
     } catch (error) {
       toast.error(error.message || 'Error signing in with Google')
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const resetPassword = async (email: string) => {
+    try {
+      setIsLoading(true)
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/auth',
+      })
+      if (error) throw error
+    } catch (error) {
+      toast.error(error.message || 'Error resetting password')
       throw error
     } finally {
       setIsLoading(false)
@@ -94,6 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true)
       const { error } = await supabase.auth.signOut()
       if (error) throw error
+      toast.success('Successfully signed out')
     } catch (error) {
       toast.error(error.message || 'Error signing out')
     } finally {
@@ -109,6 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signInWithGoogle,
     signOut,
+    resetPassword,
   }
 
   return (

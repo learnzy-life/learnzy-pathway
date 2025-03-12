@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LogIn } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
+import { toast } from 'sonner'
 
 interface AuthFormProps {
   isLogin: boolean
@@ -13,8 +14,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
   
-  const { signIn, signUp, signInWithGoogle } = useAuth()
+  const { signIn, signUp, signInWithGoogle, resetPassword } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,6 +29,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
         navigate('/')
       } else {
         await signUp(email, password)
+        toast.success('Check your email for the confirmation link!')
         // Stay on page so user can check email
       }
     } catch (error) {
@@ -43,6 +46,76 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
     } catch (error) {
       console.error('Google sign-in error:', error)
     }
+  }
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!email) {
+      toast.error('Please enter your email address')
+      return
+    }
+    
+    setLoading(true)
+    try {
+      await resetPassword(email)
+      toast.success('Check your email for password reset instructions')
+      setShowForgotPassword(false)
+    } catch (error) {
+      console.error('Password reset error:', error)
+      toast.error(error.message || 'Error resetting password')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (showForgotPassword) {
+    return (
+      <div className="card-glass p-8 animate-fade-in">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold">Reset Password</h2>
+          <p className="text-muted-foreground">Enter your email to receive a password reset link</p>
+        </div>
+        
+        <form onSubmit={handleResetPassword}>
+          <div className="mb-4">
+            <label htmlFor="reset-email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <input
+              id="reset-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              required
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-learnzy-purple"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2 px-4 bg-learnzy-purple text-white rounded-md hover:bg-learnzy-dark transition-colors flex items-center justify-center"
+          >
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+            ) : null}
+            Send Reset Link
+          </button>
+        </form>
+
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={() => setShowForgotPassword(false)}
+            className="text-learnzy-purple hover:underline"
+          >
+            Back to sign in
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -77,6 +150,17 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
             required
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-learnzy-purple"
           />
+          {isLogin && (
+            <div className="mt-1 text-right">
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-sm text-learnzy-purple hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
         </div>
 
         <button
