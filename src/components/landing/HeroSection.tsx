@@ -25,7 +25,7 @@ const HeroSection: React.FC = () => {
       
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-4 sm:px-0">
         <Link to="/subjects" className="button-primary w-full sm:w-auto">
-          Start Test Now <ArrowRight className="ml-2 w-5 h-5" />
+          Start Diagnostic Test <ArrowRight className="ml-2 w-5 h-5" />
         </Link>
         <Link to="/learn-more" className="button-secondary w-full sm:w-auto">
           Learn More

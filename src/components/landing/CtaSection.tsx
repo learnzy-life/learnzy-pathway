@@ -19,7 +19,7 @@ const CtaSection = () => {
             to="/subjects"
             className="button-primary inline-flex items-center"
           >
-            Take a Practice Test <ArrowRight className="ml-2 w-5 h-5" />
+            Take a Diagnostic Test <ArrowRight className="ml-2 w-5 h-5" />
           </Link>
           
           <Link

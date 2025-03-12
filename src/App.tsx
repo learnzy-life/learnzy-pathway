@@ -30,11 +30,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/subjects" element={<SubjectSelection />} />
-            <Route path="/pre-test/:subject" element={
-              <ProtectedRoute>
-                <PreTest />
-              </ProtectedRoute>
-            } />
+            <Route path="/pre-test/:subject" element={<PreTest />} />
             <Route path="/test/:subject" element={
               <ProtectedRoute>
                 <Test />

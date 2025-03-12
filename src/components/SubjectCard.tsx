@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Lock } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface SubjectCardProps {
   subject: 'biology' | 'physics' | 'chemistry';
@@ -22,10 +23,23 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
   attempted = false,
   locked = false
 }) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
   // Map the original colors to our new amber theme
   const colorClass = color === 'bg-green-500' ? 'bg-learnzy-amber' :
                      color === 'bg-blue-500' ? 'bg-learnzy-amber/80' :
                      color === 'bg-purple-500' ? 'bg-learnzy-amber/90' : color;
+  
+  const handleSubjectClick = (e: React.MouseEvent) => {
+    if (locked) return;
+    
+    // If user is not authenticated, redirect to auth page
+    if (!user && !attempted) {
+      e.preventDefault();
+      navigate('/auth', { state: { from: `/pre-test/${subject}` } });
+    }
+  };
   
   return (
     <div className={`card-glass p-6 card-hover h-full ${attempted ? 'opacity-60' : ''} ${locked ? 'opacity-70' : ''}`}>
@@ -62,7 +76,8 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
           </div>
         ) : (
           <Link 
-            to={`/pre-test/${subject}`}
+            to={user ? `/pre-test/${subject}` : '#'}
+            onClick={handleSubjectClick}
             className="button-primary inline-flex items-center justify-center w-full mt-auto"
           >
             Start Test <ArrowRight className="ml-2 w-4 h-4" />
