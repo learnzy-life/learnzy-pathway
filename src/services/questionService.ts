@@ -1,3 +1,4 @@
+
 import { toast } from 'sonner'
 import { supabase } from '../lib/supabase'
 
@@ -112,7 +113,7 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
       const formattedQuestions: Question[] = data.map((q: any) => {
         // Handle differences in column naming between tables
         if (subject === 'biology') {
-          // Biology now uses lowercase with underscores
+          // Biology uses lowercase with underscores
           return {
             id: q.q_no || 0,
             text: q.question_text || 'No question text available',

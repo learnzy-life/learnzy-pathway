@@ -30,7 +30,7 @@ export const useTestQuestions = (
           if (subject === 'biology') {
             return {
               ...q,
-              Subject: q.Subject || subject,
+              Subject: q.subject || subject,
               Chapter_name: q.chapter_name || 'Unknown Chapter',
               Topic: q.topic || 'General Topic',
               Subtopic: q.subtopic || 'General Subtopic',

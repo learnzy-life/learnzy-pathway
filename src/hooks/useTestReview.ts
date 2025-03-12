@@ -53,18 +53,17 @@ export const useTestReview = (sessionId: string | null) => {
           
           // Add options to each question from localStorage
           const questionsWithOptions = sortedQuestions.map(q => {
-            // Create options array for each question
-            const options = [
-              { id: 'A', text: q.Option_A || '' },
-              { id: 'B', text: q.Option_B || '' },
-              { id: 'C', text: q.Option_C || '' },
-              { id: 'D', text: q.Option_D || '' },
-            ].filter(option => option.text !== ''); // Filter out empty options
+            // Create options array for each question if not already present
+            if (!q.options) {
+              q.options = [
+                { id: 'A', text: q.Option_A || '' },
+                { id: 'B', text: q.Option_B || '' },
+                { id: 'C', text: q.Option_C || '' },
+                { id: 'D', text: q.Option_D || '' },
+              ].filter(option => option.text !== '');
+            }
             
-            return {
-              ...q,
-              options
-            };
+            return q;
           });
           
           setQuestions(questionsWithOptions);
