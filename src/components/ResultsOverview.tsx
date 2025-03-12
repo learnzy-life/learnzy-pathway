@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Share2, Award, Trophy } from 'lucide-react';
@@ -35,10 +34,10 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-3 border border-gray-200 shadow-lg rounded-md">
+        <div className="bg-white p-2 sm:p-3 border border-gray-200 shadow-lg rounded-md text-xs sm:text-sm">
           <p className="font-medium">{data.name}</p>
-          <p className="text-sm text-gray-600">Accuracy: {data.score}%</p>
-          <p className="text-sm text-gray-600">
+          <p className="text-gray-600">Accuracy: {data.score}%</p>
+          <p className="text-gray-600">
             {data.total} questions: {data.correct} correct, {data.incorrect} incorrect
           </p>
         </div>
@@ -84,76 +83,100 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
   // Only show high performance card if accuracy is above 95% and we have topic data
   const showHighPerformanceCard = accuracy > 95 && bestTopic !== null;
 
+  // Process chapter data for better mobile display
+  const processChapterDataForMobile = () => {
+    // If we have more than 4 chapters, only show top and bottom performing chapters on mobile
+    if (subjectScores.length > 4) {
+      const sortedScores = [...subjectScores].sort((a, b) => b.score - a.score);
+      const topChapters = sortedScores.slice(0, 2);
+      const bottomChapters = sortedScores.slice(-2);
+      
+      // Generate shortened names for mobile
+      return [...topChapters, ...bottomChapters].map(chapter => ({
+        ...chapter,
+        mobileName: chapter.name.length > 10 ? `${chapter.name.substring(0, 8)}...` : chapter.name
+      }));
+    }
+    
+    // Otherwise just add shortened names
+    return subjectScores.map(chapter => ({
+      ...chapter,
+      mobileName: chapter.name.length > 10 ? `${chapter.name.substring(0, 8)}...` : chapter.name
+    }));
+  };
+
+  const mobileChapterData = processChapterDataForMobile();
+
   return (
-    <div className="card-glass p-6 mb-8">
-      <h3 className="text-xl font-semibold text-learnzy-dark mb-6">Performance Overview</h3>
+    <div className="card-glass p-4 sm:p-6 mb-6 sm:mb-8">
+      <h3 className="text-lg sm:text-xl font-semibold text-learnzy-dark mb-4 sm:mb-6">Performance Overview</h3>
       
       {/* High Performance Card */}
       {showHighPerformanceCard && (
-        <div className="bg-gradient-to-r from-amber-100 to-amber-200 p-5 rounded-xl border border-amber-300 shadow-md mb-8 animate-fade-in">
-          <div className="flex justify-between items-start">
-            <div className="flex items-center">
-              <Trophy className="w-8 h-8 text-amber-500 mr-3" />
+        <div className="bg-gradient-to-r from-amber-100 to-amber-200 p-3 sm:p-5 rounded-xl border border-amber-300 shadow-md mb-6 sm:mb-8 animate-fade-in">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start">
+            <div className="flex items-center mb-3 sm:mb-0">
+              <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-amber-500 mr-2 sm:mr-3" />
               <div>
-                <h4 className="text-lg font-bold text-amber-900">{getRandomMessage(bestTopic.name)}</h4>
-                <p className="text-amber-800">You achieved an outstanding {accuracy}% accuracy!</p>
+                <h4 className="text-base sm:text-lg font-bold text-amber-900">{getRandomMessage(bestTopic.name)}</h4>
+                <p className="text-sm text-amber-800">You achieved an outstanding {accuracy}% accuracy!</p>
               </div>
             </div>
             <button 
               onClick={shareOnWhatsApp}
-              className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg flex items-center text-sm transition-colors duration-200"
+              className="bg-green-500 hover:bg-green-600 text-white py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg flex items-center text-xs sm:text-sm transition-colors duration-200 mt-2 sm:mt-0"
             >
-              <Share2 className="w-4 h-4 mr-1" /> Share
+              <Share2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> Share
             </button>
           </div>
         </div>
       )}
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="p-5 bg-white rounded-xl border border-gray-100 shadow-subtle">
-          <h4 className="text-sm text-muted-foreground mb-1">Total Score</h4>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
+        <div className="p-3 sm:p-5 bg-white rounded-xl border border-gray-100 shadow-subtle">
+          <h4 className="text-xs sm:text-sm text-muted-foreground mb-1">Total Score</h4>
           <div className="flex items-end">
-            <span className="text-3xl font-semibold text-learnzy-dark">{totalScore}</span>
-            <span className="text-base text-muted-foreground ml-1 mb-0.5">/ {maxScore}</span>
+            <span className="text-xl sm:text-3xl font-semibold text-learnzy-dark">{totalScore}</span>
+            <span className="text-sm sm:text-base text-muted-foreground ml-1 mb-0.5">/ {maxScore}</span>
           </div>
         </div>
         
-        <div className="p-5 bg-white rounded-xl border border-gray-100 shadow-subtle">
-          <h4 className="text-sm text-muted-foreground mb-1">Accuracy</h4>
+        <div className="p-3 sm:p-5 bg-white rounded-xl border border-gray-100 shadow-subtle">
+          <h4 className="text-xs sm:text-sm text-muted-foreground mb-1">Accuracy</h4>
           <div className="flex items-end">
-            <span className="text-3xl font-semibold text-learnzy-dark">{accuracy}%</span>
+            <span className="text-xl sm:text-3xl font-semibold text-learnzy-dark">{accuracy}%</span>
           </div>
         </div>
         
-        <div className="p-5 bg-white rounded-xl border border-gray-100 shadow-subtle">
-          <h4 className="text-sm text-muted-foreground mb-1">Time Spent</h4>
+        <div className="p-3 sm:p-5 bg-white rounded-xl border border-gray-100 shadow-subtle">
+          <h4 className="text-xs sm:text-sm text-muted-foreground mb-1">Time Spent</h4>
           <div className="flex items-end">
-            <span className="text-3xl font-semibold text-learnzy-dark">{timeSpent}</span>
+            <span className="text-xl sm:text-3xl font-semibold text-learnzy-dark">{timeSpent}</span>
           </div>
         </div>
       </div>
       
-      <div className="mb-8">
-        <h4 className="text-base font-medium text-learnzy-dark mb-4">Response Breakdown</h4>
-        <div className="flex space-x-4">
-          <div className="flex-1 p-4 bg-green-100/50 rounded-lg">
-            <h5 className="text-sm text-muted-foreground mb-1">Correct</h5>
-            <span className="text-xl font-semibold text-green-600">{correctAnswers}</span>
+      <div className="mb-6 sm:mb-8">
+        <h4 className="text-sm sm:text-base font-medium text-learnzy-dark mb-3 sm:mb-4">Response Breakdown</h4>
+        <div className="flex space-x-2 sm:space-x-4">
+          <div className="flex-1 p-2 sm:p-4 bg-green-100/50 rounded-lg">
+            <h5 className="text-xs sm:text-sm text-muted-foreground mb-1">Correct</h5>
+            <span className="text-lg sm:text-xl font-semibold text-green-600">{correctAnswers}</span>
           </div>
-          <div className="flex-1 p-4 bg-red-100/50 rounded-lg">
-            <h5 className="text-sm text-muted-foreground mb-1">Incorrect</h5>
-            <span className="text-xl font-semibold text-red-600">{incorrectAnswers}</span>
+          <div className="flex-1 p-2 sm:p-4 bg-red-100/50 rounded-lg">
+            <h5 className="text-xs sm:text-sm text-muted-foreground mb-1">Incorrect</h5>
+            <span className="text-lg sm:text-xl font-semibold text-red-600">{incorrectAnswers}</span>
           </div>
-          <div className="flex-1 p-4 bg-gray-100/50 rounded-lg">
-            <h5 className="text-sm text-muted-foreground mb-1">Unattempted</h5>
-            <span className="text-xl font-semibold text-gray-600">{unattempted}</span>
+          <div className="flex-1 p-2 sm:p-4 bg-gray-100/50 rounded-lg">
+            <h5 className="text-xs sm:text-sm text-muted-foreground mb-1">Unattempted</h5>
+            <span className="text-lg sm:text-xl font-semibold text-gray-600">{unattempted}</span>
           </div>
         </div>
       </div>
       
       <div>
-        <h4 className="text-base font-medium text-learnzy-dark mb-4">Chapter Performance</h4>
-        <div className="h-64">
+        <h4 className="text-sm sm:text-base font-medium text-learnzy-dark mb-3 sm:mb-4">Chapter Performance</h4>
+        <div className="h-56 sm:h-64">
           {subjectScores.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
@@ -163,19 +186,26 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis 
                   dataKey="name" 
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 10 }}
                   angle={-45}
                   textAnchor="end"
                   height={60}
+                  // Hide labels on smaller screens
+                  tickFormatter={(value) => {
+                    if (window.innerWidth < 640) {
+                      return value.length > 6 ? `${value.substring(0, 5)}...` : value;
+                    }
+                    return value;
+                  }}
                 />
-                <YAxis domain={[0, 100]} />
+                <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
                 <Tooltip content={renderTooltip} />
                 <Bar dataKey="score" fill="#FFBD59" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
             <div className="h-full flex items-center justify-center">
-              <p className="text-muted-foreground">No chapter data available</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">No chapter data available</p>
             </div>
           )}
         </div>

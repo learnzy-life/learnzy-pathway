@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ZAxis, Cell } from 'recharts';
-import { ArrowLeft, Clock, EyeIcon } from 'lucide-react';
+import { ArrowLeft, Clock, EyeIcon, ZoomIn, ZoomOut } from 'lucide-react';
 import { TimeData } from './types';
 
 const CustomTooltip = ({ active, payload }: any) => {
@@ -47,6 +47,7 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
   const { subject } = useParams();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('sessionId');
+  const [zoom, setZoom] = React.useState(false);
   
   // Check if timeData exists and has elements
   const hasTimeData = Array.isArray(timeData) && timeData.length > 0;
@@ -68,23 +69,37 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
     .sort((a, b) => Math.abs(b.timeDiff) - Math.abs(a.timeDiff))
     .slice(0, 3) : [];
 
+  const toggleZoom = () => {
+    setZoom(!zoom);
+  };
+
   return (
-    <div className="card-glass p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold text-learnzy-dark">Time per Question</h3>
-        <Link 
-          to={`/test-review/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`}
-          className="button-secondary flex items-center text-sm py-2 px-4"
-        >
-          <EyeIcon className="w-4 h-4 mr-2" /> Review Test
-        </Link>
+    <div className="card-glass p-4 sm:p-6">
+      <div className="flex justify-between items-center mb-4 sm:mb-6">
+        <h3 className="text-lg sm:text-xl font-semibold text-learnzy-dark">Time per Question</h3>
+        <div className="flex gap-2">
+          <button 
+            onClick={toggleZoom}
+            className="button-secondary flex items-center text-xs py-1 px-2 sm:text-sm sm:py-2 sm:px-3"
+            aria-label={zoom ? "Zoom out" : "Zoom in"}
+          >
+            {zoom ? <ZoomOut className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> : <ZoomIn className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />}
+            {zoom ? "Zoom Out" : "Zoom In"}
+          </button>
+          <Link 
+            to={`/test-review/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`}
+            className="button-secondary flex items-center text-xs py-1 px-2 sm:text-sm sm:py-2 sm:px-3"
+          >
+            <EyeIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> Review
+          </Link>
+        </div>
       </div>
 
-      <div className="h-72 mb-6">
+      <div className={`${zoom ? "h-[600px]" : "h-64 sm:h-72"} mb-4 sm:mb-6 overflow-x-auto`}>
         {hasTimeData ? (
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart
-              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+              margin={{ top: 20, right: 20, bottom: 40, left: 30 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
@@ -92,22 +107,24 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
                 dataKey="questionId" 
                 name="Question" 
                 domain={[0, 'dataMax']}
-                label={{ value: 'Question Number', position: 'insideBottom', offset: -10 }}
+                label={{ value: 'Question Number', position: 'insideBottom', offset: -15 }}
+                tick={{ fontSize: 10 }}
               />
               <YAxis 
                 type="number" 
                 dataKey="actualTime" 
                 name="Time" 
-                label={{ value: 'Time (seconds)', angle: -90, position: 'insideLeft' }}
+                label={{ value: 'Time (seconds)', angle: -90, position: 'insideLeft', offset: -10, fontSize: 12 }}
+                tick={{ fontSize: 10 }}
               />
-              <ZAxis range={[100, 100]} />
+              <ZAxis range={[80, 80]} />
               <Tooltip content={<CustomTooltip />} />
               <ReferenceLine
                 stroke="#FFBD59"
                 strokeDasharray="3 3"
                 strokeWidth={2}
                 segment={timeData.map(item => ({ x: item.questionId, y: item.idealTime }))}
-                label={{ value: 'Ideal Time', position: 'insideTopRight' }}
+                label={{ value: 'Ideal', position: 'insideTopRight', fontSize: 10 }}
               />
               <Scatter name="Time Spent" data={timeData} fill="#8884d8">
                 {timeData.map((entry, index) => (
@@ -121,7 +138,7 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
           </ResponsiveContainer>
         ) : (
           <div className="h-full flex items-center justify-center">
-            <p className="text-muted-foreground text-center">
+            <p className="text-muted-foreground text-center text-sm">
               Not enough data to display time chart. <br />
               Either no questions were attempted or time data is incomplete.
             </p>
@@ -129,24 +146,24 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-subtle">
-          <h4 className="text-sm text-muted-foreground mb-1">Avg. Time per Question</h4>
-          <div className="text-xl font-semibold text-learnzy-dark">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="bg-white p-3 sm:p-4 rounded-lg border border-gray-100 shadow-subtle">
+          <h4 className="text-xs sm:text-sm text-muted-foreground mb-1">Avg. Time per Question</h4>
+          <div className="text-base sm:text-xl font-semibold text-learnzy-dark">
             {formatTime(avgTimePerQuestion)}
           </div>
         </div>
         
-        <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-subtle">
-          <h4 className="text-sm text-muted-foreground mb-1">Questions Slower Than Ideal</h4>
-          <div className="text-xl font-semibold text-red-500">
+        <div className="bg-white p-3 sm:p-4 rounded-lg border border-gray-100 shadow-subtle">
+          <h4 className="text-xs sm:text-sm text-muted-foreground mb-1">Questions Slower Than Ideal</h4>
+          <div className="text-base sm:text-xl font-semibold text-red-500">
             {slowerQuestions}
           </div>
         </div>
         
-        <div className="bg-white p-4 rounded-lg border border-gray-100 shadow-subtle">
-          <h4 className="text-sm text-muted-foreground mb-1">Questions Faster Than Ideal</h4>
-          <div className="text-xl font-semibold text-green-500">
+        <div className="bg-white p-3 sm:p-4 rounded-lg border border-gray-100 shadow-subtle">
+          <h4 className="text-xs sm:text-sm text-muted-foreground mb-1">Questions Faster Than Ideal</h4>
+          <div className="text-base sm:text-xl font-semibold text-green-500">
             {fasterQuestions}
           </div>
         </div>
@@ -154,20 +171,20 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
 
       {extremeQuestions.length > 0 && (
         <div>
-          <h4 className="text-base font-medium mb-3">Most Significant Time Deviations</h4>
-          <div className="space-y-3">
+          <h4 className="text-sm sm:text-base font-medium mb-2 sm:mb-3">Most Significant Time Deviations</h4>
+          <div className="space-y-2 sm:space-y-3">
             {extremeQuestions.map((q) => (
               <div 
                 key={q.questionId}
-                className={`p-3 rounded-lg border ${
+                className={`p-2 sm:p-3 rounded-lg border ${
                   q.timeDiff > 0 
                     ? 'bg-red-50 border-red-100' 
                     : 'bg-green-50 border-green-100'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">Question {q.questionId}</span>
-                  <span className={q.timeDiff > 0 ? 'text-red-600' : 'text-green-600'}>
+                  <span className="font-medium text-sm">Question {q.questionId}</span>
+                  <span className={`text-xs sm:text-sm ${q.timeDiff > 0 ? 'text-red-600' : 'text-green-600'}`}>
                     {q.timeDiff > 0 
                       ? `${formatTime(q.timeDiff)} slower` 
                       : `${formatTime(Math.abs(q.timeDiff))} faster`}

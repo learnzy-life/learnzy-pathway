@@ -44,7 +44,7 @@ const ResultsLayout: React.FC<ResultsLayoutProps> = ({ children, subjectTitle })
           <style>
             body {
               font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-              padding: 2rem;
+              padding: 1rem;
               background-color: #f5f5f7;
             }
             .results-container {
@@ -53,25 +53,39 @@ const ResultsLayout: React.FC<ResultsLayoutProps> = ({ children, subjectTitle })
               background-color: white;
               border-radius: 8px;
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-              padding: 2rem;
+              padding: 1.5rem;
             }
             h1 {
               color: #333;
-              font-size: 2rem;
+              font-size: 1.5rem;
               margin-bottom: 1rem;
             }
             .header {
               display: flex;
               justify-content: space-between;
               align-items: center;
-              margin-bottom: 2rem;
+              margin-bottom: 1.5rem;
               border-bottom: 1px solid #eee;
               padding-bottom: 1rem;
             }
             .learnzy-brand {
               font-weight: bold;
-              font-size: 1.5rem;
+              font-size: 1.25rem;
               color: #9b87f5;
+            }
+            @media (min-width: 640px) {
+              body {
+                padding: 2rem;
+              }
+              .results-container {
+                padding: 2rem;
+              }
+              h1 {
+                font-size: 2rem;
+              }
+              .learnzy-brand {
+                font-size: 1.5rem;
+              }
             }
           </style>
         </head>
@@ -120,31 +134,31 @@ const ResultsLayout: React.FC<ResultsLayoutProps> = ({ children, subjectTitle })
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container mx-auto px-4 sm:px-6 pt-20 sm:pt-24 pb-16">
-        <section className="py-6 sm:py-8 max-w-5xl mx-auto">
-          <Link to="/subjects" className="flex items-center text-muted-foreground hover:text-learnzy-dark mb-6 sm:mb-8 transition-colors duration-200">
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Subjects
+      <main className="container mx-auto px-3 sm:px-6 pt-16 sm:pt-24 pb-12 sm:pb-16">
+        <section className="py-4 sm:py-8 max-w-5xl mx-auto">
+          <Link to="/subjects" className="flex items-center text-muted-foreground hover:text-learnzy-dark mb-4 sm:mb-8 transition-colors duration-200 text-sm sm:text-base">
+            <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" /> Back to Subjects
           </Link>
           
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 sm:mb-10">
-            <div className="mb-4 md:mb-0">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold mb-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-10">
+            <div className="mb-4 sm:mb-0">
+              <h1 className="text-xl sm:text-3xl md:text-4xl font-display font-bold mb-1 sm:mb-2">
                 {subjectTitle} Test Results
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Great job completing your diagnostic test! Here's a detailed breakdown of your performance.
               </p>
             </div>
             
-            <div className="flex space-x-3">
+            <div className="flex space-x-2 sm:space-x-3">
               <button 
-                className="button-secondary text-sm sm:text-base py-2 px-4 sm:px-6 flex items-center"
+                className="button-secondary text-xs sm:text-base py-1.5 sm:py-2 px-2 sm:px-6 flex items-center"
                 onClick={handleDownload}
               >
-                <Download className="w-4 h-4 mr-2" /> Download
+                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> Download
               </button>
-              <button className="button-secondary text-sm sm:text-base py-2 px-4 sm:px-6 flex items-center">
-                <Share2 className="w-4 h-4 mr-2" /> Share
+              <button className="button-secondary text-xs sm:text-base py-1.5 sm:py-2 px-2 sm:px-6 flex items-center">
+                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> Share
               </button>
             </div>
           </div>
