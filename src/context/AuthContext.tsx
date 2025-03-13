@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Session, User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
@@ -13,6 +12,8 @@ type AuthContextType = {
   signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<void>
+  bypassAuth: () => void
+  isDevelopmentBypass: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -21,26 +22,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isDevelopmentBypass, setIsDevelopmentBypass] = useState(false)
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user || null)
-      setIsLoading(false)
-    })
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+    // Check if dev bypass is active in localStorage
+    const devBypass = localStorage.getItem('devAuthBypass') === 'true'
+    setIsDevelopmentBypass(devBypass)
+    
+    if (!devBypass) {
+      // Only fetch real auth if not in bypass mode
+      // Get initial session
+      supabase.auth.getSession().then(({ data: { session } }) => {
         setSession(session)
         setUser(session?.user || null)
         setIsLoading(false)
-      }
-    )
+      })
 
-    return () => subscription.unsubscribe()
+      // Listen for auth changes
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        (_event, session) => {
+          setSession(session)
+          setUser(session?.user || null)
+          setIsLoading(false)
+        }
+      )
+
+      return () => subscription.unsubscribe()
+    } else {
+      // If in dev bypass mode, set a fake user
+      setIsLoading(false)
+    }
   }, [])
+
+  const bypassAuth = () => {
+    // Create fake user and session for development
+    const fakeUser = {
+      id: 'dev-user-id',
+      email: 'dev@example.com',
+      app_metadata: {},
+      user_metadata: {},
+      aud: 'authenticated',
+      created_at: new Date().toISOString()
+    } as User
+    
+    setUser(fakeUser)
+    localStorage.setItem('devAuthBypass', 'true')
+    setIsDevelopmentBypass(true)
+    toast.success('Development auth bypass enabled')
+  }
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -134,6 +163,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       setIsLoading(true)
+      
+      // If in dev bypass mode, just clear the bypass
+      if (isDevelopmentBypass) {
+        localStorage.removeItem('devAuthBypass')
+        setIsDevelopmentBypass(false)
+        setUser(null)
+        toast.success('Development bypass disabled')
+        return
+      }
+      
       const { error } = await supabase.auth.signOut()
       if (error) throw error
       toast.success('Successfully signed out')
@@ -153,6 +192,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signInWithGoogle,
     signOut,
     resetPassword,
+    bypassAuth,
+    isDevelopmentBypass
   }
 
   return (

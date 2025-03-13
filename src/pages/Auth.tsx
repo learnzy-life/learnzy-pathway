@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext'
 
 const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true)
-  const { user, isLoading } = useAuth()
+  const { user, isLoading, bypassAuth, isDevelopmentBypass } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   
@@ -17,10 +17,10 @@ const Auth: React.FC = () => {
   
   // If the user is already logged in, redirect to home page or the page they came from
   useEffect(() => {
-    if (user && !isLoading) {
+    if ((user || isDevelopmentBypass) && !isLoading) {
       navigate(from, { replace: true })
     }
-  }, [user, isLoading, navigate, from])
+  }, [user, isLoading, navigate, from, isDevelopmentBypass])
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -40,6 +40,16 @@ const Auth: React.FC = () => {
         <section className="py-12 max-w-md mx-auto">
           <AuthHeader isLogin={isLogin} />
           <AuthForm isLogin={isLogin} setIsLogin={setIsLogin} />
+          
+          {/* Development bypass button */}
+          <div className="mt-8 text-center">
+            <button
+              onClick={bypassAuth}
+              className="text-sm text-gray-500 hover:text-learnzy-purple"
+            >
+              [DEV] Bypass Authentication
+            </button>
+          </div>
         </section>
       </main>
     </div>

@@ -11,14 +11,14 @@ import { useAuth } from '../../context/AuthContext'
 const PreTest: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>()
   const navigate = useNavigate()
-  const { user, isLoading } = useAuth()
+  const { user, isLoading, isDevelopmentBypass } = useAuth()
 
-  // Redirect to auth page if not authenticated
+  // Redirect to auth page if not authenticated or using dev bypass
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isLoading && !user && !isDevelopmentBypass) {
       navigate('/auth', { state: { from: `/pre-test/${subject}` } })
     }
-  }, [user, isLoading, navigate, subject])
+  }, [user, isLoading, navigate, subject, isDevelopmentBypass])
 
   if (!subject) {
     return <div>Invalid subject</div>

@@ -23,7 +23,7 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
   attempted = false,
   locked = false
 }) => {
-  const { user } = useAuth();
+  const { user, isDevelopmentBypass } = useAuth();
   const navigate = useNavigate();
   
   // Map the original colors to our new amber theme
@@ -34,8 +34,8 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
   const handleSubjectClick = (e: React.MouseEvent) => {
     if (locked) return;
     
-    // If user is not authenticated, redirect to auth page
-    if (!user && !attempted) {
+    // If user is not authenticated and not using dev bypass, redirect to auth page
+    if (!user && !isDevelopmentBypass && !attempted) {
       e.preventDefault();
       navigate('/auth', { state: { from: `/pre-test/${subject}` } });
     }
@@ -76,7 +76,7 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
           </div>
         ) : (
           <Link 
-            to={user ? `/pre-test/${subject}` : '#'}
+            to={(user || isDevelopmentBypass) ? `/pre-test/${subject}` : '#'}
             onClick={handleSubjectClick}
             className="button-primary inline-flex items-center justify-center w-full mt-auto"
           >
