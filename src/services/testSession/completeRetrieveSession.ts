@@ -36,7 +36,13 @@ export const completeTestSession = async (
       Priority_Level: q.Priority_Level || '',
       Time_to_Solve: q.Time_to_Solve || 0,
       Key_Concept_Tested: q.Key_Concept_Tested || '',
-      Common_Pitfalls: q.Common_Pitfalls || ''
+      Common_Pitfalls: q.Common_Pitfalls || '',
+      // Include options data for review
+      Option_A: q.Option_A || '',
+      Option_B: q.Option_B || '',
+      Option_C: q.Option_C || '',
+      Option_D: q.Option_D || '',
+      options: q.options || []
     }))
 
     // Get subject-level metadata from the first question

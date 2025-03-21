@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ZAxis, Cell } from 'recharts';
+import { ResponsiveContainer, ComposedChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ZAxis, Legend } from 'recharts';
 import { ArrowLeft, Clock, EyeIcon, ZoomIn, ZoomOut } from 'lucide-react';
 import { TimeData } from './types';
 
@@ -90,7 +90,7 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
             to={`/test-review/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`}
             className="button-secondary flex items-center text-xs py-1 px-2 sm:text-sm sm:py-2 sm:px-3"
           >
-            <EyeIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> Review
+            <EyeIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" /> Review Questions
           </Link>
         </div>
       </div>
@@ -98,8 +98,9 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
       <div className={`${zoom ? "h-[600px]" : "h-64 sm:h-72"} mb-4 sm:mb-6 overflow-x-auto`}>
         {hasTimeData ? (
           <ResponsiveContainer width="100%" height="100%">
-            <ScatterChart
+            <ComposedChart
               margin={{ top: 20, right: 20, bottom: 40, left: 30 }}
+              data={timeData}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
@@ -112,29 +113,25 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
               />
               <YAxis 
                 type="number" 
-                dataKey="actualTime" 
                 name="Time" 
                 label={{ value: 'Time (seconds)', angle: -90, position: 'insideLeft', offset: -10, fontSize: 12 }}
                 tick={{ fontSize: 10 }}
               />
-              <ZAxis range={[80, 80]} />
               <Tooltip content={<CustomTooltip />} />
-              <ReferenceLine
-                stroke="#FFBD59"
-                strokeDasharray="3 3"
-                strokeWidth={2}
-                segment={timeData.map(item => ({ x: item.questionId, y: item.idealTime }))}
-                label={{ value: 'Ideal', position: 'insideTopRight', fontSize: 10 }}
+              <Legend />
+              <Bar 
+                dataKey="actualTime" 
+                name="Your Time" 
+                fill="#4f46e5" 
+                barSize={20} 
               />
-              <Scatter name="Time Spent" data={timeData} fill="#8884d8">
-                {timeData.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
-                    fill={entry.actualTime > entry.idealTime ? '#f87171' : '#4ade80'} 
-                  />
-                ))}
-              </Scatter>
-            </ScatterChart>
+              <Bar 
+                dataKey="idealTime" 
+                name="Ideal Time" 
+                fill="#FFBD59" 
+                barSize={20} 
+              />
+            </ComposedChart>
           </ResponsiveContainer>
         ) : (
           <div className="h-full flex items-center justify-center">

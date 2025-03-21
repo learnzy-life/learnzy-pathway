@@ -78,7 +78,12 @@ export const useTestActions = (
         Priority_Level: q.Priority_Level || '',
         Time_to_Solve: q.Time_to_Solve || 0,
         Key_Concept_Tested: q.Key_Concept_Tested || '',
-        Common_Pitfalls: q.Common_Pitfalls || ''
+        Common_Pitfalls: q.Common_Pitfalls || '',
+        Option_A: q.Option_A || q.option_a || '',
+        Option_B: q.Option_B || q.option_b || '',
+        Option_C: q.Option_C || q.option_c || '',
+        Option_D: q.Option_D || q.option_d || '',
+        options: q.options || []
       }
     })
 
