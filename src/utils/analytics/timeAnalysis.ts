@@ -42,6 +42,8 @@ export const calculateTimeAnalysis = (
     };
   });
   
+  console.log("Generated time data for chart:", timeData);
+  
   // Identify slow and quick questions based on actual vs ideal time
   const slowQuestions = timeData
     .filter(item => item.actualTime >= item.idealTime * 1.5 && item.idealTime > 0)

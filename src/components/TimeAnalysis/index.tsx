@@ -16,7 +16,7 @@ interface TimeAnalysisProps {
     slowQuestions: number[]
     quickQuestions: number[]
     feedback: string
-    timeData?: TimeData[]
+    timeData: TimeData[]
   }
 }
 
@@ -31,6 +31,7 @@ const TimeAnalysis: React.FC<TimeAnalysisProps> = ({ timeAnalysis }) => {
 
       <TimeSummary summary={timeAnalysis.timeSummary} />
 
+      {/* Ensure TimeChartSection always receives the data */}
       <TimeChartSection timeData={timeAnalysis.timeData || []} />
 
       <TimeBreakdownCards 

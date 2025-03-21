@@ -25,6 +25,8 @@ export const useTestActions = (
     answerId: string,
     timeTaken: number
   ) => {
+    console.log(`Question ${questionId} answered in ${timeTaken} seconds`);
+    
     setQuestions((prev) =>
       prev.map((q) => (q.id === questionId ? { ...q, answer: answerId, timeTaken } : q))
     )
