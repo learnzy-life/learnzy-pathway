@@ -4,7 +4,6 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { ResponsiveContainer, ComposedChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ZAxis, Legend } from 'recharts';
 import { ArrowLeft, Clock, EyeIcon, ZoomIn, ZoomOut } from 'lucide-react';
 import { TimeData } from './types';
-import { ScrollArea } from '../ui/scroll-area';
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
@@ -74,14 +73,6 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
     setZoom(!zoom);
   };
 
-  // Calculate chart width based on number of questions
-  const getChartWidth = () => {
-    if (!hasTimeData) return '100%';
-    // Allocate at least 40px per question for better readability
-    const minWidth = timeData.length * 40;
-    return Math.max(minWidth, 300);
-  };
-
   return (
     <div className="card-glass p-4 sm:p-6">
       <div className="flex justify-between items-center mb-4 sm:mb-6">
@@ -104,49 +95,44 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
         </div>
       </div>
 
-      <div className={`${zoom ? "h-[600px]" : "h-64 sm:h-72"} mb-4 sm:mb-6`}>
+      <div className={`${zoom ? "h-[600px]" : "h-64 sm:h-72"} mb-4 sm:mb-6 overflow-x-auto`}>
         {hasTimeData ? (
-          <ScrollArea className="w-full h-full">
-            <div style={{ width: getChartWidth(), height: '100%', minWidth: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart
-                  margin={{ top: 20, right: 30, bottom: 40, left: 30 }}
-                  data={timeData}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    type="number" 
-                    dataKey="questionId" 
-                    name="Question" 
-                    domain={[0, 'dataMax']}
-                    label={{ value: 'Question Number', position: 'insideBottom', offset: -15 }}
-                    tick={{ fontSize: 10 }}
-                    allowDecimals={false}
-                  />
-                  <YAxis 
-                    type="number" 
-                    name="Time" 
-                    label={{ value: 'Time (seconds)', angle: -90, position: 'insideLeft', offset: -10, fontSize: 12 }}
-                    tick={{ fontSize: 10 }}
-                  />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Bar 
-                    dataKey="actualTime" 
-                    name="Your Time" 
-                    fill="#4f46e5" 
-                    barSize={20} 
-                  />
-                  <Bar 
-                    dataKey="idealTime" 
-                    name="Ideal Time" 
-                    fill="#FFBD59" 
-                    barSize={20} 
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
-            </div>
-          </ScrollArea>
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart
+              margin={{ top: 20, right: 20, bottom: 40, left: 30 }}
+              data={timeData}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                type="number" 
+                dataKey="questionId" 
+                name="Question" 
+                domain={[0, 'dataMax']}
+                label={{ value: 'Question Number', position: 'insideBottom', offset: -15 }}
+                tick={{ fontSize: 10 }}
+              />
+              <YAxis 
+                type="number" 
+                name="Time" 
+                label={{ value: 'Time (seconds)', angle: -90, position: 'insideLeft', offset: -10, fontSize: 12 }}
+                tick={{ fontSize: 10 }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Bar 
+                dataKey="actualTime" 
+                name="Your Time" 
+                fill="#4f46e5" 
+                barSize={20} 
+              />
+              <Bar 
+                dataKey="idealTime" 
+                name="Ideal Time" 
+                fill="#FFBD59" 
+                barSize={20} 
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
         ) : (
           <div className="h-full flex items-center justify-center">
             <p className="text-muted-foreground text-center text-sm">

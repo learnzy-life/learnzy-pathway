@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Share2, Award, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
 import { ChapterPerformance } from '../utils/analytics/types';
-import { ScrollArea } from './ui/scroll-area';
 
 interface ResultsOverviewProps {
   subject: string;
@@ -47,14 +45,6 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
     }
     
     return null;
-  };
-
-  // Calculate chart width based on number of chapters
-  const getChartWidth = () => {
-    if (!subjectScores || subjectScores.length === 0) return '100%';
-    // Allocate at least 100px per chapter for better readability
-    const minWidth = subjectScores.length * 100;
-    return Math.max(minWidth, 300);
   };
 
   // Array of celebratory messages for high performers
@@ -188,29 +178,31 @@ const ResultsOverview: React.FC<ResultsOverviewProps> = ({
         <h4 className="text-sm sm:text-base font-medium text-learnzy-dark mb-3 sm:mb-4">Chapter Performance</h4>
         <div className="h-56 sm:h-64">
           {subjectScores.length > 0 ? (
-            <ScrollArea className="w-full h-full">
-              <div style={{ width: getChartWidth(), height: '100%', minWidth: '100%' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={subjectScores}
-                    margin={{ top: 5, right: 5, left: 5, bottom: 25 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis 
-                      dataKey="name" 
-                      tick={{ fontSize: 10 }}
-                      angle={-45}
-                      textAnchor="end"
-                      height={60}
-                      interval={0}
-                    />
-                    <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
-                    <Tooltip content={renderTooltip} />
-                    <Bar dataKey="score" fill="#FFBD59" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </ScrollArea>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={subjectScores}
+                margin={{ top: 5, right: 5, left: 5, bottom: 25 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis 
+                  dataKey="name" 
+                  tick={{ fontSize: 10 }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
+                  // Hide labels on smaller screens
+                  tickFormatter={(value) => {
+                    if (window.innerWidth < 640) {
+                      return value.length > 6 ? `${value.substring(0, 5)}...` : value;
+                    }
+                    return value;
+                  }}
+                />
+                <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
+                <Tooltip content={renderTooltip} />
+                <Bar dataKey="score" fill="#FFBD59" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           ) : (
             <div className="h-full flex items-center justify-center">
               <p className="text-xs sm:text-sm text-muted-foreground">No chapter data available</p>

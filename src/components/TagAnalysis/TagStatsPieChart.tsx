@@ -2,7 +2,6 @@
 import React from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
 import { tagOptions } from '../../pages/PreAnalysis/constants/tagOptions'
-import { ScrollArea } from '../ui/scroll-area'
 
 // Define tag colors with a new color scheme
 const COLORS = [
@@ -47,9 +46,6 @@ const TagStatsPieChart: React.FC<TagStatsPieChartProps> = ({ tagCounts }) => {
     )
   }
 
-  // Sort data by value (descending) for better presentation
-  const sortedData = [...data].sort((a, b) => b.value - a.value);
-
   // Custom tooltip for the pie chart
   const renderTooltip = (props: any) => {
     const { active, payload } = props
@@ -67,52 +63,27 @@ const TagStatsPieChart: React.FC<TagStatsPieChartProps> = ({ tagCounts }) => {
     return null
   }
 
-  // Custom legend that handles overflow with scrolling
-  const renderLegend = (props: any) => {
-    const { payload } = props;
-    
-    return (
-      <ScrollArea className="w-full h-24 mt-4">
-        <div className="px-2">
-          {payload.map((entry: any, index: number) => (
-            <div key={`legend-${index}`} className="flex items-center mb-2">
-              <div 
-                className="w-3 h-3 rounded-sm mr-2" 
-                style={{ backgroundColor: entry.color }}
-              />
-              <span className="text-xs text-gray-700">{entry.value}</span>
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
-    );
-  };
-
   return (
     <div className="h-64">
-      <ScrollArea className="w-full h-full">
-        <div className="min-w-[300px] h-full pr-4">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={sortedData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {sortedData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip content={renderTooltip} />
-              <Legend content={renderLegend} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </ScrollArea>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            outerRadius={80}
+            fill="#8884d8"
+            dataKey="value"
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip content={renderTooltip} />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
     </div>
   )
 }
