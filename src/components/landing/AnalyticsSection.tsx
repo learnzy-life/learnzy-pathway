@@ -81,29 +81,22 @@ const AnalyticsSection: React.FC = () => {
             <div className="grid grid-cols-2 gap-2">
               <div className="overflow-hidden rounded-lg border border-gray-200">
                 <img 
-                  src="/assets/results-overview.png" 
-                  alt="Results overview dashboard" 
+                  src="/lovable-uploads/5727a0a5-76a0-4c56-bed5-b1b1df931182.png" 
+                  alt="Mistake Pattern Analysis" 
                   className="w-full h-auto object-cover"
                 />
               </div>
               <div className="overflow-hidden rounded-lg border border-gray-200">
                 <img 
-                  src="/assets/topic-analysis.png" 
-                  alt="Topic breakdown analysis" 
+                  src="/lovable-uploads/451ffd40-0f9a-4ffc-af08-883bf433741e.png" 
+                  alt="Chapter Performance" 
                   className="w-full h-auto object-cover"
                 />
               </div>
-              <div className="overflow-hidden rounded-lg border border-gray-200">
+              <div className="overflow-hidden rounded-lg border border-gray-200 col-span-2">
                 <img 
                   src="/assets/time-analysis.png" 
-                  alt="Time management analysis" 
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-              <div className="overflow-hidden rounded-lg border border-gray-200">
-                <img 
-                  src="/assets/tag-analysis.png" 
-                  alt="Error pattern analysis" 
+                  alt="Improvement Topics" 
                   className="w-full h-auto object-cover"
                 />
               </div>
