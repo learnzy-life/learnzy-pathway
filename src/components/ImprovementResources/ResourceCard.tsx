@@ -56,32 +56,32 @@ const ResourceCard: React.FC<ResourceCardProps> = ({
   const matchingResource = findMatchingResource(topic);
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-subtle overflow-hidden">
-      <div className="p-3 sm:p-5 border-b border-gray-100">
-        <div className="flex justify-between items-center mb-2 sm:mb-3">
-          <h4 className="text-sm sm:font-medium text-learnzy-dark">{topic}</h4>
-          <span className={`text-xs sm:text-sm font-medium ${getAccuracyColor(accuracy)}`}>
+    <div className="bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+      <div className="p-4 sm:p-6 border-b border-gray-100">
+        <div className="flex justify-between items-center mb-3 sm:mb-4">
+          <h4 className="text-base sm:text-lg font-semibold text-learnzy-dark">{topic}</h4>
+          <span className={`text-sm sm:text-base font-medium ${getAccuracyColor(accuracy)}`}>
             {accuracy}%
           </span>
         </div>
         
-        <div className="flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-3">
+        <div className="flex flex-wrap gap-2 sm:gap-3 mb-3 sm:mb-4">
           {difficultyLevel && (
-            <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full ${getDifficultyColor(difficultyLevel)}`}>
+            <span className={`text-xs sm:text-sm px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full ${getDifficultyColor(difficultyLevel)}`}>
               {difficultyLevel}
             </span>
           )}
           {priorityLevel && (
-            <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full ${getPriorityColor(priorityLevel)}`}>
+            <span className={`text-xs sm:text-sm px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full ${getPriorityColor(priorityLevel)}`}>
               {priorityLevel} Priority
             </span>
           )}
         </div>
       </div>
       
-      <div className="px-3 sm:px-5 py-2 sm:py-3">
-        <h5 className="text-xs sm:text-sm font-medium text-learnzy-dark mb-2 sm:mb-3">Recommended Resources</h5>
-        <ul className="space-y-2 sm:space-y-3">
+      <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50">
+        <h5 className="text-sm sm:text-base font-medium text-learnzy-dark mb-3 sm:mb-4">Recommended Resources</h5>
+        <ul className="space-y-3 sm:space-y-4">
           {/* NCERT Resource */}
           <ResourceItem 
             type="NCERT"

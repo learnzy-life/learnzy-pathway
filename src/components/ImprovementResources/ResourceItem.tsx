@@ -26,45 +26,45 @@ const ResourceItem: React.FC<ResourceItemProps> = ({
     }
   };
 
-  // If resource is not available, show unavailable state
+  // If resource is not available, show unavailable state with more prominence
   if (!resourceAvailable) {
     return (
-      <li>
-        <div className="flex items-start p-1.5 sm:p-2 rounded-lg bg-gray-50">
-          <div className="p-1 sm:p-1.5 bg-gray-200 rounded-md mr-2 sm:mr-3">
+      <li className="border rounded-lg">
+        <div className="flex items-start p-2.5 sm:p-3.5 rounded-lg bg-gray-50">
+          <div className="p-1.5 sm:p-2 bg-gray-200 rounded-md mr-3 sm:mr-4">
             {getResourceIcon(type)}
           </div>
           <div className="flex-1">
-            <div className="text-xs sm:text-sm font-medium text-learnzy-dark">Self-study recommended</div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground">{type}</div>
+            <div className="text-sm sm:text-base font-medium text-learnzy-dark">Self-study recommended</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">{type} resource not available for {topic}</div>
           </div>
         </div>
       </li>
     );
   }
 
-  // If resource is available, show as a link
+  // If resource is available, show as a prominent link
   const defaultLink = `https://learnzy.com/resources/biology/${type.toLowerCase()}/${topic.toLowerCase().replace(/\s+/g, '-')}`;
   const link = resourceLink || defaultLink;
 
   return (
-    <li>
+    <li className="border rounded-lg hover:border-learnzy-purple transition-colors">
       <a 
         href={link}
-        className="flex items-start p-1.5 sm:p-2 rounded-lg hover:bg-gray-50 transition-colors"
+        className="flex items-start p-2.5 sm:p-3.5 rounded-lg hover:bg-gray-50 transition-colors"
         target="_blank"
         rel="noopener noreferrer"
       >
-        <div className="p-1 sm:p-1.5 bg-learnzy-purple/10 rounded-md mr-2 sm:mr-3">
+        <div className="p-1.5 sm:p-2 bg-learnzy-purple/10 rounded-md mr-3 sm:mr-4">
           {getResourceIcon(type)}
         </div>
         <div className="flex-1">
-          <div className="text-xs sm:text-sm font-medium text-learnzy-dark">{topic} {type}</div>
-          <div className="text-[10px] sm:text-xs text-muted-foreground">
-            {type === 'NCERT' ? 'Study Material' : 'Video Lecture'}
+          <div className="text-sm sm:text-base font-medium text-learnzy-dark">{topic} {type}</div>
+          <div className="text-xs sm:text-sm text-muted-foreground">
+            {type === 'NCERT' ? 'Topper-highlighted study material' : 'Expert video lecture'}
           </div>
         </div>
-        <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground self-center" />
+        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground self-center" />
       </a>
     </li>
   );
