@@ -22,7 +22,8 @@ interface TopicItem {
   }[];
 }
 
-interface DifficultyPerformance {
+// Rename to interface to avoid conflict
+interface DifficultyPerformanceData {
   easy: {
     total: number;
     correct: number;
@@ -43,7 +44,7 @@ interface DifficultyPerformance {
 interface TopicBreakdownProps {
   topics: TopicItem[];
   isFirstTest?: boolean;
-  overallDifficultyPerformance?: DifficultyPerformance;
+  overallDifficultyPerformance?: DifficultyPerformanceData;
 }
 
 const TopicBreakdown: React.FC<TopicBreakdownProps> = ({ 
