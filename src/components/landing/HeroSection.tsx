@@ -7,7 +7,7 @@ const HeroSection: React.FC = () => {
   return (
     <section className="py-10 md:py-24 flex flex-col items-center text-center relative">
       {/* Background Element */}
-      <div className="absolute top-20 right-0 md:right-10 opacity-5 w-48 md:w-64 h-48 md:h-64 rotate-12">
+      <div className="absolute top-20 right-0 md:right-10 opacity-5 w-48 md:w-64 h-48 md:h-64 rotate-12" aria-hidden="true">
         <Brain className="w-full h-full text-learnzy-purple" />
       </div>
       
@@ -24,10 +24,10 @@ const HeroSection: React.FC = () => {
       </p>
       
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-4 sm:px-0">
-        <Link to="/subjects" className="button-primary w-full sm:w-auto">
+        <Link to="/subjects" className="button-primary">
           Start Diagnostic Test <ArrowRight className="ml-2 w-5 h-5" />
         </Link>
-        <Link to="/learn-more" className="button-secondary w-full sm:w-auto">
+        <Link to="/learn-more" className="button-secondary">
           Learn More
         </Link>
       </div>

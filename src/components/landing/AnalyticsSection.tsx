@@ -7,7 +7,7 @@ const AnalyticsSection: React.FC = () => {
   return (
     <section className="py-10 md:py-16 relative px-3 sm:px-0">
       {/* Background Element */}
-      <div className="absolute top-40 right-0 opacity-5 w-48 md:w-72 h-48 md:h-72">
+      <div className="absolute top-40 right-0 opacity-5 w-48 md:w-72 h-48 md:h-72" aria-hidden="true">
         <BarChart className="w-full h-full text-blue-400" />
       </div>
       
@@ -50,7 +50,7 @@ const AnalyticsSection: React.FC = () => {
         </div>
       </div>
       
-      <div className="mt-8 md:mt-10 p-5 md:p-6 card-glass bg-gradient-to-r from-blue-50 to-purple-50">
+      <div className="mt-8 md:mt-10 p-4 md:p-6 card-glass bg-gradient-to-r from-blue-50 to-purple-50">
         <div className="flex flex-col md:flex-row items-center gap-5 md:gap-6">
           <div className="w-full md:w-1/2 order-2 md:order-1">
             <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-3">NEET-Focused Analysis</h3>
@@ -77,13 +77,16 @@ const AnalyticsSection: React.FC = () => {
             </ul>
           </div>
           <div className="w-full md:w-1/2 order-1 md:order-2 bg-white p-3 md:p-4 rounded-xl border border-gray-100 shadow-subtle mb-4 md:mb-0">
-            {/* Grid of result page screenshots */}
+            {/* Grid of result page screenshots - optimized with width and height attributes */}
             <div className="grid grid-cols-2 gap-2">
               <div className="overflow-hidden rounded-lg border border-gray-200">
                 <img 
                   src="/lovable-uploads/56dce0b3-91a3-4aa8-856f-8fa445c42a80.png" 
                   alt="Mistake Pattern Analysis" 
                   className="w-full h-auto object-cover"
+                  width="200"
+                  height="150"
+                  loading="lazy"
                 />
               </div>
               <div className="overflow-hidden rounded-lg border border-gray-200">
@@ -91,6 +94,9 @@ const AnalyticsSection: React.FC = () => {
                   src="/lovable-uploads/b3565144-b0e6-4617-b512-2f426c59e44d.png" 
                   alt="Chapter Performance" 
                   className="w-full h-auto object-cover"
+                  width="200"
+                  height="150"
+                  loading="lazy"
                 />
               </div>
               <div className="overflow-hidden rounded-lg border border-gray-200 col-span-2">
@@ -98,6 +104,9 @@ const AnalyticsSection: React.FC = () => {
                   src="/lovable-uploads/b4acfb8c-2a45-4fe6-8cc3-9f929b070d69.png" 
                   alt="Improvement Topics" 
                   className="w-full h-auto object-cover"
+                  width="400"
+                  height="200"
+                  loading="lazy"
                 />
               </div>
             </div>

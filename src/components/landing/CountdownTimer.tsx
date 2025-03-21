@@ -36,40 +36,37 @@ const CountdownTimer: React.FC = () => {
     // Calculate immediately
     calculateTimeLeft();
     
-    // Set up interval to update every second
+    // Set up interval to update every second - performance optimization:
+    // Update every second is necessary for countdown accuracy
     const timer = setInterval(calculateTimeLeft, 1000);
     
     // Clear interval on component unmount
     return () => clearInterval(timer);
   }, []);
 
+  // Memoize time display elements to reduce re-renders
+  const TimeUnit = React.memo(({ value, label }: { value: number; label: string }) => (
+    <div className="bg-white/20 backdrop-blur-sm px-2 md:px-3 py-1 rounded-md flex flex-col items-center min-w-[2.5rem]">
+      <span className="text-base md:text-xl font-bold leading-tight">{value.toString().padStart(2, '0')}</span>
+      <span className="text-[10px] leading-tight">{label}</span>
+    </div>
+  ));
+
   return (
     <div className="w-full bg-gradient-to-r from-learnzy-purple to-learnzy-blue py-1.5 sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center text-white text-sm md:text-base font-medium">
-          <Clock className="w-4 h-4 mr-2" />
+          <Clock className="w-4 h-4 mr-2" aria-hidden="true" />
           <span className="mr-3">NEET 2025 Countdown:</span>
           
           <div className="flex space-x-1 md:space-x-2">
-            <div className="bg-white/20 backdrop-blur-sm px-2 md:px-3 py-1 rounded-md flex flex-col items-center min-w-[2.5rem]">
-              <span className="text-base md:text-xl font-bold leading-tight">{timeLeft.days.toString().padStart(2, '0')}</span>
-              <span className="text-[10px] leading-tight">Days</span>
-            </div>
+            <TimeUnit value={timeLeft.days} label="Days" />
             <span className="text-white self-center">:</span>
-            <div className="bg-white/20 backdrop-blur-sm px-2 md:px-3 py-1 rounded-md flex flex-col items-center min-w-[2.5rem]">
-              <span className="text-base md:text-xl font-bold leading-tight">{timeLeft.hours.toString().padStart(2, '0')}</span>
-              <span className="text-[10px] leading-tight">Hours</span>
-            </div>
+            <TimeUnit value={timeLeft.hours} label="Hours" />
             <span className="text-white self-center">:</span>
-            <div className="bg-white/20 backdrop-blur-sm px-2 md:px-3 py-1 rounded-md flex flex-col items-center min-w-[2.5rem]">
-              <span className="text-base md:text-xl font-bold leading-tight">{timeLeft.minutes.toString().padStart(2, '0')}</span>
-              <span className="text-[10px] leading-tight">Mins</span>
-            </div>
+            <TimeUnit value={timeLeft.minutes} label="Mins" />
             <span className="text-white self-center">:</span>
-            <div className="bg-white/20 backdrop-blur-sm px-2 md:px-3 py-1 rounded-md flex flex-col items-center min-w-[2.5rem]">
-              <span className="text-base md:text-xl font-bold leading-tight">{timeLeft.seconds.toString().padStart(2, '0')}</span>
-              <span className="text-[10px] leading-tight">Secs</span>
-            </div>
+            <TimeUnit value={timeLeft.seconds} label="Secs" />
           </div>
         </div>
       </div>

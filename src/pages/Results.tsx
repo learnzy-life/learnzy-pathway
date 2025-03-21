@@ -71,7 +71,7 @@ const Results: React.FC = () => {
         title: `${topic.name} NCERT Highlights`,
         url: matchingResource?.ncert_link && matchingResource.ncert_link !== 'NA' 
           ? matchingResource.ncert_link 
-          : `https://learnzy.com/resources/${subject}/ncert/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
+          : `https://learnzy.ai/resources/${subject}/ncert/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
         description: matchingResource?.ncert_link === 'NA' 
           ? 'Self-study recommended for this chapter' 
           : 'Toppers-highlighted NCERT pages for this topic',
@@ -81,7 +81,7 @@ const Results: React.FC = () => {
         title: `${topic.name} Video Lecture`,
         url: matchingResource?.video_link && matchingResource.video_link !== 'NA'
           ? matchingResource.video_link
-          : `https://learnzy.com/resources/${subject}/video/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
+          : `https://learnzy.ai/resources/${subject}/video/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
         description: matchingResource?.video_link === 'NA' 
           ? 'Self-study recommended for this chapter' 
           : 'Expert video tutorial for this topic',

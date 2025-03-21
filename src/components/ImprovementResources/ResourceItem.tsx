@@ -44,7 +44,8 @@ const ResourceItem: React.FC<ResourceItemProps> = ({
   }
 
   // If resource is available, show as a prominent link
-  const defaultLink = `https://learnzy.com/resources/biology/${type.toLowerCase()}/${topic.toLowerCase().replace(/\s+/g, '-')}`;
+  // Using learnzy.ai instead of learnzy.com to match your actual domain
+  const defaultLink = `https://learnzy.ai/resources/${type.toLowerCase()}/${topic.toLowerCase().replace(/\s+/g, '-')}`;
   const link = resourceLink || defaultLink;
 
   return (
@@ -54,6 +55,7 @@ const ResourceItem: React.FC<ResourceItemProps> = ({
         className="flex items-start p-2.5 sm:p-3.5 rounded-lg hover:bg-gray-50 transition-colors"
         target="_blank"
         rel="noopener noreferrer"
+        aria-label={`${topic} ${type} resource`}
       >
         <div className="p-1.5 sm:p-2 bg-learnzy-purple/10 rounded-md mr-3 sm:mr-4">
           {getResourceIcon(type)}

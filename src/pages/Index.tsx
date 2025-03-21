@@ -8,7 +8,7 @@ import HeroSection from '../components/landing/HeroSection'
 import WellnessSection from '../components/landing/WellnessSection'
 import CountdownTimer from '../components/landing/CountdownTimer'
 
-const Index: React.FC = () => {
+const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-white">
       {/* Countdown Timer at the top */}
