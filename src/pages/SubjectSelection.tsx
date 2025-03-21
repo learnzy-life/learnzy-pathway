@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '../components/Header';
 import SubjectCard from '../components/SubjectCard';
@@ -39,7 +40,14 @@ const SubjectSelection: React.FC = () => {
     let isLocked = true;
 
     if (index < 5) {
-      const dates = ['2024-03-22', '2024-03-24', '2024-03-26', '2024-03-28', '2024-03-30', '2024-04-01'];
+      // Updated dates as requested
+      const dates = [
+        '2025-03-26', // Mock 1 - March 26, 2025
+        '2025-03-28', // Mock 2 - March 28, 2025
+        '2025-03-30', // Mock 3 - March 30, 2025
+        '2025-04-01', // Mock 4 - April 1, 2025
+        '2025-04-03'  // Mock 5 - April 3, 2025
+      ];
       unlockDate = dates[index];
     } else {
       isLocked = true;
