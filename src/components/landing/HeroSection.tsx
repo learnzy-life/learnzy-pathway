@@ -1,14 +1,9 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, Brain, Clock } from 'lucide-react';
+import { ArrowRight, BookOpen, Brain } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
-  // Calculate days until NEET 2025 (assuming May 5, 2025)
-  const neetDate = new Date(2025, 4, 5); // May 5, 2025
-  const today = new Date();
-  const daysUntilNeet = Math.ceil((neetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  
   return (
     <section className="py-10 md:py-24 flex flex-col items-center text-center relative">
       {/* Background Element */}
@@ -35,17 +30,6 @@ const HeroSection: React.FC = () => {
         <Link to="/learn-more" className="button-secondary w-full sm:w-auto">
           Learn More
         </Link>
-      </div>
-      
-      {/* NEET 2025 Countdown Alert */}
-      <div className="mt-8 md:mt-10 bg-amber-50 p-3 md:p-4 rounded-lg border border-amber-100 max-w-2xl mx-auto animate-pulse-soft px-4 sm:px-4">
-        <div className="flex items-center justify-center gap-3 mb-2">
-          <Clock className="h-5 w-5 text-amber-600" />
-          <h3 className="font-semibold text-amber-800">{daysUntilNeet} days until NEET 2025</h3>
-        </div>
-        <p className="text-amber-700 text-sm">
-          Start your preparation today with our specialized diagnostic tests and mental wellness tools designed specifically for NEET 2025!
-        </p>
       </div>
       
       {/* USP Statement */}

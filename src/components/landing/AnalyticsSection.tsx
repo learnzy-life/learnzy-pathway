@@ -77,11 +77,37 @@ const AnalyticsSection: React.FC = () => {
             </ul>
           </div>
           <div className="w-full md:w-1/2 order-1 md:order-2 bg-white p-3 md:p-4 rounded-xl border border-gray-100 shadow-subtle mb-4 md:mb-0">
-            <img 
-              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" 
-              alt="NEET analytics dashboard" 
-              className="w-full h-auto rounded-lg"
-            />
+            {/* Grid of result page screenshots */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="overflow-hidden rounded-lg border border-gray-200">
+                <img 
+                  src="/assets/results-overview.png" 
+                  alt="Results overview dashboard" 
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+              <div className="overflow-hidden rounded-lg border border-gray-200">
+                <img 
+                  src="/assets/topic-analysis.png" 
+                  alt="Topic breakdown analysis" 
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+              <div className="overflow-hidden rounded-lg border border-gray-200">
+                <img 
+                  src="/assets/time-analysis.png" 
+                  alt="Time management analysis" 
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+              <div className="overflow-hidden rounded-lg border border-gray-200">
+                <img 
+                  src="/assets/tag-analysis.png" 
+                  alt="Error pattern analysis" 
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
