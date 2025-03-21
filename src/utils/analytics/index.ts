@@ -1,3 +1,4 @@
+
 import { QuestionResult } from '../../services/testSession';
 import { Subject } from '../../services/questionService';
 import { QueryResult, ResultsData, SubjectScores } from './types';
@@ -54,8 +55,6 @@ export const calculateAnalytics = async (
   
   // Get time analysis - pass the subject to ensure correct time limits
   const timeAnalysis = calculateTimeAnalysis(userAnswers, questionMap, subj);
-  
-  console.log("Time analysis calculated:", timeAnalysis);
   
   // Get default data for other sections
   const cognitiveInsights = getDefaultCognitiveInsights();

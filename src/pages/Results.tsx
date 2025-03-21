@@ -57,9 +57,6 @@ const Results: React.FC = () => {
     )
   }
 
-  // Ensure timeAnalysis contains the necessary timeData
-  console.log("Time analysis data:", resultsData.timeAnalysis);
-
   const subjectTitle = getSubjectTitle(subject as Subject)
 
   const improvementResources = resultsData.topics.map((topic) => {

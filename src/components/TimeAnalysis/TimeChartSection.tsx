@@ -53,8 +53,6 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
   // Check if timeData exists and has elements
   const hasTimeData = Array.isArray(timeData) && timeData.length > 0;
   
-  console.log("TimeChartSection received data:", timeData);
-  
   // Generate stats safely
   const totalActualTime = hasTimeData ? timeData.reduce((sum, item) => sum + item.actualTime, 0) : 0;
   const totalIdealTime = hasTimeData ? timeData.reduce((sum, item) => sum + item.idealTime, 0) : 0;

@@ -38,8 +38,6 @@ export function processTimeAnalysisData(questions: any[]) {
     };
   });
 
-  console.log('Generated time data:', timeData);
-
   // Find slow questions using the same threshold (1.5x) as in calculateTimeAnalysis
   const slowQuestions = timeData
     .filter((item) => item.actualTime >= item.idealTime * 1.5 && item.idealTime > 0)
