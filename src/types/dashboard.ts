@@ -21,7 +21,7 @@ export interface Question {
   correctAnswer?: string;
   answer?: string;
   timeTaken?: number;
-  // Add metadata fields that are being referenced in useTestActions.ts
+  // Metadata fields that are being referenced
   Subject?: string;
   Chapter_name?: string;
   Topic?: string;
@@ -45,6 +45,15 @@ export interface Question {
   time_to_solve?: number;
   key_concept_tested?: string;
   common_pitfalls?: string;
+  // Add option properties for both uppercase and lowercase variants
+  Option_A?: string;
+  Option_B?: string;
+  Option_C?: string;
+  Option_D?: string;
+  option_a?: string;
+  option_b?: string;
+  option_c?: string;
+  option_d?: string;
 }
 
 export interface Option {
