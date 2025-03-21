@@ -1,3 +1,4 @@
+
 import React from 'react'
 import Header from '../components/Header'
 import AnalyticsSection from '../components/landing/AnalyticsSection'
@@ -15,14 +16,14 @@ const Index: React.FC = () => {
         {/* Hero Section */}
         <HeroSection />
 
+        {/* Features Section - Moved up for better flow */}
+        <FeaturesSection />
+
         {/* Wellness + Learning Integration Section */}
         <WellnessSection />
 
         {/* Analytics Section */}
         <AnalyticsSection />
-
-        {/* Features Section */}
-        <FeaturesSection />
 
         {/* Testimonial/CTA Section */}
         <CtaSection />
