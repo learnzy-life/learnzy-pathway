@@ -22,7 +22,7 @@ interface TopicItem {
   }[];
 }
 
-// Rename to interface to avoid conflict
+// Use a different name to avoid conflict with the imported component
 interface DifficultyPerformanceData {
   easy: {
     total: number;
