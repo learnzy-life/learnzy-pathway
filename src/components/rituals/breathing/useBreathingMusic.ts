@@ -17,9 +17,11 @@ export const useBreathingMusic = ({ isActive }: UseBreathingMusicProps) => {
       audioRef.current.loop = true;
       audioRef.current.volume = 0.4;
       audioRef.current.preload = "auto";
+      audioRef.current.crossOrigin = "anonymous"; // Add crossOrigin for CORS issues
       
-      // Use a reliable calming music file (royalty-free from Mixkit)
-      audioRef.current.src = "https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3";
+      // Use a content delivery network URL for better global access
+      // Use a relative path to avoid CORS issues on different domains
+      audioRef.current.src = "/audio/calming-music.mp3";
       
       // Add event listeners for better error handling
       audioRef.current.addEventListener('canplaythrough', () => {
@@ -29,6 +31,11 @@ export const useBreathingMusic = ({ isActive }: UseBreathingMusicProps) => {
       
       audioRef.current.addEventListener('error', (e) => {
         console.error('Audio loading error:', e);
+        // Fallback to another source if the primary source fails
+        if (audioRef.current) {
+          audioRef.current.src = "https://assets.mixkit.co/music/preview/mixkit-serene-view-443.mp3";
+          console.log('Trying fallback audio source');
+        }
       });
       
       // iOS Safari and some mobile browsers require user interaction

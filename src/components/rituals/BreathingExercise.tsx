@@ -22,17 +22,28 @@ const BreathingExercise: React.FC<BreathingExerciseProps> = ({ step, isActive })
     // Touch event to unlock audio on iOS
     const unlockAudioOnStart = () => {
       if (audioRef.current && isActive) {
-        audioRef.current.play().catch(err => {
-          console.log('Initial audio play attempt:', err);
-        });
+        // Add a small timeout to ensure the component is fully rendered
+        // before attempting to play audio
+        setTimeout(() => {
+          audioRef.current?.play().catch(err => {
+            console.log('Initial audio play attempt:', err);
+          });
+        }, 300);
       }
     };
     
-    // Attempt to play audio on component mount
+    // Attempt to play audio on component mount with a delay
     if (isActive) {
       unlockAudioOnStart();
     }
-  }, [isActive]);
+    
+    // Cleanup function
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+  }, [isActive, audioRef]);
   
   return (
     <div className="text-center">
