@@ -6,6 +6,7 @@ import MeditationFloatingPrompt from './meditation/MeditationFloatingPrompt';
 import MeditationGuideDisplay from './meditation/MeditationGuideDisplay';
 import { useVoiceGuidance } from './meditation/useVoiceGuidance';
 import { useFloatingPrompt } from './meditation/useFloatingPrompt';
+import { useBreathingMusic } from './breathing/useBreathingMusic';
 
 interface MeditationProps {
   isActive: boolean;
@@ -41,6 +42,9 @@ const Meditation: React.FC<MeditationProps> = ({ isActive, timeLeft, audioError 
     setCurrentGuideIndex,
     meditationGuide: MEDITATION_GUIDE
   });
+  
+  // Add background music to meditation as well
+  const { audioRef } = useBreathingMusic({ isActive });
   
   // Control breathing animation
   useEffect(() => {
