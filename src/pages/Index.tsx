@@ -21,11 +21,11 @@ const Index = () => {
         {/* Hero Section */}
         <HeroSection />
 
-        {/* Features Section - Moved up for better flow */}
-        <FeaturesSection />
-        
-        {/* YouTube Video Tutorial Section */}
+        {/* YouTube Video Tutorial Section - Moved above Features */}
         <YoutubeVideo />
+
+        {/* Features Section */}
+        <FeaturesSection />
 
         {/* Wellness + Learning Integration Section */}
         <WellnessSection />
