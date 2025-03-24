@@ -22,7 +22,7 @@ const SubjectSelection: React.FC = () => {
       icon: '⚛️',
       color: 'bg-learnzy-amber/80',
       attempted: false,
-      locked: true
+      locked: false
     },
     {
       id: 'chemistry',
@@ -31,7 +31,7 @@ const SubjectSelection: React.FC = () => {
       icon: '⚗️',
       color: 'bg-learnzy-amber/90',
       attempted: false,
-      locked: true
+      locked: false
     }
   ];
 
