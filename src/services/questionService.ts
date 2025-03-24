@@ -145,8 +145,32 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
             key_concept_tested: q.key_concept_tested,
             common_pitfalls: q.common_pitfalls,
           }
+        } else if (subject === 'physics') {
+          // Physics also uses lowercase with underscores (like biology)
+          return {
+            id: q.q_no || 0,
+            text: q.question_text || 'No question text available',
+            options: [
+              { id: 'A', text: q.option_a || 'Option A' },
+              { id: 'B', text: q.option_b || 'Option B' },
+              { id: 'C', text: q.option_c || 'Option C' },
+              { id: 'D', text: q.option_d || 'Option D' },
+            ],
+            correctAnswer: q.correct_answer || '',
+            subject: q.subject,
+            chapter_name: q.chapter_name,
+            topic: q.topic,
+            subtopic: q.subtopic,
+            difficulty_level: q.difficulty_level,
+            question_structure: q.question_structure,
+            bloom_taxonomy: q.bloom_taxonomy,
+            priority_level: q.priority_level,
+            time_to_solve: q.time_to_solve,
+            key_concept_tested: q.key_concept_tested,
+            common_pitfalls: q.common_pitfalls,
+          }
         } else {
-          // Chemistry and Physics still use the original column names
+          // Chemistry uses uppercase with underscores
           return {
             id: q.q_no || 0,
             text: q.Question_Text || 'No question text available',
@@ -170,7 +194,7 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
             Common_Pitfalls: q.Common_Pitfalls,
           }
         }
-      })
+      });
 
       return formattedQuestions
     } else {
