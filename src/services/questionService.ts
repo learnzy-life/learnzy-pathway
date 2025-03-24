@@ -146,7 +146,8 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
             common_pitfalls: q.common_pitfalls,
           }
         } else if (subject === 'physics') {
-          // Physics also uses lowercase with underscores (like biology)
+          // Physics uses lowercase with underscores (like biology)
+          console.log('Mapping physics question:', q);
           return {
             id: q.q_no || 0,
             text: q.question_text || 'No question text available',
@@ -168,6 +169,11 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
             time_to_solve: q.time_to_solve,
             key_concept_tested: q.key_concept_tested,
             common_pitfalls: q.common_pitfalls,
+            // Include lowercase properties as well for compatibility
+            option_a: q.option_a || '',
+            option_b: q.option_b || '',
+            option_c: q.option_c || '',
+            option_d: q.option_d || '',
           }
         } else {
           // Chemistry uses uppercase with underscores
@@ -192,6 +198,11 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
             Time_to_Solve: q.Time_to_Solve,
             Key_Concept_Tested: q.Key_Concept_Tested,
             Common_Pitfalls: q.Common_Pitfalls,
+            // Include uppercase properties as well for compatibility
+            Option_A: q.Option_A || '',
+            Option_B: q.Option_B || '',
+            Option_C: q.Option_C || '',
+            Option_D: q.Option_D || '',
           }
         }
       });
