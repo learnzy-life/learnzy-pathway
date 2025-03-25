@@ -116,24 +116,15 @@ export const getTestSession = async (
 
     return {
       id: data.id,
-      user_id: data.user_id,  // Changed from userId to user_id to match the TestSession type
+      user_id: data.user_id,
       subject: data.subject,
       start_time: data.start_time,
       end_time: data.end_time,
       score: data.score || 0,
       total_questions: data.total_questions || questionsData.length,
       questions: questionsData,
-      // Include metadata fields
-      chapterName: data.chapter_name,
-      topic: data.topic,
-      subtopic: data.subtopic,
-      difficultyLevel: data.difficulty_level,
-      questionStructure: data.question_structure,
-      bloomTaxonomy: data.bloom_taxonomy,
-      priorityLevel: data.priority_level,
-      timeToSolve: data.time_to_solve,
-      keyConceptTested: data.key_concept_tested,
-      commonPitfalls: data.common_pitfalls
+      // We're not including these fields as they're not in the TestSession type
+      // If needed, update the TestSession type in types.ts to include them
     }
   } catch (err) {
     console.error('Unexpected error fetching test session:', err)

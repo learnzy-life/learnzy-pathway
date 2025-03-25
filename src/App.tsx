@@ -18,52 +18,55 @@ import Profile from "./pages/Profile";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/subjects" element={<SubjectSelection />} />
-            <Route path="/pre-test/:subject" element={<PreTest />} />
-            <Route path="/test/:subject" element={
-              <ProtectedRoute>
-                <Test />
-              </ProtectedRoute>
-            } />
-            <Route path="/analysis/:subject" element={
-              <ProtectedRoute>
-                <PreAnalysis />
-              </ProtectedRoute>
-            } />
-            <Route path="/results/:subject" element={
-              <ProtectedRoute>
-                <Results />
-              </ProtectedRoute>
-            } />
-            <Route path="/test-review/:subject" element={
-              <ProtectedRoute>
-                <TestReview />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } />
-            <Route path="/learn-more" element={<LearnMore />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  // Create the query client inside the component
+  const queryClient = new QueryClient();
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/subjects" element={<SubjectSelection />} />
+              <Route path="/pre-test/:subject" element={<PreTest />} />
+              <Route path="/test/:subject" element={
+                <ProtectedRoute>
+                  <Test />
+                </ProtectedRoute>
+              } />
+              <Route path="/analysis/:subject" element={
+                <ProtectedRoute>
+                  <PreAnalysis />
+                </ProtectedRoute>
+              } />
+              <Route path="/results/:subject" element={
+                <ProtectedRoute>
+                  <Results />
+                </ProtectedRoute>
+              } />
+              <Route path="/test-review/:subject" element={
+                <ProtectedRoute>
+                  <TestReview />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/learn-more" element={<LearnMore />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
