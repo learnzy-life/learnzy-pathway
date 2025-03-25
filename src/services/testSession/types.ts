@@ -1,3 +1,4 @@
+
 import { Question } from '../question'
 
 export interface QuestionResult {
@@ -8,6 +9,7 @@ export interface QuestionResult {
   correctAnswer: string;
   isCorrect: boolean;
   timeTaken?: number;
+  tags?: string[];
   // Metadata fields
   Chapter_name?: string;
   Topic?: string;
@@ -30,6 +32,11 @@ export interface QuestionResult {
   time_to_solve?: number;
   key_concept_tested?: string;
   common_pitfalls?: string;
+  // Legacy options format
+  Option_A?: string;
+  Option_B?: string;
+  Option_C?: string;
+  Option_D?: string;
 }
 
 export interface TestSessionData {
@@ -45,4 +52,18 @@ export interface TestSessionData {
   unattempted: number;
   questions?: Question[];
   answers?: QuestionResult[];
+}
+
+export interface TestSession {
+  id: string;
+  subject: string;
+  questions: QuestionResult[];
+  score: number;
+  total_questions: number;
+  correct_answers: number;
+  incorrect_answers: number;
+  unattempted: number;
+  start_time: string;
+  end_time: string;
+  user_id: string;
 }

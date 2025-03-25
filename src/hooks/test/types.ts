@@ -1,3 +1,4 @@
+
 import { Question, Subject } from '../../services/question'
 
 export interface TestState {
@@ -20,3 +21,5 @@ export interface TestActions {
   formatTime: (seconds: number) => string
   setShowWarning: (show: boolean) => void
 }
+
+export type QuestionFilterType = 'incorrect' | 'unattempted';
