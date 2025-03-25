@@ -1,5 +1,4 @@
-
-import { Question, Subject } from '../../services/questionService'
+import { Question, Subject } from '../../services/question'
 
 export interface TestState {
   questions: Question[]

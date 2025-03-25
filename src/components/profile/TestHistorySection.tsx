@@ -1,9 +1,8 @@
-
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Clock, Book } from 'lucide-react'
 import { TestSession } from '../../hooks/useProfileData'
-import { Subject } from '../../services/questionService'
+import { Subject } from '../../services/question'
 
 interface TestHistorySectionProps {
   loading: boolean

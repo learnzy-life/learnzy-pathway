@@ -1,7 +1,6 @@
-
 import { toast } from 'sonner'
 import { supabase } from '../../lib/supabase'
-import { Question, Subject } from '../questionService'
+import { Question, Subject } from '../question'
 import { QuestionResult } from './types'
 
 // Create a new test session when a test starts

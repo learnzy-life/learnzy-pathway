@@ -1,4 +1,3 @@
-
 import { BarChart, Book, CheckCircle2, Clock, PieChart } from 'lucide-react'
 import React from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
@@ -14,7 +13,7 @@ import TimeAnalysis from '../components/TimeAnalysis'
 import TopicBreakdown from '../components/TopicBreakdown'
 import { getSubjectTitle } from '../data/mockResultsData'
 import { useResultsData } from '../hooks/useResultsData'
-import { Subject } from '../services/questionService'
+import { Subject } from '../services/question'
 
 const Results: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>()
