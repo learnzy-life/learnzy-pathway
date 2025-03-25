@@ -144,6 +144,23 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
             time_to_solve: q.time_to_solve,
             key_concept_tested: q.key_concept_tested,
             common_pitfalls: q.common_pitfalls,
+            // Include uppercase properties for analytics compatibility
+            Subject: q.subject,
+            Chapter_name: q.chapter_name,
+            Topic: q.topic,
+            Subtopic: q.subtopic,
+            Difficulty_Level: q.difficulty_level,
+            Question_Structure: q.question_structure,
+            Bloom_Taxonomy: q.bloom_taxonomy,
+            Priority_Level: q.priority_level,
+            Time_to_Solve: q.time_to_solve,
+            Key_Concept_Tested: q.key_concept_tested,
+            Common_Pitfalls: q.common_pitfalls,
+            // Include option properties
+            option_a: q.option_a || '',
+            option_b: q.option_b || '',
+            option_c: q.option_c || '',
+            option_d: q.option_d || '',
           }
         } else if (subject === 'physics') {
           // Physics uses lowercase with underscores (like biology)
@@ -158,6 +175,7 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
               { id: 'D', text: q.option_d || 'Option D' },
             ],
             correctAnswer: q.correct_answer || '',
+            // Include both lowercase properties 
             subject: q.subject,
             chapter_name: q.chapter_name,
             topic: q.topic,
@@ -169,7 +187,19 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
             time_to_solve: q.time_to_solve,
             key_concept_tested: q.key_concept_tested,
             common_pitfalls: q.common_pitfalls,
-            // Include lowercase properties as well for compatibility
+            // And uppercase properties for analytics compatibility
+            Subject: q.subject,
+            Chapter_name: q.chapter_name,
+            Topic: q.topic,
+            Subtopic: q.subtopic,
+            Difficulty_Level: q.difficulty_level,
+            Question_Structure: q.question_structure,
+            Bloom_Taxonomy: q.bloom_taxonomy,
+            Priority_Level: q.priority_level,
+            Time_to_Solve: q.time_to_solve,
+            Key_Concept_Tested: q.key_concept_tested,
+            Common_Pitfalls: q.common_pitfalls,
+            // Include lowercase option properties
             option_a: q.option_a || '',
             option_b: q.option_b || '',
             option_c: q.option_c || '',
@@ -198,11 +228,27 @@ export const fetchQuestions = async (subject: Subject): Promise<Question[]> => {
             Time_to_Solve: q.Time_to_Solve,
             Key_Concept_Tested: q.Key_Concept_Tested,
             Common_Pitfalls: q.Common_Pitfalls,
-            // Include uppercase properties as well for compatibility
+            // Include lowercase properties for compatibility
+            subject: q.Subject,
+            chapter_name: q.Chapter_name,
+            topic: q.Topic,
+            subtopic: q.Subtopic,
+            difficulty_level: q.Difficulty_Level,
+            question_structure: q.Question_Structure,
+            bloom_taxonomy: q.Bloom_Taxonomy,
+            priority_level: q.Priority_Level,
+            time_to_solve: q.Time_to_Solve,
+            key_concept_tested: q.Key_Concept_Tested,
+            common_pitfalls: q.Common_Pitfalls,
+            // Include uppercase and lowercase option properties
             Option_A: q.Option_A || '',
             Option_B: q.Option_B || '',
             Option_C: q.Option_C || '',
             Option_D: q.Option_D || '',
+            option_a: q.Option_A || '',
+            option_b: q.Option_B || '',
+            option_c: q.Option_C || '',
+            option_d: q.Option_D || '',
           }
         }
       });
