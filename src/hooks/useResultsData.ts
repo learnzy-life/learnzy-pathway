@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Subject } from '../services/questionService';
+import { Subject } from '../services/question';
 import { getTestSession } from '../services/testSession';
 import { calculateAnalytics } from '../utils/analytics';
 import { supabase } from '../lib/supabase';

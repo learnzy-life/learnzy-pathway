@@ -1,6 +1,5 @@
-
 import { useState } from 'react'
-import { Subject } from '../../services/questionService'
+import { Subject } from '../../services/question'
 import { useTestTimer } from './useTestTimer'
 import { useTestQuestions } from './useTestQuestions'
 import { useTestActions } from './useTestActions'

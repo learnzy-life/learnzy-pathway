@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { Subject } from '../services/questionService';
+import { Subject } from '../services/question';
 import Header from '../components/Header';
 import ReviewHeader from '../components/TestReview/ReviewHeader';
 import QuestionProgressBar from '../components/TestReview/QuestionProgressBar';

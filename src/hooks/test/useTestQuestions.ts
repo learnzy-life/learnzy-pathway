@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react'
-import { Question, Subject, fetchQuestions } from '../../services/questionService'
+import { Question, Subject, fetchQuestions } from '../../services/question'
 import { createTestSession } from '../../services/testSession'
 import { supabase } from '../../lib/supabase'
 import { toast } from 'sonner'

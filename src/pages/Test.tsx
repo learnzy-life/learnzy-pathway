@@ -1,4 +1,3 @@
-
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import QuestionNavigation from '../components/QuestionNavigation'
@@ -7,7 +6,7 @@ import TestFooter from '../components/TestFooter'
 import TestHeader from '../components/TestHeader'
 import TestQuestion from '../components/TestQuestion'
 import { useTestState } from '../hooks/test/useTestState'
-import { Subject } from '../services/questionService'
+import { Subject } from '../services/question'
 
 const Test: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>()

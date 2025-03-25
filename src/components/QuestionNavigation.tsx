@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Question } from '../services/questionService';
+import { Question } from '../services/question';
 
 interface QuestionNavigationProps {
   questions: Question[];
