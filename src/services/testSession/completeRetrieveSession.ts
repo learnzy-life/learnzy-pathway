@@ -27,7 +27,7 @@ export const completeTestSession = async (
       timeTaken: q.timeTaken,
       tags: q.tags || [],
       // Include both uppercase and lowercase variants for maximum compatibility
-      Subject: q.Subject || '',
+      // Using optional chaining to safely access properties that might not exist
       Chapter_name: q.Chapter_name || '',
       Topic: q.Topic || '',
       Subtopic: q.Subtopic || '',
@@ -116,12 +116,12 @@ export const getTestSession = async (
 
     return {
       id: data.id,
-      userId: data.user_id,
+      user_id: data.user_id,  // Changed from userId to user_id to match the TestSession type
       subject: data.subject,
-      startTime: data.start_time,
-      endTime: data.end_time,
+      start_time: data.start_time,
+      end_time: data.end_time,
       score: data.score || 0,
-      totalQuestions: data.total_questions || questionsData.length,
+      total_questions: data.total_questions || questionsData.length,
       questions: questionsData,
       // Include metadata fields
       chapterName: data.chapter_name,

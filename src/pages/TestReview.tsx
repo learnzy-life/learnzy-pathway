@@ -33,7 +33,15 @@ const TestReview: React.FC = () => {
       <Header />
       
       <main className="container mx-auto px-4 sm:px-6 pt-24 pb-16">
-        <ReviewHeader subject={subject} sessionId={sessionId} />
+        {currentQuestion && (
+          <ReviewHeader 
+            currentQuestion={currentQuestion}
+            questionIndex={currentQuestionIndex}
+            totalQuestions={questions.length}
+            subject={subject}
+            sessionId={sessionId}
+          />
+        )}
         
         <div className="max-w-4xl mx-auto">
           {questions.length === 0 ? (

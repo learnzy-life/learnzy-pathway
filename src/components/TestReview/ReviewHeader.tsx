@@ -2,6 +2,7 @@
 import React from 'react';
 import { Question } from '../../services/question';
 import { Subject } from '../../services/question';
+import { ChevronLeft } from 'lucide-react';
 
 interface ReviewHeaderProps {
   currentQuestion: Question;

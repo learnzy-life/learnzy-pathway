@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { Subject } from '../services/questionService'
+import { Subject } from '../services/question' // Changed from questionService to question
 import { toast } from 'sonner'
 
 export interface TestSession {
