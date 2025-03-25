@@ -7,9 +7,12 @@ import NavigationButtons from './components/NavigationButtons'
 import { tagOptions } from './constants/tagOptions'
 import { Button } from '@/components/ui/button'
 import { QuestionFilterType } from '@/hooks/test/types'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 const PreAnalysis: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<QuestionFilterType>('incorrect')
+  const isMobile = useIsMobile()
+  
   const {
     questions,
     currentQuestionIndex,
@@ -50,7 +53,7 @@ const PreAnalysis: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center p-4">
         <div className="w-16 h-16 border-4 border-learnzy-purple/30 border-t-learnzy-purple rounded-full animate-spin mb-6"></div>
         <h2 className="text-xl font-medium ml-4">Preparing your analysis...</h2>
       </div>
@@ -59,7 +62,7 @@ const PreAnalysis: React.FC = () => {
 
   if (isSubmitting) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <div className="w-16 h-16 border-4 border-learnzy-purple/30 border-t-learnzy-purple rounded-full animate-spin mb-6"></div>
         <h2 className="text-xl font-medium">Processing your analysis...</h2>
         <p className="text-muted-foreground">
@@ -71,7 +74,7 @@ const PreAnalysis: React.FC = () => {
 
   if (!currentQuestion) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center">
           <h2 className="text-xl font-medium mb-4">
             {activeFilter === 'incorrect' 
@@ -120,18 +123,18 @@ const PreAnalysis: React.FC = () => {
     : 'Review questions you didn\'t attempt to identify knowledge gaps.'
 
   return (
-    <div className="min-h-screen bg-background px-4 py-8">
+    <div className="min-h-screen bg-background px-4 py-6 sm:py-8">
       <div className="container mx-auto max-w-4xl">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-semibold text-learnzy-dark mb-2">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl font-semibold text-learnzy-dark mb-2">
             Analyze Your Mistakes
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground px-1">
             {questionTypeDescription} Select all tags that apply to each question.
           </p>
         </div>
 
-        <div className="flex justify-center mb-6 gap-4">
+        <div className="flex flex-wrap justify-center mb-4 sm:mb-6 gap-2 sm:gap-4">
           <Button
             variant={activeFilter === 'incorrect' ? 'default' : 'outline'}
             onClick={() => {
@@ -139,7 +142,8 @@ const PreAnalysis: React.FC = () => {
                 setActiveFilter('incorrect')
               }
             }}
-            className={incorrectQuestions.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}
+            className={`${incorrectQuestions.length === 0 ? 'opacity-50 cursor-not-allowed' : ''} 
+              text-xs sm:text-sm px-2 py-1 sm:px-4 sm:py-2 h-auto`}
             disabled={incorrectQuestions.length === 0}
           >
             Incorrect Questions ({incorrectQuestions.length})
@@ -151,20 +155,21 @@ const PreAnalysis: React.FC = () => {
                 setActiveFilter('unattempted')
               }
             }}
-            className={unattemptedQuestions.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}
+            className={`${unattemptedQuestions.length === 0 ? 'opacity-50 cursor-not-allowed' : ''} 
+              text-xs sm:text-sm px-2 py-1 sm:px-4 sm:py-2 h-auto`}
             disabled={unattemptedQuestions.length === 0}
           >
             Unattempted Questions ({unattemptedQuestions.length})
           </Button>
         </div>
 
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-sm font-medium px-3 py-1 bg-learnzy-purple/10 text-learnzy-purple rounded-full">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4">
+          <span className="text-xs sm:text-sm font-medium px-2 py-1 bg-learnzy-purple/10 text-learnzy-purple rounded-full mb-2 sm:mb-0 inline-block">
             {questionTypeLabel}: {currentQuestionIndex + 1} of {filteredQuestions.length}
           </span>
 
-          <div className="flex items-center text-sm text-muted-foreground">
-            <Info className="w-4 h-4 mr-1" />
+          <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
+            <Info className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
             <span>You can select multiple reasons</span>
           </div>
         </div>
@@ -182,6 +187,7 @@ const PreAnalysis: React.FC = () => {
           onPrevQuestion={handlePrevQuestion}
           onNextQuestion={() => handleNextQuestion(filteredQuestions)}
           onSubmitAnalysis={handleSubmitAnalysis}
+          isMobile={isMobile}
         />
       </div>
     </div>

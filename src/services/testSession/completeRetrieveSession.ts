@@ -123,8 +123,10 @@ export const getTestSession = async (
       score: data.score || 0,
       total_questions: data.total_questions || questionsData.length,
       questions: questionsData,
-      // We're not including these fields as they're not in the TestSession type
-      // If needed, update the TestSession type in types.ts to include them
+      // Calculate these values to match the TestSession type
+      correct_answers: questionsData.filter(q => q.isCorrect).length,
+      incorrect_answers: questionsData.filter(q => !q.isCorrect && q.userAnswer).length,
+      unattempted: questionsData.filter(q => !q.userAnswer).length
     }
   } catch (err) {
     console.error('Unexpected error fetching test session:', err)

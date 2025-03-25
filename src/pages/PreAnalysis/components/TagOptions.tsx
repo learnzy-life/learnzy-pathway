@@ -21,13 +21,13 @@ const TagOptions: React.FC<TagOptionsProps> = ({
   onTagToggle,
 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 gap-2 sm:gap-3">
       {tagOptions.map((tag) => (
         <button
           key={tag.id}
           onClick={() => onTagToggle(tag.id)}
           className={`
-            flex items-start p-3 rounded-lg text-left transition-all
+            flex items-start p-2 sm:p-3 rounded-lg text-left transition-all
             ${
               currentQuestion.tags?.includes(tag.id)
                 ? 'bg-learnzy-purple/20 border border-learnzy-purple/30'
@@ -37,7 +37,7 @@ const TagOptions: React.FC<TagOptionsProps> = ({
         >
           <div
             className={`
-            w-5 h-5 rounded-md flex-shrink-0 flex items-center justify-center mr-3 mt-0.5
+            w-4 h-4 sm:w-5 sm:h-5 rounded-md flex-shrink-0 flex items-center justify-center mr-2 sm:mr-3 mt-0.5
             ${
               currentQuestion.tags?.includes(tag.id)
                 ? 'bg-learnzy-purple text-white'
@@ -46,14 +46,14 @@ const TagOptions: React.FC<TagOptionsProps> = ({
           `}
           >
             {currentQuestion.tags?.includes(tag.id) && (
-              <Check className="w-3 h-3" />
+              <Check className="w-2 h-2 sm:w-3 sm:h-3" />
             )}
           </div>
           <div>
-            <div className="font-medium text-learnzy-dark">
+            <div className="text-sm sm:text-base font-medium text-learnzy-dark">
               {tag.label}
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground">
               {tag.description}
             </div>
           </div>
