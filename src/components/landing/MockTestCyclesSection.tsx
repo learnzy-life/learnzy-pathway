@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Book, Bridge, Shield, Star, Brain } from 'lucide-react';
+import { Book, ArrowRight, Shield, Star, Brain } from 'lucide-react';
 import SectionHeader from '../SectionHeader';
 
 const MockTestCyclesSection: React.FC = () => {
@@ -44,7 +44,7 @@ const MockTestCyclesSection: React.FC = () => {
                     <tr>
                       <td className="px-4 py-3">
                         <div className="flex items-center">
-                          <Bridge className="w-5 h-5 mr-2 text-learnzy-purple" />
+                          <ArrowRight className="w-5 h-5 mr-2 text-learnzy-purple" />
                           <span className="font-medium">Cycle 2: Bridging Gaps</span>
                         </div>
                       </td>
@@ -148,7 +148,7 @@ const MockTestCyclesSection: React.FC = () => {
                   <div className="absolute left-0 top-0 w-6 h-6 rounded-full bg-learnzy-purple flex items-center justify-center text-white font-bold">2</div>
                   <div className="bg-blue-50 rounded-lg p-3 border-2 border-[#003366] ml-2">
                     <div className="flex items-center mb-2">
-                      <Bridge className="w-5 h-5 text-learnzy-purple mr-2" />
+                      <ArrowRight className="w-5 h-5 text-learnzy-purple mr-2" />
                       <h4 className="font-bold text-[#003366]">Cycle 2: Bridging Gaps</h4>
                     </div>
                     <div className="flex space-x-1">
