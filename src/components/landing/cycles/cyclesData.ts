@@ -11,7 +11,7 @@ export interface CycleData {
   info: string;
 }
 
-// This function is needed to properly initialize the icons as JSX elements
+// This function is needed to properly initialize the icons as React elements
 export const getCyclesData = (): CycleData[] => [
   {
     number: 1,
