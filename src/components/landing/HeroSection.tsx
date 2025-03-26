@@ -15,12 +15,16 @@ const HeroSection: React.FC = () => {
         <BookOpen className="w-7 md:w-8 h-7 md:h-8 text-learnzy-purple" />
       </div>
       
-      <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-3 sm:mb-6 max-w-3xl leading-tight z-10 px-3 sm:px-0">
-        Ace <span className="text-gradient">NEET 2025</span> with Learnzy: <span className="text-amber-500">Smart Tests</span> + <span className="text-amber-500">Calm Mind</span> = Success
+      <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-2 sm:mb-3 max-w-3xl leading-tight z-10 px-3 sm:px-0">
+        Crack <span className="text-gradient">NEET 2025</span> in <span className="text-amber-500">40 Days</span> Guaranteed*
       </h1>
       
-      <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mb-6 sm:mb-10 z-10 px-4 sm:px-0">
-        Discover your strengths, fix your weaknesses, and stay calm with Learnzy's personalized approach for NEET success.
+      <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl mb-3 sm:mb-5 z-10 px-4 sm:px-0 italic">
+        *If you are currently scoring 450+ and follow our structured program and complete all recommended activities.
+      </p>
+      
+      <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mb-6 sm:mb-10 z-10 px-4 sm:px-0 font-medium">
+        Smart Prep + Calm Mind = Medical Seat
       </p>
       
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-4 sm:px-0">
