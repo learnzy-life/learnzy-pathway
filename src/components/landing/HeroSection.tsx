@@ -2,8 +2,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, Brain } from 'lucide-react';
+import { trackButtonClick } from '../../utils/analytics/googleAnalytics';
 
 const HeroSection: React.FC = () => {
+  const handleStartTestClick = () => {
+    trackButtonClick('start_free_test', 'hero_section');
+  };
+
+  const handleLearnMoreClick = () => {
+    trackButtonClick('not_sure_of_score', 'hero_section');
+  };
+
   return (
     <section className="py-10 md:py-24 flex flex-col items-center text-center relative">
       {/* Background Element */}
@@ -28,10 +37,18 @@ const HeroSection: React.FC = () => {
       </p>
       
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-xs sm:max-w-none sm:w-auto px-4 sm:px-0">
-        <Link to="/subjects" className="button-primary">
+        <Link 
+          to="/subjects" 
+          className="button-primary" 
+          onClick={handleStartTestClick}
+        >
           Start Free Test <ArrowRight className="ml-2 w-5 h-5" />
         </Link>
-        <Link to="/learn-more" className="button-secondary">
+        <Link 
+          to="/learn-more" 
+          className="button-secondary"
+          onClick={handleLearnMoreClick}
+        >
           Not Sure of Your Score?
         </Link>
       </div>

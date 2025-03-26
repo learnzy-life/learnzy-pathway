@@ -3,7 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import Index from "./pages/Index";
 import SubjectSelection from "./pages/SubjectSelection";
 import PreTest from "./pages/PreTest";
@@ -17,6 +18,38 @@ import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { trackPageView } from "./utils/analytics/googleAnalytics";
+
+// Analytics tracker component
+const AnalyticsTracker = () => {
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Get page title based on the current route
+    const getPageTitle = (pathname: string) => {
+      switch(pathname) {
+        case '/': return 'Home';
+        case '/subjects': return 'Subject Selection';
+        case '/learn-more': return 'Learn More';
+        case '/auth': return 'Authentication';
+        case '/profile': return 'User Profile';
+        default:
+          if (pathname.includes('/pre-test')) return 'Pre-Test';
+          if (pathname.includes('/test')) return 'Test';
+          if (pathname.includes('/analysis')) return 'Pre-Analysis';
+          if (pathname.includes('/results')) return 'Results';
+          if (pathname.includes('/test-review')) return 'Test Review';
+          return 'Page';
+      }
+    };
+    
+    // Track page view
+    const pageTitle = getPageTitle(location.pathname);
+    trackPageView(location.pathname, pageTitle);
+  }, [location]);
+  
+  return null;
+};
 
 const App = () => {
   // Create the query client inside the component
@@ -29,6 +62,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
+            <AnalyticsTracker />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/subjects" element={<SubjectSelection />} />
