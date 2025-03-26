@@ -8,6 +8,7 @@ import HeroSection from '../components/landing/HeroSection'
 import WellnessSection from '../components/landing/WellnessSection'
 import CountdownTimer from '../components/landing/CountdownTimer'
 import YoutubeVideo from '../components/landing/YoutubeVideo'
+import MockTestCyclesSection from '../components/landing/MockTestCyclesSection'
 
 const Index = () => {
   return (
@@ -21,7 +22,10 @@ const Index = () => {
         {/* Hero Section */}
         <HeroSection />
 
-        {/* YouTube Video Tutorial Section - Moved above Features */}
+        {/* Mock Test Cycles Section - New section */}
+        <MockTestCyclesSection />
+
+        {/* YouTube Video Tutorial Section */}
         <YoutubeVideo />
 
         {/* Features Section */}
