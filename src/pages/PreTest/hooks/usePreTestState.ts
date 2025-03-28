@@ -51,6 +51,7 @@ export const usePreTestState = () => {
     localStorage.setItem('selected_ritual', selectedRitual);
 
     if (selectedRitual === 'none') {
+      console.log('Ritual selected as none, completing immediately');
       setRitualCompleted(true);
       setShowPostRitualInfo(true);
       toast({
@@ -58,6 +59,7 @@ export const usePreTestState = () => {
         description: "You've chosen to skip the pre-test ritual.",
       });
     } else {
+      console.log('Starting ritual activity:', selectedRitual);
       setShowRitualActivity(true);
 
       const toastMessages = {
@@ -83,6 +85,7 @@ export const usePreTestState = () => {
   };
 
   const handleRitualComplete = async (duration?: number) => {
+    console.log('Ritual completed:', ritual, 'with duration:', duration);
     if (mood && ritual) {
       // Save completed ritual data
       await saveRitualActivity({

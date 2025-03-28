@@ -14,10 +14,10 @@ const PreMockTest: React.FC = () => {
   const navigate = useNavigate();
   const [showPreTest, setShowPreTest] = useState(false);
   
-  // Get subject based on the mock test number
+  // Get subject based on the mock test number - ensuring it's a valid Subject type
   const getMockSubject = () => {
-    // For now, let's assume all mock tests are mixed subjects
-    return 'mixed';
+    // For mock tests, we use 'biology' as the type but display as 'mixed'
+    return 'biology';
   };
   
   const handleStartTest = () => {

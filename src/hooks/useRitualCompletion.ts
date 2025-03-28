@@ -23,6 +23,8 @@ export const useRitualCompletion = ({
 }: UseRitualCompletionProps) => {
   
   const handleComplete = async () => {
+    console.log('Running ritual completion in hook');
+    
     // Cancel any ongoing speech when completing
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
@@ -31,21 +33,30 @@ export const useRitualCompletion = ({
     // Calculate duration (how long they actually took)
     const ritualDuration = actualDuration > 0 ? actualDuration : initialTime - timeLeft;
     
-    // Save the ritual activity data
-    await saveRitualActivity({
-      subject,
-      ritual,
-      mood,
-      completedAt: new Date().toISOString(),
-      duration: ritualDuration
-    });
+    try {
+      // Save the ritual activity data
+      await saveRitualActivity({
+        subject,
+        ritual,
+        mood,
+        completedAt: new Date().toISOString(),
+        duration: ritualDuration
+      });
+      
+      toast({
+        title: "Ritual Complete",
+        description: "You're now prepared for your test. Good luck!",
+      });
+    } catch (error) {
+      console.error('Error saving ritual activity:', error);
+    }
     
-    toast({
-      title: "Ritual Complete",
-      description: "You're now prepared for your test. Good luck!",
-    });
-    
-    onComplete();
+    // Always call the onComplete callback
+    if (onComplete) {
+      setTimeout(() => {
+        onComplete();
+      }, 300);
+    }
   };
   
   return { handleComplete };

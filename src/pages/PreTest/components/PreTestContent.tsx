@@ -35,7 +35,7 @@ const PreTestContent: React.FC<PreTestContentProps> = ({
   // Only show breathing, affirmation, and "none" options
   const rituals = getRitualOptions().filter(r => r.id === 'breathing' || r.id === 'affirmation' || r.id === 'none');
 
-  // Encouraging messages when users skip analysis
+  // Encouraging messages when users skip ritual
   const encouragingMessages = [
     "90% of users felt more confident after completing a pre-test ritual.",
     "Students who use breathing exercises score 15% higher on average!",
@@ -138,13 +138,6 @@ const PreTestContent: React.FC<PreTestContentProps> = ({
           </div>
 
           <TestInformation />
-          <StartTestButton
-            mood={mood}
-            ritual={ritual}
-            subject={subject}
-            subjectTitle={subjectTitle}
-            onStartTest={onStartTest}
-          />
         </div>
       )}
     </>
