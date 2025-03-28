@@ -3,6 +3,7 @@ import React from 'react';
 import { Loader2 } from 'lucide-react';
 import MockTestCard from './MockTestCard';
 import { MockTest } from '../../types/mock-test';
+import { Card } from "@/components/ui/card";
 
 interface MockTestsGridProps {
   isLoading: boolean;
@@ -27,8 +28,16 @@ const MockTestsGrid: React.FC<MockTestsGridProps> = ({
 
   const cycleTests = mockTests.filter(test => test.cycle === cycleNumber);
   
+  if (cycleTests.length === 0) {
+    return (
+      <Card className="p-6 text-center text-muted-foreground">
+        No mock tests available for this cycle.
+      </Card>
+    );
+  }
+  
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
       {cycleTests.map((test) => (
         <MockTestCard
           key={test.id}

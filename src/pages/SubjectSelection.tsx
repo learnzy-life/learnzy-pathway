@@ -2,10 +2,10 @@
 import React from 'react';
 import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
-import SubjectsList from '../components/subjects/SubjectsList';
 import MockTestCycles from '../components/mock-tests/MockTestCycles';
 import PaymentDialog from '../components/mock-tests/PaymentDialog';
 import { useMockTests } from '../hooks/useMockTests';
+import SubjectsSection from '../components/subjects/SubjectsSection';
 
 const SubjectSelection: React.FC = () => {
   const { user } = useAuth();
@@ -56,26 +56,15 @@ const SubjectSelection: React.FC = () => {
       <Header />
       
       <main className="container mx-auto px-6 pt-24 pb-16">
-        <section className="py-12 md:py-16">
-          <div className="text-center mb-12">
-            <h1 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Select a Subject for Your Diagnostic Test
-            </h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Choose a subject to begin your diagnostic journey. Each test contains 180 questions and takes approximately 180 minutes to complete.
-            </p>
-          </div>
-          
-          <SubjectsList subjects={subjects} />
+        <SubjectsSection subjects={subjects} />
 
-          <MockTestCycles 
-            mockTests={mockTests}
-            isLoading={isLoading}
-            unlockedCycles={unlockedCycles}
-            onMockTestClick={handleMockTestClick}
-            onUnlockCycleClick={handleUnlockCycleClick}
-          />
-        </section>
+        <MockTestCycles 
+          mockTests={mockTests}
+          isLoading={isLoading}
+          unlockedCycles={unlockedCycles}
+          onMockTestClick={handleMockTestClick}
+          onUnlockCycleClick={handleUnlockCycleClick}
+        />
       </main>
 
       <PaymentDialog 
