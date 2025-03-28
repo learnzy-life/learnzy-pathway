@@ -2,7 +2,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Lock } from 'lucide-react';
+import { CreditCard, Lock } from 'lucide-react';
 import { MockTest } from '../../types/mock-test';
 
 interface PaymentDialogProps {
@@ -18,11 +18,27 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({
   selectedTest, 
   onPaymentComplete 
 }) => {
+  const [isProcessing, setIsProcessing] = useState(false);
+  
+  const handlePayNow = async () => {
+    if (!selectedTest) return;
+    
+    setIsProcessing(true);
+    try {
+      await onPaymentComplete(selectedTest);
+    } catch (error) {
+      console.error("Payment error:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Lock className="h-5 w-5 text-amber-500" />
             {selectedTest?.cycle > 1 && selectedTest?.requiresPayment 
               ? `Unlock Cycle ${selectedTest?.cycle}` 
               : 'Unlock Premium Mock Test'}
@@ -61,14 +77,21 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({
           <div className="text-center">
             <p className="text-2xl font-bold mb-4">₹499</p>
             <Button 
-              className="bg-amber-500 hover:bg-amber-600 text-white w-full"
-              onClick={() => {
-                if (selectedTest) {
-                  onPaymentComplete(selectedTest);
-                }
-              }}
+              className="bg-amber-500 hover:bg-amber-600 text-white w-full flex items-center justify-center gap-2"
+              onClick={handlePayNow}
+              disabled={isProcessing}
             >
-              Pay with Razorpay
+              {isProcessing ? (
+                <>
+                  <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="h-5 w-5" />
+                  Pay with Razorpay
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -76,5 +99,7 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({
     </Dialog>
   );
 };
+
+import { useState } from 'react';
 
 export default PaymentDialog;

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { toast } from 'sonner';
@@ -33,7 +34,7 @@ export const useMockTests = (userId: string | undefined) => {
     const fetchUnlockedCycles = async () => {
       if (userId) {
         try {
-          const storedUnlockedCycles = localStorage.getItem('unlockedCycles');
+          const storedUnlockedCycles = localStorage.getItem(`unlockedCycles_${userId}`);
           if (storedUnlockedCycles) {
             setUnlockedCycles(JSON.parse(storedUnlockedCycles));
           }
@@ -214,26 +215,34 @@ export const useMockTests = (userId: string | undefined) => {
     }
     
     try {
+      // Use the user's email if we had it
+      const userEmail = "user@example.com"; // In a real app, get this from your auth context
+      
       const result = await processPaymentForCycle(
         test.cycle,
-        "user@example.com" // Replace with actual user email
+        userEmail
       );
       
       if (result.success) {
         if (test.cycle > 1) {
           const newUnlockedCycles = [...unlockedCycles, test.cycle];
           setUnlockedCycles(newUnlockedCycles);
-          localStorage.setItem('unlockedCycles', JSON.stringify(newUnlockedCycles));
           
-          setMockTests(prev => prev.map(t => ({
-            ...t,
-            isLocked: t.cycle === test.cycle ? false : t.isLocked
-          })));
+          // Store in localStorage with user ID to prevent sharing between accounts
+          localStorage.setItem(`unlockedCycles_${userId}`, JSON.stringify(newUnlockedCycles));
           
-          toast.success(`Cycle ${test.cycle} has been unlocked!`);
-        } else if (test.isPremium) {
-          const testNumber = test.id.split('-').pop() || '1';
-          window.location.href = `/pre-mock-test/${test.cycle}/${testNumber}`;
+          // Update the locked status of all tests in this cycle
+          setMockTests(prev => prev.map(t => {
+            if (t.cycle === test.cycle) {
+              return {
+                ...t,
+                isLocked: false
+              };
+            }
+            return t;
+          }));
+          
+          toast.success(`Cycle ${test.cycle} has been unlocked! You now have access to all tests in this cycle.`);
         }
         
         setShowPaymentDialog(false);

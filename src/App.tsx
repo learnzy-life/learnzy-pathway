@@ -21,6 +21,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import PreMockTest from './pages/PreMockTest';
 import MockTest from './pages/MockTest';
 import { useAuth } from './context/AuthContext';
+import { loadRazorpayScript } from './utils/loadScript';
 
 function App() {
   const { isDevelopmentBypass } = useAuth();
@@ -41,6 +42,13 @@ function App() {
       }
     }
   }, [isDevelopmentBypass, location, navigate]);
+
+  // Preload Razorpay script on app initialization
+  useEffect(() => {
+    loadRazorpayScript().catch(err => {
+      console.error("Failed to load Razorpay script:", err);
+    });
+  }, []);
 
   return (
     <div className="App">
