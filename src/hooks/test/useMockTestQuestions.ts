@@ -26,10 +26,10 @@ export const useMockTestQuestions = (
         // Sort questions by their ID to ensure numerical ascending order
         const sortedQuestions = [...loadedQuestions].sort((a, b) => a.id - b.id)
         
-        // Get subject from the first question
+        // Get subject from the first question or use 'biology' as default
         const subject = sortedQuestions.length > 0 
-          ? (sortedQuestions[0].subject || 'mixed')
-          : 'mixed';
+          ? (sortedQuestions[0].subject || 'biology')
+          : 'biology';
         
         // Get user mood and ritual data from localStorage
         const mood = localStorage.getItem('selected_mood') || 'unknown'
@@ -39,7 +39,7 @@ export const useMockTestQuestions = (
         const mockSessionId = `mock-${cycle}-${testNumber}`;
         
         // Create a new test session with the loaded questions
-        const newSessionId = await createTestSession('mixed', sortedQuestions, mockSessionId)
+        const newSessionId = await createTestSession(subject, sortedQuestions, mockSessionId)
         setSessionId(newSessionId || mockSessionId)
         
         if (newSessionId) {

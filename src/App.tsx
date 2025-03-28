@@ -16,10 +16,10 @@ import Results from './pages/Results';
 import TestReview from './pages/TestReview';
 import NotFound from './pages/NotFound';
 import PreDynamicTest from './pages/PreDynamicTest';
-import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import PreMockTest from './pages/PreMockTest';
 import MockTest from './pages/MockTest';
+import { useAuth } from './context/AuthContext';
 
 function App() {
   const { isDevelopmentBypass } = useAuth();
