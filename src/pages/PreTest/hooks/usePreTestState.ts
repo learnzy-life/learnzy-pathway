@@ -4,6 +4,7 @@ import { toast } from '../../../hooks/use-toast';
 import { Mood, PreRitual } from '../utils/subjectUtils';
 import { saveRitualActivity } from '../../../utils/ritualService';
 import { supabase } from '../../../lib/supabase';
+import { Subject } from '../../../services/question/types';
 
 export const usePreTestState = () => {
   const [mood, setMood] = useState<Mood | undefined>(undefined);
@@ -89,7 +90,7 @@ export const usePreTestState = () => {
     if (mood && ritual) {
       // Save completed ritual data
       await saveRitualActivity({
-        subject: 'unknown', // This will be updated with actual subject
+        subject: 'biology', // Use a valid Subject type as default
         ritual,
         mood,
         completedAt: new Date().toISOString(),

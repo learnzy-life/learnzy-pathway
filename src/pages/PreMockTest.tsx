@@ -7,6 +7,7 @@ import { Book, AlertTriangle, Clock3 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
 import PreTestContent from './PreTest/components/PreTestContent';
+import { Subject } from '../services/question/types';
 
 const PreMockTest: React.FC = () => {
   const { cycle, testNumber } = useParams<{ cycle: string; testNumber: string }>();
@@ -15,7 +16,7 @@ const PreMockTest: React.FC = () => {
   const [showPreTest, setShowPreTest] = useState(false);
   
   // Get subject based on the mock test number - ensuring it's a valid Subject type
-  const getMockSubject = () => {
+  const getMockSubject = (): Subject => {
     // For mock tests, we use 'biology' as the type but display as 'mixed'
     return 'biology';
   };
