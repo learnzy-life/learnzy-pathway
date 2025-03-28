@@ -36,11 +36,12 @@ const PreDynamicTest: React.FC = () => {
         }
         
         // Get completed tests from this cycle to analyze weakness
+        const testIds = [`mock-${cycle}-1`, `mock-${cycle}-2`, `mock-${cycle}-3`, `mock-${cycle}-4`];
         const { data: completedTests, error: testsError } = await supabase
           .from('test_sessions')
           .select('*')
           .eq('user_id', user.id)
-          .containsAny('id', [`mock-${cycle}-1`, `mock-${cycle}-2`, `mock-${cycle}-3`, `mock-${cycle}-4`])
+          .in('id', testIds)
           .not('end_time', 'is', null);
           
         if (testsError) {
