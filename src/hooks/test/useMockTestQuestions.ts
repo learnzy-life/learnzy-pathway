@@ -26,13 +26,13 @@ export const useMockTestQuestions = (
         // Sort questions by their ID to ensure numerical ascending order
         const sortedQuestions = [...loadedQuestions].sort((a, b) => a.id - b.id)
         
-        // Get subject from the first question or use 'biology' as default
+        // Get subject from the first question or use 'mixed' as default for mock tests
         const subjectValue = sortedQuestions.length > 0 
-          ? (sortedQuestions[0].subject || 'biology')
-          : 'biology';
+          ? (sortedQuestions[0].subject || 'mixed')
+          : 'mixed';
         
         // Ensure the subject is a valid Subject type
-        const subject = (subjectValue === 'physics' || subjectValue === 'chemistry') 
+        const subject = (subjectValue === 'physics' || subjectValue === 'chemistry' || subjectValue === 'biology') 
           ? subjectValue as Subject 
           : 'biology' as Subject;
         
@@ -57,7 +57,10 @@ export const useMockTestQuestions = (
               test_session_id: newSessionId,
               subject,
               mood,
-              ritual
+              ritual,
+              test_type: 'mock',
+              mock_cycle: cycle,
+              mock_number: testNumber
             }).select().single()
             
             if (error) {

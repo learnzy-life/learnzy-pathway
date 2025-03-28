@@ -6,31 +6,63 @@ import Header from '../components/Header';
 import { Book, AlertTriangle, Clock3 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../context/AuthContext';
+import PreTestContent from './PreTest/components/PreTestContent';
 
 const PreMockTest: React.FC = () => {
   const { cycle, testNumber } = useParams<{ cycle: string; testNumber: string }>();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const [showPreTest, setShowPreTest] = useState(false);
   
-  const handleStartTest = async () => {
-    setIsLoading(true);
-    
-    try {
-      if (!user) {
-        toast.error("You need to be logged in to take this test");
-        navigate('/auth');
-        return;
-      }
-      
-      // Navigate to the mock test page
-      navigate(`/mock-test/${cycle}/${testNumber}`);
-    } catch (error) {
-      console.error('Error starting mock test:', error);
-      toast.error("An unexpected error occurred");
-      setIsLoading(false);
-    }
+  // Get subject based on the mock test number
+  const getMockSubject = () => {
+    // For now, let's assume all mock tests are mixed subjects
+    return 'mixed';
   };
+  
+  const handleStartTest = () => {
+    setShowPreTest(true);
+  };
+  
+  const handleStartMockTest = () => {
+    navigate(`/mock-test/${cycle}/${testNumber}`);
+  };
+
+  // Redirect to auth if not logged in
+  React.useEffect(() => {
+    if (!isLoading && !user) {
+      toast.error("Please log in to take mock tests");
+      navigate('/auth', { state: { from: `/pre-mock-test/${cycle}/${testNumber}` } });
+    }
+  }, [user, isLoading, navigate, cycle, testNumber]);
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-learnzy-purple/30 border-t-learnzy-purple rounded-full animate-spin mb-6"></div>
+        <h2 className="text-xl font-medium ml-4">Loading...</h2>
+      </div>
+    );
+  }
+  
+  // Show pre-test ritual content if user clicked "Start Test"
+  if (showPreTest) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        
+        <main className="container mx-auto px-6 pt-24 pb-16">
+          <section className="py-12 max-w-3xl mx-auto">
+            <PreTestContent
+              subject={getMockSubject()}
+              subjectTitle={`Mock Test ${testNumber}`}
+              onStartTest={handleStartMockTest}
+            />
+          </section>
+        </main>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen bg-background">
@@ -83,17 +115,9 @@ const PreMockTest: React.FC = () => {
             
             <button
               onClick={handleStartTest}
-              disabled={isLoading}
               className="button-primary w-full flex items-center justify-center"
             >
-              {isLoading ? (
-                <>
-                  <span className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2"></span>
-                  <span>Loading...</span>
-                </>
-              ) : (
-                'Start Mock Test'
-              )}
+              Start Mock Test
             </button>
           </div>
         </div>

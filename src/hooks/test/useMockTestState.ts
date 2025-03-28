@@ -14,7 +14,7 @@ export const useMockTestState = (cycle: string, testNumber: string): [TestState,
     setQuestions(questionsData)
   }
 
-  // Determine subject from the first question
+  // Determine subject from the first question or use "mixed" for mock tests
   const subject = questions.length > 0 
     ? (questions[0].subject as any) 
     : 'mixed';
@@ -32,7 +32,7 @@ export const useMockTestState = (cycle: string, testNumber: string): [TestState,
     handleSubmitClick,
   } = useTestActions(subject, questions, setQuestions, sessionId, startTime)
 
-  // Mock tests have the same time limit as diagnostic tests
+  // Mock tests use the same time limit as diagnostic tests (180 min = 3 hours)
   const [timeRemaining, formatTime] = useTestTimer(180 * 60, handleSubmitTest, subject)
 
   return [

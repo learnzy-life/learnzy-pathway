@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
-import { ThemeProvider } from "./components/theme-provider"
-import { Toaster } from "./components/ui/toaster"
-import { TooltipProvider } from "./components/ui/tooltip"
+import { ThemeProvider } from "./components/theme-provider";
+import { Toaster } from "./components/ui/toaster";
+import { TooltipProvider } from "./components/ui/tooltip";
 import Index from './pages/Index';
 import Auth from './pages/Auth';
 import LearnMore from './pages/LearnMore';

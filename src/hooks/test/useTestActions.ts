@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Subject } from '../../services/question'
@@ -5,7 +6,7 @@ import { Question } from '../../types/dashboard'
 import { completeTestSession, updateQuestionAnswer } from '../../services/testSession'
 
 export const useTestActions = (
-  subject: Subject,
+  subject: Subject | string,
   questions: Question[],
   setQuestions: React.Dispatch<React.SetStateAction<Question[]>>,
   sessionId: string | null,
@@ -90,7 +91,20 @@ export const useTestActions = (
     if (sessionId) {
       completeTestSession(sessionId, questionResults)
         .then(() => {
-          navigate(`/analysis/${subject}?sessionId=${sessionId}`)
+          // Check if this is a mock test (sessionId starts with "mock-")
+          if (sessionId.startsWith('mock-')) {
+            // Extract cycle and test number from the sessionId
+            const parts = sessionId.split('-');
+            if (parts.length >= 3) {
+              const cycle = parts[1];
+              const testNumber = parts[2];
+              navigate(`/analysis/${subject}?sessionId=${sessionId}&mock=true&cycle=${cycle}&testNumber=${testNumber}`);
+              return;
+            }
+          }
+          
+          // Default path for diagnostic tests
+          navigate(`/analysis/${subject}?sessionId=${sessionId}`);
         })
         .catch((error) => {
           console.error('Error completing test session:', error)
