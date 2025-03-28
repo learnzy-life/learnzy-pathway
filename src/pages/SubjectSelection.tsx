@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
 import MockTestCycles from '../components/mock-tests/MockTestCycles';
 import PaymentDialog from '../components/mock-tests/PaymentDialog';
-import { useMockTests } from '../hooks/useMockTests';
+import { useMockTests } from '../hooks/mock-tests/useMockTests';
 import SubjectsSection from '../components/subjects/SubjectsSection';
 
 const SubjectSelection: React.FC = () => {
