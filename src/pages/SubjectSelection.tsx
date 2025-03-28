@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import SubjectCard from '../components/SubjectCard';
@@ -76,10 +75,8 @@ const SubjectSelection: React.FC = () => {
     };
 
     const initializeMockTests = () => {
-      // Create mock test data structure with 5 tests per cycle (4 regular + 1 dynamic)
       const tests: MockTest[] = [];
       
-      // Cycle 1 - All unlocked by default
       for (let i = 1; i <= 4; i++) {
         tests.push({
           id: `mock-1-${i}`,
@@ -92,18 +89,16 @@ const SubjectSelection: React.FC = () => {
         });
       }
       
-      // Add dynamic test for cycle 1
       tests.push({
         id: `mock-1-5`,
         title: `AI-Powered Review Test`,
         cycle: 1,
-        isLocked: true, // Locked until previous tests are completed
+        isLocked: true,
         unlockDate: null,
         isDynamic: true,
         isCompleted: false
       });
       
-      // Cycle 2 - Locked with future dates
       const cycle2StartDate = new Date('2025-04-05');
       for (let i = 1; i <= 4; i++) {
         tests.push({
@@ -117,7 +112,6 @@ const SubjectSelection: React.FC = () => {
         });
       }
       
-      // Add dynamic test for cycle 2
       tests.push({
         id: `mock-2-5`,
         title: `AI-Powered Review Test`,
@@ -128,7 +122,6 @@ const SubjectSelection: React.FC = () => {
         isCompleted: false
       });
       
-      // Cycle 3 - Locked with future dates
       const cycle3StartDate = new Date('2025-04-15');
       for (let i = 1; i <= 4; i++) {
         tests.push({
@@ -142,7 +135,6 @@ const SubjectSelection: React.FC = () => {
         });
       }
       
-      // Add dynamic test for cycle 3
       tests.push({
         id: `mock-3-5`,
         title: `AI-Powered Review Test`,
@@ -153,7 +145,6 @@ const SubjectSelection: React.FC = () => {
         isCompleted: false
       });
       
-      // Cycle 4 - Locked with future dates
       const cycle4StartDate = new Date('2025-04-25');
       for (let i = 1; i <= 4; i++) {
         tests.push({
@@ -167,7 +158,6 @@ const SubjectSelection: React.FC = () => {
         });
       }
       
-      // Add dynamic test for cycle 4
       tests.push({
         id: `mock-4-5`,
         title: `AI-Powered Review Test`,
@@ -187,26 +177,35 @@ const SubjectSelection: React.FC = () => {
   }, [user]);
 
   const canStartDynamicTest = (cycle: number) => {
-    // Check if all 4 regular tests in this cycle are completed
     const cycleTests = mockTests.filter(test => test.cycle === cycle && !test.isDynamic);
-    return cycleTests.every(test => test.isCompleted);
+    const cycleCompletedTestIds = completedTests.filter(id => id.startsWith(`mock-${cycle}-`) && !id.endsWith('-5'));
+    return cycleTests.every(test => completedTests.includes(test.id));
   };
 
   const handleMockTestClick = (test: MockTest) => {
-    if (test.isLocked) return;
+    if (test.isLocked) {
+      toast.error("This test is currently locked.");
+      return;
+    }
+    
+    const isCompleted = completedTests.includes(test.id);
+    test.isCompleted = isCompleted;
     
     if (test.isDynamic) {
-      // Check if user has completed all previous tests in this cycle
       if (!canStartDynamicTest(test.cycle)) {
         toast.error("Complete all tests in this cycle to unlock the AI-powered test.");
         return;
       }
       
-      // Navigate to dynamic test preparation
       window.location.href = `/pre-dynamic-test/${test.cycle}`;
     } else {
-      // Navigate to regular mock test
-      window.location.href = `/pre-mock-test/${test.cycle}/${test.id.split('-').pop()}`;
+      const testNumber = test.id.split('-').pop() || '1';
+      
+      if (isCompleted) {
+        window.location.href = `/results/mixed?sessionId=${test.id}`;
+      } else {
+        window.location.href = `/pre-mock-test/${test.cycle}/${testNumber}`;
+      }
     }
   };
 

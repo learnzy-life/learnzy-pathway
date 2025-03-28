@@ -6,7 +6,8 @@ import { QuestionResult } from './types'
 // Create a new test session when a test starts
 export const createTestSession = async (
   subject: Subject,
-  questions: Question[]
+  questions: Question[],
+  customId?: string
 ): Promise<string | null> => {
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -22,6 +23,8 @@ export const createTestSession = async (
       end_time: null,
       score: null,
       total_questions: questions.length,
+      // Add custom ID if provided
+      id: customId || undefined,
       // Add metadata at the session level
       chapter_name: firstQuestion?.Chapter_name || null,
       topic: firstQuestion?.Topic || null,
@@ -73,14 +76,14 @@ export const createTestSession = async (
     if (error) {
       console.error('Error creating test session:', error)
       toast.error('Failed to create test session')
-      return null
+      return customId
     }
 
     console.log('Test session created with ID:', data.id)
     return data.id
   } catch (err) {
     console.error('Unexpected error creating test session:', err)
-    return null
+    return customId
   }
 }
 
