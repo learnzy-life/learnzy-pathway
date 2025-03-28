@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { toast } from 'sonner';
@@ -61,18 +60,6 @@ export const useMockTests = (userId: string | undefined) => {
           requiresPayment: false
         });
       }
-      
-      tests.push({
-        id: `mock-1-6`,
-        title: `Premium Mock Test`,
-        cycle: 1,
-        isLocked: false,
-        unlockDate: null,
-        isDynamic: false,
-        isCompleted: false,
-        isPremium: true,
-        requiresPayment: true
-      });
       
       tests.push({
         id: `mock-1-5`,
