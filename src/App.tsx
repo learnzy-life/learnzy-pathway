@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
-import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from "@/components/ui/toaster"
+import { ThemeProvider } from "./components/theme-provider"
+import { Toaster } from "./components/ui/toaster"
 import Index from './pages/Index';
 import Auth from './pages/Auth';
 import LearnMore from './pages/LearnMore';
@@ -16,7 +17,7 @@ import TestReview from './pages/TestReview';
 import NotFound from './pages/NotFound';
 import PreDynamicTest from './pages/PreDynamicTest';
 import { useAuth } from './context/AuthContext';
-import { ProtectedRoute } from './components/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 import PreMockTest from './pages/PreMockTest';
 import MockTest from './pages/MockTest';
 

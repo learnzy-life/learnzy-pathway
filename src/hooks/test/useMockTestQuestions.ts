@@ -39,7 +39,7 @@ export const useMockTestQuestions = (
         const mockSessionId = `mock-${cycle}-${testNumber}`;
         
         // Create a new test session with the loaded questions
-        const newSessionId = await createTestSession(subject, sortedQuestions, mockSessionId)
+        const newSessionId = await createTestSession('mixed', sortedQuestions, mockSessionId)
         setSessionId(newSessionId || mockSessionId)
         
         if (newSessionId) {
