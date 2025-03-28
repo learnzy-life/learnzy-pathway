@@ -156,6 +156,258 @@ export type Database = {
         }
         Relationships: []
       }
+      mock_1: {
+        Row: {
+          bloom_taxonomy: string | null
+          chapter_name: string | null
+          common_pitfalls: string | null
+          correct_answer: string | null
+          difficulty_level: string | null
+          key_concept_tested: string | null
+          option_a: string | null
+          option_b: string | null
+          option_c: string | null
+          option_d: string | null
+          priority_level: string | null
+          q_no: number
+          question_structure: string | null
+          question_text: string | null
+          subject: string | null
+          subtopic: string | null
+          time_to_solve: number | null
+          topic: string | null
+        }
+        Insert: {
+          bloom_taxonomy?: string | null
+          chapter_name?: string | null
+          common_pitfalls?: string | null
+          correct_answer?: string | null
+          difficulty_level?: string | null
+          key_concept_tested?: string | null
+          option_a?: string | null
+          option_b?: string | null
+          option_c?: string | null
+          option_d?: string | null
+          priority_level?: string | null
+          q_no?: number
+          question_structure?: string | null
+          question_text?: string | null
+          subject?: string | null
+          subtopic?: string | null
+          time_to_solve?: number | null
+          topic?: string | null
+        }
+        Update: {
+          bloom_taxonomy?: string | null
+          chapter_name?: string | null
+          common_pitfalls?: string | null
+          correct_answer?: string | null
+          difficulty_level?: string | null
+          key_concept_tested?: string | null
+          option_a?: string | null
+          option_b?: string | null
+          option_c?: string | null
+          option_d?: string | null
+          priority_level?: string | null
+          q_no?: number
+          question_structure?: string | null
+          question_text?: string | null
+          subject?: string | null
+          subtopic?: string | null
+          time_to_solve?: number | null
+          topic?: string | null
+        }
+        Relationships: []
+      }
+      mock_2: {
+        Row: {
+          bloom_taxonomy: string | null
+          chapter_name: string | null
+          common_pitfalls: string | null
+          correct_answer: string | null
+          difficulty_level: string | null
+          key_concept_tested: string | null
+          option_a: string | null
+          option_b: string | null
+          option_c: string | null
+          option_d: string | null
+          priority_level: string | null
+          q_no: number
+          question_structure: string | null
+          question_text: string
+          subject: string | null
+          subtopic: string | null
+          time_to_solve: number | null
+          topic: string | null
+        }
+        Insert: {
+          bloom_taxonomy?: string | null
+          chapter_name?: string | null
+          common_pitfalls?: string | null
+          correct_answer?: string | null
+          difficulty_level?: string | null
+          key_concept_tested?: string | null
+          option_a?: string | null
+          option_b?: string | null
+          option_c?: string | null
+          option_d?: string | null
+          priority_level?: string | null
+          q_no?: number
+          question_structure?: string | null
+          question_text: string
+          subject?: string | null
+          subtopic?: string | null
+          time_to_solve?: number | null
+          topic?: string | null
+        }
+        Update: {
+          bloom_taxonomy?: string | null
+          chapter_name?: string | null
+          common_pitfalls?: string | null
+          correct_answer?: string | null
+          difficulty_level?: string | null
+          key_concept_tested?: string | null
+          option_a?: string | null
+          option_b?: string | null
+          option_c?: string | null
+          option_d?: string | null
+          priority_level?: string | null
+          q_no?: number
+          question_structure?: string | null
+          question_text?: string
+          subject?: string | null
+          subtopic?: string | null
+          time_to_solve?: number | null
+          topic?: string | null
+        }
+        Relationships: []
+      }
+      mock_3: {
+        Row: {
+          bloom_taxonomy: string | null
+          chapter_name: string | null
+          common_pitfalls: string | null
+          correct_answer: string | null
+          difficulty_level: string | null
+          key_concept_tested: string
+          option_a: string | null
+          option_b: string | null
+          option_c: string | null
+          option_d: string | null
+          priority_level: string | null
+          q_no: number
+          question_structure: string | null
+          question_text: string | null
+          subject: string | null
+          subtopic: string | null
+          time_to_solve: number | null
+          topic: string | null
+        }
+        Insert: {
+          bloom_taxonomy?: string | null
+          chapter_name?: string | null
+          common_pitfalls?: string | null
+          correct_answer?: string | null
+          difficulty_level?: string | null
+          key_concept_tested: string
+          option_a?: string | null
+          option_b?: string | null
+          option_c?: string | null
+          option_d?: string | null
+          priority_level?: string | null
+          q_no?: number
+          question_structure?: string | null
+          question_text?: string | null
+          subject?: string | null
+          subtopic?: string | null
+          time_to_solve?: number | null
+          topic?: string | null
+        }
+        Update: {
+          bloom_taxonomy?: string | null
+          chapter_name?: string | null
+          common_pitfalls?: string | null
+          correct_answer?: string | null
+          difficulty_level?: string | null
+          key_concept_tested?: string
+          option_a?: string | null
+          option_b?: string | null
+          option_c?: string | null
+          option_d?: string | null
+          priority_level?: string | null
+          q_no?: number
+          question_structure?: string | null
+          question_text?: string | null
+          subject?: string | null
+          subtopic?: string | null
+          time_to_solve?: number | null
+          topic?: string | null
+        }
+        Relationships: []
+      }
+      mock_4: {
+        Row: {
+          bloom_taxonomy: string | null
+          chapter_name: string | null
+          common_pitfalls: string | null
+          correct_answer: string | null
+          difficulty_level: string | null
+          key_concept_tested: string | null
+          option_a: string | null
+          option_b: string | null
+          option_c: string | null
+          option_d: string | null
+          priority_level: string | null
+          q_no: number
+          question_structure: string | null
+          question_text: string | null
+          subject: string | null
+          subtopic: string | null
+          time_to_solve: number | null
+          topic: string | null
+        }
+        Insert: {
+          bloom_taxonomy?: string | null
+          chapter_name?: string | null
+          common_pitfalls?: string | null
+          correct_answer?: string | null
+          difficulty_level?: string | null
+          key_concept_tested?: string | null
+          option_a?: string | null
+          option_b?: string | null
+          option_c?: string | null
+          option_d?: string | null
+          priority_level?: string | null
+          q_no?: number
+          question_structure?: string | null
+          question_text?: string | null
+          subject?: string | null
+          subtopic?: string | null
+          time_to_solve?: number | null
+          topic?: string | null
+        }
+        Update: {
+          bloom_taxonomy?: string | null
+          chapter_name?: string | null
+          common_pitfalls?: string | null
+          correct_answer?: string | null
+          difficulty_level?: string | null
+          key_concept_tested?: string | null
+          option_a?: string | null
+          option_b?: string | null
+          option_c?: string | null
+          option_d?: string | null
+          priority_level?: string | null
+          q_no?: number
+          question_structure?: string | null
+          question_text?: string | null
+          subject?: string | null
+          subtopic?: string | null
+          time_to_solve?: number | null
+          topic?: string | null
+        }
+        Relationships: []
+      }
       physics_dt: {
         Row: {
           bloom_taxonomy: string | null
