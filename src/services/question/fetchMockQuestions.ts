@@ -8,6 +8,7 @@ export const fetchMockQuestions = async (cycle: string, testNumber: string): Pro
   console.log(`Fetching mock test ${testNumber} questions for cycle ${cycle}...`)
 
   try {
+    // Map testNumber to the corresponding table name
     const tableToQuery = `mock_${testNumber}`
     console.log(`Attempting to fetch from ${tableToQuery} table...`)
 
