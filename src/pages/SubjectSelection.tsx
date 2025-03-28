@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import SubjectCard from '../components/SubjectCard';
@@ -11,6 +10,7 @@ import { Loader2, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { processPaymentForCycle } from '../utils/razorpayPayment';
 
 interface MockTest {
   id: string;
@@ -21,6 +21,7 @@ interface MockTest {
   isDynamic: boolean;
   isCompleted: boolean;
   isPremium: boolean;
+  requiresPayment: boolean;
 }
 
 const SubjectSelection: React.FC = () => {
@@ -30,8 +31,9 @@ const SubjectSelection: React.FC = () => {
   const [completedTests, setCompletedTests] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
-  const [selectedPremiumTest, setSelectedPremiumTest] = useState<MockTest | null>(null);
-  
+  const [selectedTest, setSelectedTest] = useState<MockTest | null>(null);
+  const [unlockedCycles, setUnlockedCycles] = useState<number[]>([1]);
+
   const subjects = [
     {
       id: 'biology',
@@ -80,6 +82,19 @@ const SubjectSelection: React.FC = () => {
       }
     };
 
+    const fetchUnlockedCycles = async () => {
+      if (user) {
+        try {
+          const storedUnlockedCycles = localStorage.getItem('unlockedCycles');
+          if (storedUnlockedCycles) {
+            setUnlockedCycles(JSON.parse(storedUnlockedCycles));
+          }
+        } catch (error) {
+          console.error('Error fetching unlocked cycles:', error);
+        }
+      }
+    };
+
     const initializeMockTests = () => {
       const tests: MockTest[] = [];
       
@@ -93,11 +108,11 @@ const SubjectSelection: React.FC = () => {
           unlockDate: null,
           isDynamic: false,
           isCompleted: false,
-          isPremium: false
+          isPremium: false,
+          requiresPayment: false
         });
       }
       
-      // Mock 6 is premium
       tests.push({
         id: `mock-1-6`,
         title: `Premium Mock Test`,
@@ -106,7 +121,8 @@ const SubjectSelection: React.FC = () => {
         unlockDate: null,
         isDynamic: false,
         isCompleted: false,
-        isPremium: true
+        isPremium: true,
+        requiresPayment: true
       });
       
       tests.push({
@@ -117,21 +133,22 @@ const SubjectSelection: React.FC = () => {
         unlockDate: null,
         isDynamic: true,
         isCompleted: false,
-        isPremium: false
+        isPremium: false,
+        requiresPayment: false
       });
       
       // Cycle 2
-      const cycle2StartDate = new Date('2025-04-05');
       for (let i = 1; i <= 4; i++) {
         tests.push({
           id: `mock-2-${i}`,
           title: `Mock Test ${i + 4}`,
           cycle: 2,
-          isLocked: true,
-          unlockDate: new Date(cycle2StartDate.getTime() + (i - 1) * 2 * 24 * 60 * 60 * 1000).toISOString(),
+          isLocked: !unlockedCycles.includes(2),
+          unlockDate: null,
           isDynamic: false,
           isCompleted: false,
-          isPremium: false
+          isPremium: false,
+          requiresPayment: true
         });
       }
       
@@ -139,25 +156,26 @@ const SubjectSelection: React.FC = () => {
         id: `mock-2-5`,
         title: `AI-Powered Review Test`,
         cycle: 2,
-        isLocked: true,
+        isLocked: !unlockedCycles.includes(2),
         unlockDate: null,
         isDynamic: true,
         isCompleted: false,
-        isPremium: false
+        isPremium: false,
+        requiresPayment: true
       });
       
       // Cycle 3
-      const cycle3StartDate = new Date('2025-04-15');
       for (let i = 1; i <= 4; i++) {
         tests.push({
           id: `mock-3-${i}`,
           title: `Mock Test ${i + 8}`,
           cycle: 3,
-          isLocked: true,
-          unlockDate: new Date(cycle3StartDate.getTime() + (i - 1) * 2 * 24 * 60 * 60 * 1000).toISOString(),
+          isLocked: !unlockedCycles.includes(3),
+          unlockDate: null,
           isDynamic: false,
           isCompleted: false,
-          isPremium: false
+          isPremium: false,
+          requiresPayment: true
         });
       }
       
@@ -165,25 +183,26 @@ const SubjectSelection: React.FC = () => {
         id: `mock-3-5`,
         title: `AI-Powered Review Test`,
         cycle: 3,
-        isLocked: true,
+        isLocked: !unlockedCycles.includes(3),
         unlockDate: null,
         isDynamic: true,
         isCompleted: false,
-        isPremium: false
+        isPremium: false,
+        requiresPayment: true
       });
       
       // Cycle 4
-      const cycle4StartDate = new Date('2025-04-25');
       for (let i = 1; i <= 4; i++) {
         tests.push({
           id: `mock-4-${i}`,
           title: `Mock Test ${i + 12}`,
           cycle: 4,
-          isLocked: true,
-          unlockDate: new Date(cycle4StartDate.getTime() + (i - 1) * 2 * 24 * 60 * 60 * 1000).toISOString(),
+          isLocked: !unlockedCycles.includes(4),
+          unlockDate: null,
           isDynamic: false,
           isCompleted: false,
-          isPremium: false
+          isPremium: false,
+          requiresPayment: true
         });
       }
       
@@ -191,11 +210,12 @@ const SubjectSelection: React.FC = () => {
         id: `mock-4-5`,
         title: `AI-Powered Review Test`,
         cycle: 4,
-        isLocked: true,
+        isLocked: !unlockedCycles.includes(4),
         unlockDate: null,
         isDynamic: true,
         isCompleted: false,
-        isPremium: false
+        isPremium: false,
+        requiresPayment: true
       });
       
       setMockTests(tests);
@@ -203,8 +223,9 @@ const SubjectSelection: React.FC = () => {
     };
 
     fetchCompletedTests();
+    fetchUnlockedCycles();
     initializeMockTests();
-  }, [user]);
+  }, [user, unlockedCycles]);
 
   const canStartDynamicTest = (cycle: number) => {
     const cycleTests = mockTests.filter(test => test.cycle === cycle && !test.isDynamic);
@@ -214,15 +235,20 @@ const SubjectSelection: React.FC = () => {
 
   const handleMockTestClick = (test: MockTest) => {
     if (test.isLocked) {
-      toast.error("This test is currently locked.");
+      if (test.requiresPayment) {
+        setSelectedTest(test);
+        setShowPaymentDialog(true);
+      } else {
+        toast.error("This test is currently locked.");
+      }
       return;
     }
     
     const isCompleted = completedTests.includes(test.id);
     test.isCompleted = isCompleted;
     
-    if (test.isPremium) {
-      setSelectedPremiumTest(test);
+    if (test.isPremium && !isCompleted) {
+      setSelectedTest(test);
       setShowPaymentDialog(true);
       return;
     }
@@ -245,15 +271,42 @@ const SubjectSelection: React.FC = () => {
     }
   };
 
-  const handlePaymentComplete = (testId: string) => {
-    // Here you would typically validate the payment with your backend
-    // For now, we'll just close the dialog and navigate to the test
-    setShowPaymentDialog(false);
+  const handlePaymentComplete = async (test: MockTest) => {
+    if (!user) {
+      toast.error("You need to be logged in to make a payment");
+      return;
+    }
     
-    if (selectedPremiumTest) {
-      const testNumber = selectedPremiumTest.id.split('-').pop() || '1';
-      const cycle = selectedPremiumTest.cycle;
-      window.location.href = `/pre-mock-test/${cycle}/${testNumber}`;
+    try {
+      const result = await processPaymentForCycle(
+        test.cycle,
+        user.email
+      );
+      
+      if (result.success) {
+        if (test.cycle > 1) {
+          const newUnlockedCycles = [...unlockedCycles, test.cycle];
+          setUnlockedCycles(newUnlockedCycles);
+          localStorage.setItem('unlockedCycles', JSON.stringify(newUnlockedCycles));
+          
+          setMockTests(prev => prev.map(t => ({
+            ...t,
+            isLocked: t.cycle === test.cycle ? false : t.isLocked
+          })));
+          
+          toast.success(`Cycle ${test.cycle} has been unlocked!`);
+        } else if (test.isPremium) {
+          const testNumber = test.id.split('-').pop() || '1';
+          window.location.href = `/pre-mock-test/${test.cycle}/${testNumber}`;
+        }
+        
+        setShowPaymentDialog(false);
+      } else {
+        toast.error(result.error || "Payment failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      toast.error("An error occurred during payment processing");
     }
   };
 
@@ -311,6 +364,31 @@ const SubjectSelection: React.FC = () => {
                     <h3 className="font-semibold text-lg text-learnzy-dark mb-1">Cycle {cycle.number}: {cycle.title}</h3>
                     <p className="text-sm text-muted-foreground mb-2">{cycle.focus}</p>
                     <p className="text-xs text-muted-foreground">{cycle.info}</p>
+                    
+                    {cycle.number > 1 && !unlockedCycles.includes(cycle.number) && (
+                      <div className="mt-3 pt-3 border-t border-dashed border-amber-200">
+                        <Button 
+                          onClick={() => {
+                            const dummyTest = {
+                              id: `cycle-${cycle.number}`,
+                              title: `Cycle ${cycle.number}`,
+                              cycle: cycle.number,
+                              isLocked: true,
+                              unlockDate: null,
+                              isDynamic: false,
+                              isCompleted: false,
+                              isPremium: false,
+                              requiresPayment: true
+                            };
+                            setSelectedTest(dummyTest);
+                            setShowPaymentDialog(true);
+                          }}
+                          className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+                        >
+                          Unlock Cycle {cycle.number} (₹499)
+                        </Button>
+                      </div>
+                    )}
                   </div>
                   
                   {isLoading ? (
@@ -355,9 +433,11 @@ const SubjectSelection: React.FC = () => {
                             ) : test.isLocked ? (
                               <p className="text-sm text-gray-500">
                                 <span className="inline-flex items-center">
-                                  {test.isDynamic 
-                                    ? "Complete previous tests to unlock"
-                                    : "🔒 Locked"}
+                                  {test.requiresPayment 
+                                    ? "Unlock Cycle to Access" 
+                                    : test.isDynamic 
+                                      ? "Complete previous tests to unlock"
+                                      : "🔒 Locked"}
                                 </span>
                               </p>
                             ) : test.isPremium ? (
@@ -376,23 +456,43 @@ const SubjectSelection: React.FC = () => {
         </section>
       </main>
 
-      {/* Payment Dialog for Premium Mock Tests */}
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Unlock Premium Mock Test</DialogTitle>
+            <DialogTitle>
+              {selectedTest?.cycle > 1 && selectedTest?.requiresPayment 
+                ? `Unlock Cycle ${selectedTest?.cycle}` 
+                : 'Unlock Premium Mock Test'}
+            </DialogTitle>
             <DialogDescription>
-              Get access to our premium mock test with exclusive questions and insights.
+              {selectedTest?.cycle > 1 && selectedTest?.requiresPayment
+                ? `Get access to all mock tests in Cycle ${selectedTest?.cycle}. This is a one-time payment.`
+                : 'Get access to our premium mock test with exclusive questions and insights.'}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <div className="bg-amber-50 p-4 rounded-lg mb-4">
-              <h3 className="font-semibold text-amber-800 mb-2">Premium Mock Test Benefits:</h3>
+              <h3 className="font-semibold text-amber-800 mb-2">
+                {selectedTest?.cycle > 1 && selectedTest?.requiresPayment
+                  ? `Cycle ${selectedTest?.cycle} Benefits:`
+                  : 'Premium Mock Test Benefits:'}
+              </h3>
               <ul className="list-disc pl-5 text-amber-700 space-y-1">
-                <li>Advanced difficulty level questions</li>
-                <li>Detailed analytics on your performance</li>
-                <li>Compare your score with top performers</li>
-                <li>Extended explanation for each question</li>
+                {selectedTest?.cycle > 1 && selectedTest?.requiresPayment ? (
+                  <>
+                    <li>Access to all 4 mock tests in this cycle</li>
+                    <li>Access to the AI-powered review test</li>
+                    <li>Detailed analytics and insights</li>
+                    <li>Personalized improvement recommendations</li>
+                  </>
+                ) : (
+                  <>
+                    <li>Advanced difficulty level questions</li>
+                    <li>Detailed analytics on your performance</li>
+                    <li>Compare your score with top performers</li>
+                    <li>Extended explanation for each question</li>
+                  </>
+                )}
               </ul>
             </div>
             <div className="text-center">
@@ -400,11 +500,8 @@ const SubjectSelection: React.FC = () => {
               <Button 
                 className="bg-amber-500 hover:bg-amber-600 text-white w-full"
                 onClick={() => {
-                  // In a real implementation, this would trigger the Razorpay payment flow
-                  toast.success("Payment integration will be implemented with Razorpay");
-                  // For now, we'll just simulate a successful payment
-                  if (selectedPremiumTest) {
-                    handlePaymentComplete(selectedPremiumTest.id);
+                  if (selectedTest) {
+                    handlePaymentComplete(selectedTest);
                   }
                 }}
               >
