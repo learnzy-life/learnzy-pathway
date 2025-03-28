@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { CycleData } from '../landing/cycles/cyclesData';
+import { Lock } from 'lucide-react';
 
 interface CycleInfoProps {
   cycle: CycleData;
@@ -21,7 +22,9 @@ const CycleInfo: React.FC<CycleInfoProps> = ({ cycle, isUnlocked, onUnlockClick 
           <Button 
             onClick={onUnlockClick}
             className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+            size="sm"
           >
+            <Lock className="w-4 h-4 mr-2" />
             Unlock Cycle {cycle.number} (₹499)
           </Button>
         </div>

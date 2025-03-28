@@ -23,7 +23,6 @@ interface PaymentResult {
  * Add <script src="https://checkout.razorpay.com/v1/checkout.js"></script> to your HTML
  */
 export const initiateRazorpayPayment = async (
-  key: string, // Razorpay API Key
   options: PaymentOptions
 ): Promise<PaymentResult> => {
   try {
@@ -40,7 +39,7 @@ export const initiateRazorpayPayment = async (
 
       // Create a new instance of Razorpay
       const razorpayOptions: any = {
-        key,
+        key: 'rzp_live_gmpGhWote5So0q', // Your Razorpay key ID
         amount: options.amount, // Amount in smallest currency unit (paise for INR)
         currency: options.currency || 'INR',
         name: options.name,
@@ -103,7 +102,7 @@ export const processPaymentForCycle = async (
   const cycleAmount = 49900; // ₹499 in paise
   const cycleName = `Cycle ${cycleNumber}`;
   
-  const result = await initiateRazorpayPayment('rzp_test_YOUR_KEY_HERE', {
+  const result = await initiateRazorpayPayment({
     amount: cycleAmount,
     currency: 'INR',
     name: 'Learnzy',
