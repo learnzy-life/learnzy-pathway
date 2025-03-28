@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react'
-import { Question } from '../../services/question'
+import { Question, Subject } from '../../services/question'
 import { fetchMockQuestions } from '../../services/question/fetchMockQuestions'
 import { createTestSession } from '../../services/testSession'
 import { supabase } from '../../lib/supabase'
@@ -27,9 +27,14 @@ export const useMockTestQuestions = (
         const sortedQuestions = [...loadedQuestions].sort((a, b) => a.id - b.id)
         
         // Get subject from the first question or use 'biology' as default
-        const subject = sortedQuestions.length > 0 
+        const subjectValue = sortedQuestions.length > 0 
           ? (sortedQuestions[0].subject || 'biology')
           : 'biology';
+        
+        // Ensure the subject is a valid Subject type
+        const subject = (subjectValue === 'physics' || subjectValue === 'chemistry') 
+          ? subjectValue as Subject 
+          : 'biology' as Subject;
         
         // Get user mood and ritual data from localStorage
         const mood = localStorage.getItem('selected_mood') || 'unknown'
