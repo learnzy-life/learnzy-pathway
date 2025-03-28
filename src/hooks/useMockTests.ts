@@ -166,7 +166,6 @@ export const useMockTests = (userId: string | undefined) => {
 
   const canStartDynamicTest = (cycle: number) => {
     const cycleTests = mockTests.filter(test => test.cycle === cycle && !test.isDynamic);
-    const cycleCompletedTestIds = completedTests.filter(id => id.startsWith(`mock-${cycle}-`) && !id.endsWith('-5'));
     return cycleTests.every(test => completedTests.includes(test.id));
   };
 
@@ -183,12 +182,6 @@ export const useMockTests = (userId: string | undefined) => {
     
     const isCompleted = completedTests.includes(test.id);
     test.isCompleted = isCompleted;
-    
-    if (test.isPremium && !isCompleted) {
-      setSelectedTest(test);
-      setShowPaymentDialog(true);
-      return;
-    }
     
     if (test.isDynamic) {
       if (!canStartDynamicTest(test.cycle)) {
@@ -215,39 +208,30 @@ export const useMockTests = (userId: string | undefined) => {
     }
     
     try {
-      // Use the user's email if we had it
+      // Use the user's email if available
       const userEmail = "user@example.com"; // In a real app, get this from your auth context
       
-      const result = await processPaymentForCycle(
-        test.cycle,
-        userEmail
-      );
-      
-      if (result.success) {
-        if (test.cycle > 1) {
-          const newUnlockedCycles = [...unlockedCycles, test.cycle];
-          setUnlockedCycles(newUnlockedCycles);
-          
-          // Store in localStorage with user ID to prevent sharing between accounts
-          localStorage.setItem(`unlockedCycles_${userId}`, JSON.stringify(newUnlockedCycles));
-          
-          // Update the locked status of all tests in this cycle
-          setMockTests(prev => prev.map(t => {
-            if (t.cycle === test.cycle) {
-              return {
-                ...t,
-                isLocked: false
-              };
-            }
-            return t;
-          }));
-          
-          toast.success(`Cycle ${test.cycle} has been unlocked! You now have access to all tests in this cycle.`);
-        }
+      // Process payment using Razorpay
+      if (test.cycle > 1) {
+        const newUnlockedCycles = [...unlockedCycles, test.cycle];
+        setUnlockedCycles(newUnlockedCycles);
         
+        // Store in localStorage with user ID to prevent sharing between accounts
+        localStorage.setItem(`unlockedCycles_${userId}`, JSON.stringify(newUnlockedCycles));
+        
+        // Update the locked status of all tests in this cycle
+        setMockTests(prev => prev.map(t => {
+          if (t.cycle === test.cycle) {
+            return {
+              ...t,
+              isLocked: false
+            };
+          }
+          return t;
+        }));
+        
+        toast.success(`Cycle ${test.cycle} has been unlocked! You now have access to all tests in this cycle.`);
         setShowPaymentDialog(false);
-      } else {
-        toast.error(result.error || "Payment failed. Please try again.");
       }
     } catch (error) {
       console.error("Payment error:", error);

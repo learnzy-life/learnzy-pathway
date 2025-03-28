@@ -1,4 +1,6 @@
 
+import { loadRazorpayScript } from './loadScript';
+
 interface PaymentOptions {
   amount: number; // in paise (100 paise = ₹1)
   currency: string;
@@ -19,20 +21,19 @@ interface PaymentResult {
 
 /**
  * Initialize and display Razorpay payment dialog
- * Note: This requires Razorpay to be loaded in the page
- * Add <script src="https://checkout.razorpay.com/v1/checkout.js"></script> to your HTML
+ * Requires Razorpay to be loaded in the page
  */
-export const initiateRazorpayPayment = async (
+export const initiateRazorpayPayment = (
   options: PaymentOptions
 ): Promise<PaymentResult> => {
-  try {
-    // First ensure the Razorpay script is loaded
-    await loadRazorpayScript();
-    
-    return new Promise((resolve) => {
+  return new Promise(async (resolve) => {
+    try {
+      // First ensure the Razorpay script is loaded
+      await loadRazorpayScript();
+      
       // Check if Razorpay is available
       if (!(window as any).Razorpay) {
-        console.error("Razorpay SDK is not loaded. Please add the Razorpay script to your page.");
+        console.error("Razorpay SDK is not loaded");
         resolve({ success: false, error: "Razorpay SDK not loaded" });
         return;
       }
@@ -45,7 +46,7 @@ export const initiateRazorpayPayment = async (
         name: options.name,
         description: options.description,
         order_id: options.orderId,
-        handler: (response: any) => {
+        handler: function (response: any) {
           resolve({
             success: true,
             paymentId: response.razorpay_payment_id
@@ -61,28 +62,26 @@ export const initiateRazorpayPayment = async (
           color: '#FFB923' // Using learnzy-amber color
         },
         modal: {
-          ondismiss: () => {
+          ondismiss: function () {
             resolve({ success: false, error: "Payment cancelled by user" });
           }
         }
       };
 
-      try {
-        const razorpayInstance = new (window as any).Razorpay(razorpayOptions);
-        razorpayInstance.open();
-      } catch (error) {
-        console.error("Error initiating Razorpay payment:", error);
-        resolve({ success: false, error });
-      }
-    });
-  } catch (error) {
-    console.error("Error in initiateRazorpayPayment:", error);
-    return { success: false, error };
-  }
+      const razorpayInstance = new (window as any).Razorpay(razorpayOptions);
+      razorpayInstance.on('payment.failed', function (response: any) {
+        resolve({
+          success: false,
+          error: response.error.description
+        });
+      });
+      razorpayInstance.open();
+    } catch (error) {
+      console.error("Error in initiateRazorpayPayment:", error);
+      resolve({ success: false, error });
+    }
+  });
 };
-
-// Import loadRazorpayScript from loadScript.ts
-import { loadRazorpayScript } from './loadScript';
 
 /**
  * Process a payment for cycle access

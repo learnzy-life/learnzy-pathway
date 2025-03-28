@@ -1,9 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CreditCard, Lock } from 'lucide-react';
 import { MockTest } from '../../types/mock-test';
+import { initiateRazorpayPayment } from '../../utils/razorpayPayment';
+import { toast } from 'sonner';
 
 interface PaymentDialogProps {
   open: boolean;
@@ -25,9 +27,29 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({
     
     setIsProcessing(true);
     try {
-      await onPaymentComplete(selectedTest);
+      // Create a unique order ID
+      const orderId = `order_${Date.now()}`;
+      
+      // Set up payment options
+      const paymentResult = await initiateRazorpayPayment({
+        amount: 49900, // ₹499 in paise
+        currency: 'INR',
+        name: 'Learnzy',
+        description: `Access to ${selectedTest.cycle > 1 ? `Cycle ${selectedTest.cycle}` : 'Premium'} Mock Tests`,
+        orderId: orderId,
+        email: 'user@example.com', // Ideally this should come from user context
+      });
+      
+      if (paymentResult.success) {
+        toast.success(`Payment successful! Transaction ID: ${paymentResult.paymentId}`);
+        await onPaymentComplete(selectedTest);
+        onOpenChange(false);
+      } else {
+        toast.error(paymentResult.error || "Payment failed. Please try again.");
+      }
     } catch (error) {
       console.error("Payment error:", error);
+      toast.error("An error occurred during payment processing");
     } finally {
       setIsProcessing(false);
     }
@@ -99,7 +121,5 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({
     </Dialog>
   );
 };
-
-import { useState } from 'react';
 
 export default PaymentDialog;

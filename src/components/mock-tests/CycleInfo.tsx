@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { CycleData } from '../landing/cycles/cyclesData';
-import { Lock, CreditCard } from 'lucide-react';
+import { Lock } from 'lucide-react';
 
 interface CycleInfoProps {
   cycle: CycleData;
