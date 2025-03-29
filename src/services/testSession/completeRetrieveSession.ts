@@ -1,6 +1,6 @@
-
 import { toast } from 'sonner'
 import { supabase } from '../../lib/supabase'
+import { generateReviewTest } from './reviewTest'
 import { QuestionResult, TestSession } from './types'
 
 // Complete a test session
@@ -18,7 +18,7 @@ export const completeTestSession = async (
     console.log('Questions data with metadata:', questions[0])
 
     // Ensure all questions have the required metadata fields (both cases)
-    const questionsWithMetadata = questions.map(q => ({
+    const questionsWithMetadata = questions.map((q) => ({
       id: q.id,
       text: q.text,
       userAnswer: q.userAnswer,
@@ -43,12 +43,12 @@ export const completeTestSession = async (
       Option_B: q.Option_B || '',
       Option_C: q.Option_C || '',
       Option_D: q.Option_D || '',
-      options: q.options || []
+      options: q.options || [],
     }))
 
     // Get subject-level metadata from the first question (trying both cases)
     const firstQuestion = questions.length > 0 ? questions[0] : null
-    
+
     // Update the session with both questions data and top-level metadata fields
     const { error } = await supabase
       .from('test_sessions')
@@ -66,7 +66,7 @@ export const completeTestSession = async (
         priority_level: firstQuestion?.Priority_Level || null,
         time_to_solve: firstQuestion?.Time_to_Solve || null,
         key_concept_tested: firstQuestion?.Key_Concept_Tested || null,
-        common_pitfalls: firstQuestion?.Common_Pitfalls || null
+        common_pitfalls: firstQuestion?.Common_Pitfalls || null,
       })
       .eq('id', sessionId)
 
@@ -74,6 +74,39 @@ export const completeTestSession = async (
       console.error('Error completing test session:', error)
       toast.error('Failed to save test results')
       return false
+    }
+
+    // Check if this is Mock 4 of a cycle and automatically generate Mock 5
+    if (sessionId.startsWith('mock-')) {
+      const parts = sessionId.split('-')
+
+      // Check if this is Mock 4
+      if (parts.length >= 3 && parts[2] === '4') {
+        const cycle = parseInt(parts[1])
+
+        if (!isNaN(cycle)) {
+          console.log(
+            `Mock 4 of cycle ${cycle} completed. Automatically generating Mock 5...`
+          )
+
+          try {
+            // Generate Mock 5 in the background
+            const mock5Id = await generateReviewTest(sessionId, cycle)
+
+            if (mock5Id) {
+              console.log(`Successfully generated Mock 5 with ID: ${mock5Id}`)
+              toast.success(
+                'Your Mock 5 test has been generated! It will be available in your dashboard.'
+              )
+            } else {
+              console.error('Failed to generate Mock 5')
+            }
+          } catch (error) {
+            console.error('Error generating Mock 5:', error)
+            // Don't show error to user here, as the test completion was still successful
+          }
+        }
+      }
     }
 
     console.log('Test session completed successfully with all metadata fields')
@@ -110,8 +143,8 @@ export const getTestSession = async (
     console.log('Test session data:', data)
 
     // Make sure questions_data is always an array
-    const questionsData = Array.isArray(data.questions_data) 
-      ? data.questions_data 
+    const questionsData = Array.isArray(data.questions_data)
+      ? data.questions_data
       : []
 
     return {
@@ -124,9 +157,11 @@ export const getTestSession = async (
       total_questions: data.total_questions || questionsData.length,
       questions: questionsData,
       // Calculate these values to match the TestSession type
-      correct_answers: questionsData.filter(q => q.isCorrect).length,
-      incorrect_answers: questionsData.filter(q => !q.isCorrect && q.userAnswer).length,
-      unattempted: questionsData.filter(q => !q.userAnswer).length
+      correct_answers: questionsData.filter((q) => q.isCorrect).length,
+      incorrect_answers: questionsData.filter(
+        (q) => !q.isCorrect && q.userAnswer
+      ).length,
+      unattempted: questionsData.filter((q) => !q.userAnswer).length,
     }
   } catch (err) {
     console.error('Unexpected error fetching test session:', err)

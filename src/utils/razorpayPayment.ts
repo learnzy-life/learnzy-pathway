@@ -1,22 +1,21 @@
-
-import { loadRazorpayScript } from './loadScript';
+import { loadRazorpayScript } from './loadScript'
 
 interface PaymentOptions {
-  amount: number; // in paise (100 paise = ₹1)
-  currency: string;
-  name: string; // business/site name
-  description: string; // payment description
-  orderId: string; // order id generated from server
-  customerId?: string; // optional customer id
-  email?: string; // customer email
-  contact?: string; // customer phone
-  notes?: Record<string, string>; // additional notes
+  amount: number // in paise (100 paise = ₹1)
+  currency: string
+  name: string // business/site name
+  description: string // payment description
+  orderId: string // order id generated from server
+  customerId?: string // optional customer id
+  email?: string // customer email
+  contact?: string // customer phone
+  notes?: Record<string, string> // additional notes
 }
 
 interface PaymentResult {
-  success: boolean;
-  paymentId?: string;
-  error?: any;
+  success: boolean
+  paymentId?: string
+  error?: any
 }
 
 /**
@@ -29,13 +28,13 @@ export const initiateRazorpayPayment = (
   return new Promise(async (resolve) => {
     try {
       // First ensure the Razorpay script is loaded
-      await loadRazorpayScript();
-      
+      await loadRazorpayScript()
+
       // Check if Razorpay is available
       if (!(window as any).Razorpay) {
-        console.error("Razorpay SDK is not loaded");
-        resolve({ success: false, error: "Razorpay SDK not loaded" });
-        return;
+        console.error('Razorpay SDK is not loaded')
+        resolve({ success: false, error: 'Razorpay SDK not loaded' })
+        return
       }
 
       // Create a new instance of Razorpay
@@ -49,39 +48,39 @@ export const initiateRazorpayPayment = (
         handler: function (response: any) {
           resolve({
             success: true,
-            paymentId: response.razorpay_payment_id
-          });
+            paymentId: response.razorpay_payment_id,
+          })
         },
         prefill: {
           email: options.email || '',
           contact: options.contact || '',
-          name: options.customerId || ''
+          name: options.customerId || '',
         },
         notes: options.notes || {},
         theme: {
-          color: '#FFB923' // Using learnzy-amber color
+          color: '#FFB923', // Using learnzy-amber color
         },
         modal: {
           ondismiss: function () {
-            resolve({ success: false, error: "Payment cancelled by user" });
-          }
-        }
-      };
+            resolve({ success: false, error: 'Payment cancelled by user' })
+          },
+        },
+      }
 
-      const razorpayInstance = new (window as any).Razorpay(razorpayOptions);
+      const razorpayInstance = new (window as any).Razorpay(razorpayOptions)
       razorpayInstance.on('payment.failed', function (response: any) {
         resolve({
           success: false,
-          error: response.error.description
-        });
-      });
-      razorpayInstance.open();
+          error: response.error.description,
+        })
+      })
+      razorpayInstance.open()
     } catch (error) {
-      console.error("Error in initiateRazorpayPayment:", error);
-      resolve({ success: false, error });
+      console.error('Error in initiateRazorpayPayment:', error)
+      resolve({ success: false, error })
     }
-  });
-};
+  })
+}
 
 /**
  * Process a payment for cycle access
@@ -95,12 +94,12 @@ export const processPaymentForCycle = async (
 ): Promise<PaymentResult> => {
   // In a real implementation, you would get the order ID from a server
   // For now, we'll generate a mock order ID
-  const mockOrderId = `order_${Date.now()}`;
-  
+  const mockOrderId = `order_${Date.now()}`
+
   // Set cycle-specific amounts and descriptions
-  const cycleAmount = 49900; // ₹499 in paise
-  const cycleName = `Cycle ${cycleNumber}`;
-  
+  const cycleAmount = 49900 // ₹499 in paise
+  const cycleName = `Cycle ${cycleNumber}`
+
   const result = await initiateRazorpayPayment({
     amount: cycleAmount,
     currency: 'INR',
@@ -108,7 +107,7 @@ export const processPaymentForCycle = async (
     description: `Access to ${cycleName} Mock Tests`,
     orderId: mockOrderId,
     email: userEmail,
-  });
-  
-  return result;
-};
+  })
+
+  return result
+}

@@ -7,15 +7,17 @@ import { QuestionResult } from './types'
 export const createTestSession = async (
   subject: Subject,
   questions: Question[],
-  customId?: string
+  sourceSessionId: string
 ): Promise<string | null> => {
   try {
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     const userId = user?.id || null
 
     // Get metadata from the first question
     const firstQuestion = questions.length > 0 ? questions[0] : null
-    
+
     const newSession = {
       user_id: userId,
       subject,
@@ -23,8 +25,6 @@ export const createTestSession = async (
       end_time: null,
       score: null,
       total_questions: questions.length,
-      // Add custom ID if provided
-      id: customId || undefined,
       // Add metadata at the session level
       chapter_name: firstQuestion?.Chapter_name || null,
       topic: firstQuestion?.Topic || null,
@@ -36,6 +36,7 @@ export const createTestSession = async (
       time_to_solve: firstQuestion?.Time_to_Solve || null,
       key_concept_tested: firstQuestion?.Key_Concept_Tested || null,
       common_pitfalls: firstQuestion?.Common_Pitfalls || null,
+      source_session_id: sourceSessionId,
       // Save all question data including metadata
       questions_data: questions.map((q) => ({
         id: q.id,
@@ -61,7 +62,7 @@ export const createTestSession = async (
         Option_B: q.Option_B || q.option_b || '',
         Option_C: q.Option_C || q.option_c || '',
         Option_D: q.Option_D || q.option_d || '',
-        options: q.options || []
+        options: q.options || [],
       })),
     }
 
@@ -76,14 +77,14 @@ export const createTestSession = async (
     if (error) {
       console.error('Error creating test session:', error)
       toast.error('Failed to create test session')
-      return customId
+      return null
     }
 
     console.log('Test session created with ID:', data.id)
     return data.id
   } catch (err) {
     console.error('Unexpected error creating test session:', err)
-    return customId
+    return null
   }
 }
 

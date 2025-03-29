@@ -1,8 +1,9 @@
 import { BarChart, Book, CheckCircle2, Clock, PieChart } from 'lucide-react'
 import React from 'react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 
 import ImprovementResources from '../components/ImprovementResources'
+import Mock5Notification from '../components/Mock5Notification'
 import NextStepsSection from '../components/NextStepsSection'
 import ResultsLayout from '../components/ResultsLayout'
 import ResultsLoadingState from '../components/ResultsLoadingState'
@@ -19,6 +20,12 @@ const Results: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>()
   const [searchParams] = useSearchParams()
   const sessionId = searchParams.get('sessionId')
+  const mock = searchParams.get('mock') === 'true'
+  const cycle = parseInt(searchParams.get('cycle') || '0')
+  const testNumber = searchParams.get('testNumber') || ''
+
+  // Check if this is Mock 4 of a cycle
+  const isMock4 = mock && testNumber === '4' && cycle > 0
 
   const { loading, resultsData, errorMessage, isFirstTest } = useResultsData(
     subject,
@@ -30,19 +37,14 @@ const Results: React.FC = () => {
   }
 
   if (errorMessage) {
-    return (
-      <ResultsLoadingState 
-        loading={false} 
-        errorMessage={errorMessage} 
-      />
-    )
+    return <ResultsLoadingState loading={false} errorMessage={errorMessage} />
   }
 
   if (!resultsData) {
     return (
-      <ResultsLoadingState 
-        loading={false} 
-        errorMessage="No data available. Please try taking a test first." 
+      <ResultsLoadingState
+        loading={false}
+        errorMessage="No data available. Please try taking a test first."
       />
     )
   }
@@ -60,30 +62,40 @@ const Results: React.FC = () => {
 
   const improvementResources = resultsData.topics.map((topic) => {
     // Find matching resource from bioResources if available
-    const matchingResource = resultsData.bioResources?.find(resource => 
-      resource.chapter_name && topic.name.toLowerCase().includes(resource.chapter_name.toLowerCase())
-    );
-    
+    const matchingResource = resultsData.bioResources?.find(
+      (resource) =>
+        resource.chapter_name &&
+        topic.name.toLowerCase().includes(resource.chapter_name.toLowerCase())
+    )
+
     const resources = [
       {
         type: 'NCERT',
         title: `${topic.name} NCERT Highlights`,
-        url: matchingResource?.ncert_link && matchingResource.ncert_link !== 'NA' 
-          ? matchingResource.ncert_link 
-          : `https://learnzy.ai/resources/${subject}/ncert/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
-        description: matchingResource?.ncert_link === 'NA' 
-          ? 'Self-study recommended for this chapter' 
-          : 'Toppers-highlighted NCERT pages for this topic',
+        url:
+          matchingResource?.ncert_link && matchingResource.ncert_link !== 'NA'
+            ? matchingResource.ncert_link
+            : `https://learnzy.ai/resources/${subject}/ncert/${topic.name
+                .toLowerCase()
+                .replace(/\s+/g, '-')}`,
+        description:
+          matchingResource?.ncert_link === 'NA'
+            ? 'Self-study recommended for this chapter'
+            : 'Toppers-highlighted NCERT pages for this topic',
       },
       {
         type: 'Video',
         title: `${topic.name} Video Lecture`,
-        url: matchingResource?.video_link && matchingResource.video_link !== 'NA'
-          ? matchingResource.video_link
-          : `https://learnzy.ai/resources/${subject}/video/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
-        description: matchingResource?.video_link === 'NA' 
-          ? 'Self-study recommended for this chapter' 
-          : 'Expert video tutorial for this topic',
+        url:
+          matchingResource?.video_link && matchingResource.video_link !== 'NA'
+            ? matchingResource.video_link
+            : `https://learnzy.ai/resources/${subject}/video/${topic.name
+                .toLowerCase()
+                .replace(/\s+/g, '-')}`,
+        description:
+          matchingResource?.video_link === 'NA'
+            ? 'Self-study recommended for this chapter'
+            : 'Expert video tutorial for this topic',
       },
     ]
 
@@ -100,6 +112,15 @@ const Results: React.FC = () => {
 
   return (
     <ResultsLayout subjectTitle={subjectTitle}>
+      {/* Show Mock 5 notification if this is Mock 4 */}
+      {isMock4 && (
+        <Mock5Notification
+          sessionId={sessionId}
+          cycle={cycle}
+          isMock4={isMock4}
+        />
+      )}
+
       <div className="mb-12">
         <SectionHeader icon={CheckCircle2} title="Performance Overview" />
         <ResultsOverview
@@ -117,9 +138,7 @@ const Results: React.FC = () => {
 
       <div className="mb-12">
         <SectionHeader icon={Clock} title="Time Management" />
-        <TimeAnalysis
-          timeAnalysis={resultsData.timeAnalysis}
-        />
+        <TimeAnalysis timeAnalysis={resultsData.timeAnalysis} />
       </div>
 
       <div className="mb-12">
@@ -129,17 +148,19 @@ const Results: React.FC = () => {
 
       <div className="mb-12">
         <SectionHeader icon={BarChart} title="Chapter Performance" />
-        <TopicBreakdown 
-          topics={resultsData.topics} 
-          isFirstTest={isFirstTest} 
-          overallDifficultyPerformance={resultsData.subjectScores.overallDifficultyPerformance}
+        <TopicBreakdown
+          topics={resultsData.topics}
+          isFirstTest={isFirstTest}
+          overallDifficultyPerformance={
+            resultsData.subjectScores.overallDifficultyPerformance
+          }
         />
       </div>
 
       <div className="mb-12">
         <SectionHeader icon={Book} title="Improve Before Your Next Mock" />
-        <ImprovementResources 
-          resources={improvementResources} 
+        <ImprovementResources
+          resources={improvementResources}
           bioResources={resultsData.bioResources}
         />
       </div>

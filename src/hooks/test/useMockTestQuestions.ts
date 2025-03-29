@@ -1,10 +1,9 @@
-
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { supabase } from '../../lib/supabase'
 import { Question, Subject } from '../../services/question'
 import { fetchMockQuestions } from '../../services/question/fetchMockQuestions'
 import { createTestSession } from '../../services/testSession'
-import { supabase } from '../../lib/supabase'
-import { toast } from 'sonner'
 
 export const useMockTestQuestions = (
   cycle: string,
@@ -22,58 +21,74 @@ export const useMockTestQuestions = (
       try {
         // Load the questions with full metadata
         const loadedQuestions = await fetchMockQuestions(cycle, testNumber)
-        
+
         // Sort questions by their ID to ensure numerical ascending order
         const sortedQuestions = [...loadedQuestions].sort((a, b) => a.id - b.id)
-        
+
         // Get subject from the first question or use 'mixed' as default for mock tests
-        const subjectValue = sortedQuestions.length > 0 
-          ? (sortedQuestions[0].subject || 'mixed')
-          : 'mixed';
-        
+        const subjectValue =
+          sortedQuestions.length > 0
+            ? sortedQuestions[0].subject || 'mixed'
+            : 'mixed'
+
         // Ensure the subject is a valid Subject type
-        const subject = (subjectValue === 'physics' || subjectValue === 'chemistry' || subjectValue === 'biology') 
-          ? subjectValue as Subject 
-          : 'biology' as Subject;
-        
+        const subject =
+          subjectValue === 'physics' ||
+          subjectValue === 'chemistry' ||
+          subjectValue === 'biology'
+            ? (subjectValue as Subject)
+            : ('biology' as Subject)
+
         // Get user mood and ritual data from localStorage
         const mood = localStorage.getItem('selected_mood') || 'unknown'
         const ritual = localStorage.getItem('selected_ritual') || 'none'
-        
+
         // Generate a unique session ID for this mock test
-        const mockSessionId = `mock-${cycle}-${testNumber}`;
-        
+        const mockSessionId = `mock-${cycle}-${testNumber}`
+
         // Create a new test session with the loaded questions
-        const newSessionId = await createTestSession(subject, sortedQuestions, mockSessionId)
+        const newSessionId = await createTestSession(
+          subject,
+          sortedQuestions,
+          mockSessionId
+        )
         setSessionId(newSessionId || mockSessionId)
-        
+
         if (newSessionId) {
           // Save the preparation data
-          const { data: { user } } = await supabase.auth.getUser()
-          
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+
           if (user) {
-            const { error } = await supabase.from('user_test_preparations').insert({
-              user_id: user.id,
-              test_session_id: newSessionId,
-              subject,
-              mood,
-              ritual,
-              test_type: 'mock',
-              mock_cycle: cycle,
-              mock_number: testNumber
-            }).select().single()
-            
+            const { error } = await supabase
+              .from('user_test_preparations')
+              .insert({
+                user_id: user.id,
+                test_session_id: newSessionId,
+                subject,
+                mood,
+                ritual,
+                test_type: 'mock',
+                mock_cycle: cycle,
+                mock_number: testNumber,
+              })
+              .select()
+              .single()
+
             if (error) {
               console.error('Error saving test preparation data:', error)
             }
           }
         }
-        
+
         setStartTime(Date.now())
         setQuestions(sortedQuestions)
       } catch (error) {
         console.error('Error loading mock test:', error)
-        toast.error('Failed to load mock test questions. Using sample questions instead.')
+        toast.error(
+          'Failed to load mock test questions. Using sample questions instead.'
+        )
       } finally {
         setIsLoading(false)
       }
