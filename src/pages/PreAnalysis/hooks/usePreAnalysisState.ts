@@ -17,38 +17,20 @@ export function usePreAnalysisState() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchTestData = async () => {
       setIsLoading(true)
-      setErrorMessage(null)
 
-      if (!sessionId) {
-        console.error('PreAnalysis: No sessionId provided')
-        setErrorMessage('No session ID provided. Please take a test first.')
-        setIsLoading(false)
-        return
-      }
-
-      try {
-        console.log('PreAnalysis: Fetching session data for ID:', sessionId)
+      if (sessionId) {
         const session = await getTestSession(sessionId)
-        if (session && session.questions && session.questions.length > 0) {
-          console.log('PreAnalysis: Found session data with', session.questions.length, 'questions')
+        if (session && session.questions) {
           setQuestions(session.questions)
           setIsLoading(false)
           return
-        } else {
-          console.error('PreAnalysis: Session data is missing or has no questions')
-          setErrorMessage('No questions found in this test session.')
         }
-      } catch (error) {
-        console.error('PreAnalysis: Error fetching session data:', error)
-        setErrorMessage('Error loading test data. Please try again.')
       }
 
-      // Fallback to localStorage if sessionId fails
       const storedResults = localStorage.getItem('testResults')
       if (storedResults) {
         try {
@@ -56,7 +38,6 @@ export function usePreAnalysisState() {
           setQuestions(parsedResults)
         } catch (error) {
           console.error('Error parsing stored results:', error)
-          setErrorMessage('Error loading test data from local storage.')
           setQuestions([])
         }
       } else {
@@ -75,10 +56,9 @@ export function usePreAnalysisState() {
     setQuestions((prevQuestions) =>
       prevQuestions.map((q) => {
         if (q.id === currentQuestion.id) {
-          const existingTags = q.tags || []
-          const updatedTags = existingTags.includes(tagId)
-            ? existingTags.filter((t) => t !== tagId)
-            : [...existingTags, tagId]
+          const updatedTags = q.tags.includes(tagId)
+            ? q.tags.filter((t) => t !== tagId)
+            : [...q.tags, tagId]
 
           if (sessionId) {
             updateQuestionTags(sessionId, q.id, updatedTags).catch((error) =>
@@ -118,17 +98,11 @@ export function usePreAnalysisState() {
         'Your test has been analyzed. View your detailed results now.',
     })
 
-    // Construct URL based on test type
-    let url
+    // Add mock test parameters to URL if this is a mock test
+    let url = `/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`
     if (isMock && cycle && testNumber) {
-      url = `/results/mixed?sessionId=${sessionId}&mock=true&cycle=${cycle}&testNumber=${testNumber}`
-    } else if (isMock) {
-      url = `/results/mixed?sessionId=${sessionId}&mock=true`
-    } else {
-      url = `/results/${subject}?sessionId=${sessionId}`
+      url += `${sessionId ? '&' : '?'}mock=true&cycle=${cycle}&testNumber=${testNumber}`
     }
-
-    console.log('Navigating to results page:', url)
 
     setTimeout(() => {
       navigate(url)
@@ -143,7 +117,6 @@ export function usePreAnalysisState() {
     currentQuestionIndex,
     isLoading,
     isSubmitting,
-    errorMessage,
     handleTagToggle,
     handleNextQuestion,
     handlePrevQuestion,

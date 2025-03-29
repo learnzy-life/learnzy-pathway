@@ -14,7 +14,6 @@ interface QuestionProps {
   onAnswerSelected: (questionId: number, answerId: string, timeTaken: number) => void;
   selectedAnswer?: string;
   isCurrentQuestion: boolean;
-  subjectTag?: string;
 }
 
 const TestQuestion: React.FC<QuestionProps> = ({
@@ -24,7 +23,6 @@ const TestQuestion: React.FC<QuestionProps> = ({
   onAnswerSelected,
   selectedAnswer,
   isCurrentQuestion,
-  subjectTag,
 }) => {
   const [timeSpent, setTimeSpent] = useState(0);
 
@@ -59,36 +57,12 @@ const TestQuestion: React.FC<QuestionProps> = ({
 
   if (!isCurrentQuestion) return null;
 
-  // Map of subjects to colors
-  const subjectColors: Record<string, string> = {
-    physics: 'bg-blue-500',
-    chemistry: 'bg-purple-500',
-    biology: 'bg-green-500',
-    mathematics: 'bg-red-500',
-  };
-
-  // Get color based on subject or default to gray
-  const getSubjectColor = (subject?: string) => {
-    if (!subject) return 'bg-gray-500';
-    const lowerSubject = subject.toLowerCase();
-    return subjectColors[lowerSubject] || 'bg-gray-500';
-  };
-
   return (
     <div className="animate-fade-in">
       <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center space-x-2">
-          <span className="text-sm font-medium text-learnzy-purple px-3 py-1 bg-learnzy-purple/10 rounded-full">
-            Question {id}
-          </span>
-          
-          {subjectTag && (
-            <span className={`text-xs text-white px-3 py-1 rounded-full ${getSubjectColor(subjectTag)}`}>
-              {subjectTag}
-            </span>
-          )}
-        </div>
-        
+        <span className="text-sm font-medium text-learnzy-purple px-3 py-1 bg-learnzy-purple/10 rounded-full">
+          Question {id}
+        </span>
         <div className="flex items-center text-sm text-muted-foreground">
           <Clock className="w-4 h-4 mr-1" /> 
           <span>{formatTime(timeSpent)}</span>

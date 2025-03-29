@@ -1,4 +1,3 @@
-
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import QuestionNavigation from '../components/QuestionNavigation'
@@ -8,7 +7,6 @@ import TestHeader from '../components/TestHeader'
 import TestQuestion from '../components/TestQuestion'
 import { useTestState } from '../hooks/test/useTestState'
 import { Subject } from '../services/question'
-import TestSubjectFilter from '../components/TestSubjectFilter'
 
 const Test: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>()
@@ -20,7 +18,6 @@ const Test: React.FC = () => {
       isSubmitting,
       showWarning,
       isLoading,
-      activeSubjectFilter,
     },
     {
       handleAnswerSelected,
@@ -31,24 +28,14 @@ const Test: React.FC = () => {
       handleSubmitClick,
       formatTime,
       setShowWarning,
-      handleSubjectFilterChange,
     },
   ] = useTestState(subject as Subject)
 
   // Sort questions by their ID to ensure numerical ascending order
   const sortedQuestions = [...questions].sort((a, b) => a.id - b.id)
   
-  // Apply subject filter if active
-  const filteredQuestions = activeSubjectFilter 
-    ? sortedQuestions.filter(q => (q.subject || q.Subject || '').toLowerCase() === activeSubjectFilter.toLowerCase())
-    : sortedQuestions;
-  
-  const currentQuestion = filteredQuestions[currentQuestionIndex] || sortedQuestions[currentQuestionIndex]
+  const currentQuestion = sortedQuestions[currentQuestionIndex]
   const answeredCount = sortedQuestions.filter((q) => q.answer).length
-
-  // Get unique subjects from questions
-  const subjects = Array.from(new Set(sortedQuestions.map(q => 
-    (q.subject || q.Subject || '').toLowerCase()))).filter(Boolean) as string[];
 
   if (isLoading) {
     return (
@@ -89,25 +76,16 @@ const Test: React.FC = () => {
         formatTime={formatTime}
       />
 
-      {subjects.length > 1 && (
-        <TestSubjectFilter 
-          subjects={subjects} 
-          activeFilter={activeSubjectFilter} 
-          onFilterChange={handleSubjectFilterChange}
-        />
-      )}
-
       <div className="flex flex-1 overflow-hidden">
         <QuestionNavigation
           questions={sortedQuestions}
           currentQuestionIndex={currentQuestionIndex}
           onJumpToQuestion={handleJumpToQuestion}
-          activeFilter={activeSubjectFilter}
         />
 
         <div className="flex-1 overflow-y-auto pb-32">
           <div className="container mx-auto px-6 py-8 max-w-3xl">
-            {filteredQuestions.map((question, index) => (
+            {sortedQuestions.map((question, index) => (
               <TestQuestion
                 key={question.id}
                 id={question.id}
@@ -116,7 +94,6 @@ const Test: React.FC = () => {
                 onAnswerSelected={handleAnswerSelected}
                 selectedAnswer={question.answer}
                 isCurrentQuestion={index === currentQuestionIndex}
-                subjectTag={question.subject || question.Subject}
               />
             ))}
           </div>
@@ -125,7 +102,7 @@ const Test: React.FC = () => {
 
       <TestFooter
         currentQuestionIndex={currentQuestionIndex}
-        questionsLength={filteredQuestions.length}
+        questionsLength={sortedQuestions.length}
         onPrevQuestion={handlePrevQuestion}
         onNextQuestion={handleNextQuestion}
         onSubmitClick={handleSubmitClick}

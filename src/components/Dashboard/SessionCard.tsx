@@ -33,45 +33,9 @@ const SessionCard: React.FC<SessionCardProps> = ({
     return 'text-red-600 bg-red-50';
   };
   
-  // Format test title
-  const getTestTitle = () => {
-    // Check if this is a mock test
-    if (id.startsWith('mock-')) {
-      const parts = id.split('-');
-      if (parts.length >= 3) {
-        const cycle = parts[1];
-        const testNumber = parts[2];
-        return `Mock Test ${testNumber}`;
-      }
-      return 'Mock Test';
-    }
-    
-    // Regular subject test
-    return `${subject.charAt(0).toUpperCase() + subject.slice(1)} Test`;
-  };
-  
-  // Format test subtitle
-  const getTestSubtitle = () => {
-    if (id.startsWith('mock-')) {
-      const parts = id.split('-');
-      if (parts.length >= 3) {
-        return `Cycle ${parts[1]}`;
-      }
-    }
-    return 'Diagnostic Test';
-  };
-
-  // Generate results link based on test type
-  const getResultsLink = () => {
-    if (id.startsWith('mock-')) {
-      // For mock tests
-      const parts = id.split('-');
-      const cycle = parts.length >= 2 ? parts[1] : '1';
-      const testNumber = parts.length >= 3 ? parts[2] : '1';
-      return `/results/mixed?sessionId=${id}&mock=true&cycle=${cycle}&testNumber=${testNumber}`;
-    }
-    // For regular tests
-    return `/results/${subject}?sessionId=${id}`;
+  // Format subject name
+  const formatSubject = (subj: string) => {
+    return subj.charAt(0).toUpperCase() + subj.slice(1);
   };
 
   return (
@@ -79,9 +43,9 @@ const SessionCard: React.FC<SessionCardProps> = ({
       <div className="flex items-start justify-between mb-3">
         <div>
           <span className="text-sm font-medium px-3 py-1 bg-learnzy-purple/10 text-learnzy-purple rounded-full mb-2 inline-block">
-            {getTestTitle()}
+            {formatSubject(subject)} Test
           </span>
-          <h3 className="text-lg font-medium text-learnzy-dark">{getTestSubtitle()}</h3>
+          <h3 className="text-lg font-medium text-learnzy-dark">Test Session</h3>
         </div>
         <div className={`px-3 py-1 rounded-full font-medium ${getScoreColor()}`}>
           {scorePercentage}%
@@ -92,13 +56,13 @@ const SessionCard: React.FC<SessionCardProps> = ({
         <div className="flex items-center">
           <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
           <span className="text-sm text-muted-foreground">
-            {Math.round((score / totalQuestions) * totalQuestions)} correct
+            {score} correct
           </span>
         </div>
         <div className="flex items-center">
           <XCircle className="w-4 h-4 text-red-500 mr-2" />
           <span className="text-sm text-muted-foreground">
-            {totalQuestions - Math.round((score / totalQuestions) * totalQuestions)} incorrect
+            {totalQuestions - score} incorrect
           </span>
         </div>
       </div>
@@ -127,7 +91,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
       </div>
       
       <Link 
-        to={getResultsLink()} 
+        to={`/results/${subject}?sessionId=${id}`} 
         className="button-secondary text-sm w-full flex items-center justify-center"
       >
         <FileText className="w-4 h-4 mr-2" />

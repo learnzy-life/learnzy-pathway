@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { Subject } from '../services/question'
+import { Subject } from '../services/question' // Changed from questionService to question
 import { toast } from 'sonner'
 
 export interface TestSession {
@@ -39,17 +39,7 @@ export const useProfileData = () => {
           if (error) {
             console.error('Error fetching test sessions:', error)
           } else if (data) {
-            // Filter out sessions without end_time
-            const completedSessions = data
-              .filter(session => session.end_time)
-              .map(session => ({
-                ...session,
-                // Ensure subject is always defined
-                subject: session.subject || 'mixed'
-              })) as TestSession[]
-              
-            setTestSessions(completedSessions)
-            console.log('Fetched test sessions:', completedSessions.length)
+            setTestSessions(data as TestSession[])
           }
 
           // Get share count from localStorage
@@ -65,9 +55,9 @@ export const useProfileData = () => {
               const localSessions = JSON.parse(storedSessions)
               setTestSessions(localSessions.map((session: any, index: number) => ({
                 id: `local-${index}`,
-                subject: session.subject || 'mixed',
-                start_time: session.timestamp || new Date().toISOString(),
-                end_time: session.timestamp || new Date().toISOString(),
+                subject: session.subject,
+                start_time: session.timestamp,
+                end_time: session.timestamp,
                 score: session.score || 0,
                 total_questions: 20
               })))

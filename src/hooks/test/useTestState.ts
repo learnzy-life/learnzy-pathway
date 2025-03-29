@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { Subject } from '../../services/question'
 import { useTestTimer } from './useTestTimer'
@@ -20,14 +19,12 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
     isSubmitting,
     showWarning,
     setShowWarning,
-    activeSubjectFilter,
     handleAnswerSelected,
     handleNextQuestion,
     handlePrevQuestion,
     handleJumpToQuestion,
     handleSubmitTest,
     handleSubmitClick,
-    handleSubjectFilterChange,
   } = useTestActions(subject, questions, setQuestions, sessionId, startTime)
 
   // Pass subject to useTestTimer to set the correct time limit
@@ -42,7 +39,6 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
       showWarning,
       isLoading,
       sessionId,
-      activeSubjectFilter,
     },
     {
       handleAnswerSelected,
@@ -53,7 +49,6 @@ export const useTestState = (subject: Subject): [TestState, TestActions] => {
       handleSubmitClick,
       formatTime,
       setShowWarning,
-      handleSubjectFilterChange,
     },
   ]
 }

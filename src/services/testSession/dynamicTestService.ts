@@ -1,79 +1,58 @@
 
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase';
+import { Subject } from '../question';
+import { toast } from 'sonner';
 
 /**
- * Check if a test session is a mock test
- * @param sessionId The test session ID to check
- * @returns Promise<boolean> True if it's a mock test, false otherwise
+ * Determines if a test session is a mock test
+ * @param sessionId The session ID to check
+ * @returns A boolean indicating if the session is a mock test
  */
-export const isMockTestSession = async (sessionId: string): Promise<boolean> => {
-  // Quick check for sessions that follow the mock test naming pattern
+export const isMockTestSession = async (sessionId: string | null): Promise<boolean> => {
+  if (!sessionId) return false;
+  
+  // Check if the session ID follows the mock test pattern (mock-X-Y)
   if (sessionId.startsWith('mock-')) {
-    return true
+    return true;
   }
-
-  // For legacy or other session IDs, check the database
+  
+  // If it doesn't match the pattern, check the database
   try {
     const { data, error } = await supabase
       .from('test_sessions')
-      .select('id')
+      .select('source_session_id')
       .eq('id', sessionId)
-      .maybeSingle()
-
+      .single();
+      
     if (error) {
-      console.error('Error checking if session is a mock test:', error)
-      return false
+      console.error('Error checking if session is mock test:', error);
+      return false;
     }
-
-    // If found, check if it follows the mock pattern
-    return data && data.id && data.id.startsWith('mock-')
+    
+    return data.source_session_id?.startsWith('mock-') || false;
   } catch (err) {
-    console.error('Unexpected error checking if session is a mock test:', err)
-    return false
+    console.error('Error checking mock test session:', err);
+    return false;
   }
-}
+};
 
 /**
- * Get the metadata (cycle and test number) for a mock test session
- * @param sessionId The test session ID
- * @returns Promise<{ cycle: string, testNumber: string }> The metadata
+ * Gets mock test metadata from a session ID
+ * @param sessionId The session ID to parse
+ * @returns Mock test metadata including cycle and test number
  */
-export const getMockTestMetadata = async (sessionId: string): Promise<{
-  cycle: string
-  testNumber: string
-}> => {
-  // Extract cycle and test number from the session ID
-  const parts = sessionId.split('-')
+export const getMockTestMetadata = (sessionId: string | null): { cycle: string, testNumber: string } => {
+  if (!sessionId || !sessionId.startsWith('mock-')) {
+    return { cycle: '1', testNumber: '1' };
+  }
   
-  // Default values
-  let cycle = '1'
-  let testNumber = '1'
-  
-  // Extract values if they exist in the expected format
+  const parts = sessionId.split('-');
   if (parts.length >= 3) {
-    cycle = parts[1]
-    testNumber = parts[2]
+    return {
+      cycle: parts[1],
+      testNumber: parts[2]
+    };
   }
   
-  // If we couldn't extract from the ID format, try to get from the database
-  if (cycle === '1' && testNumber === '1' && !sessionId.startsWith('mock-')) {
-    try {
-      const { data, error } = await supabase
-        .from('mock_tests')
-        .select('cycle, test_number')
-        .eq('session_id', sessionId)
-        .maybeSingle()
-        
-      if (!error && data) {
-        cycle = data.cycle.toString()
-        testNumber = data.test_number.toString()
-      }
-    } catch (err) {
-      console.error('Error getting mock test metadata from database:', err)
-    }
-  }
-  
-  console.log('Mock test metadata extracted:', { cycle, testNumber })
-  
-  return { cycle, testNumber }
-}
+  return { cycle: '1', testNumber: '1' };
+};

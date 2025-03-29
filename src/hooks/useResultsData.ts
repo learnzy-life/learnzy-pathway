@@ -21,7 +21,6 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
       try {
         // Get session ID from params or prop
         const id = sessionId || searchParams.get('sessionId');
-        const isMock = searchParams.get('mock') === 'true';
         
         // Handle case when no session ID is provided
         if (!id) {
@@ -30,19 +29,16 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
           setLoading(false);
           return;
         }
-
-        // For mock tests, we use a generic "mixed" subject
-        const testSubject = isMock ? 'mixed' : subject;
         
         // Handle case when no subject is provided
-        if (!testSubject) {
+        if (!subject) {
           console.error('No subject provided for results page');
           setErrorMessage('No subject selected. Please choose a subject and start a test.');
           setLoading(false);
           return;
         }
 
-        console.log(`Fetching session data for ID: ${id} and subject: ${testSubject}`);
+        console.log(`Fetching session data for ID: ${id} and subject: ${subject}`);
 
         // Fetch session data
         const sessionData = await getTestSession(id);
@@ -62,8 +58,6 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
           return;
         }
         
-        console.log('Found session data with', sessionData.questions.length, 'questions');
-        
         // Check if this is the user's first test in this subject
         const { data: { user } } = await supabase.auth.getUser();
         
@@ -72,7 +66,7 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
             .from('test_sessions')
             .select('id')
             .eq('user_id', user.id)
-            .eq('subject', testSubject)
+            .eq('subject', subject)
             .not('id', 'eq', id)
             .limit(1);
             
@@ -88,7 +82,7 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
         const analytics = await calculateAnalytics(
           sessionData.questions, 
           sessionData.questions,
-          testSubject
+          subject
         );
         
         // Add questions for review if needed

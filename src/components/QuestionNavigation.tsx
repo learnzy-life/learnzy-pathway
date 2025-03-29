@@ -1,77 +1,43 @@
-
-import React from 'react'
-import { Check } from 'lucide-react'
-
-interface Question {
-  id: number
-  answer?: string
-  subject?: string
-  Subject?: string
-}
+import React from 'react';
+import { Question } from '../services/question';
 
 interface QuestionNavigationProps {
-  questions: Question[]
-  currentQuestionIndex: number
-  onJumpToQuestion: (index: number) => void
-  activeFilter?: string | null
+  questions: Question[];
+  currentQuestionIndex: number;
+  onJumpToQuestion: (index: number) => void;
 }
 
 const QuestionNavigation: React.FC<QuestionNavigationProps> = ({
   questions,
   currentQuestionIndex,
-  onJumpToQuestion,
-  activeFilter,
+  onJumpToQuestion
 }) => {
-  // Filter questions based on active filter
-  const filteredQuestions = activeFilter 
-    ? questions.filter(q => (q.subject || q.Subject || '').toLowerCase() === activeFilter.toLowerCase())
-    : questions;
-
-  // Map subject to colors
-  const getSubjectColor = (subject?: string) => {
-    if (!subject) return '';
-    const lowerSubject = subject.toLowerCase();
-    
-    switch (lowerSubject) {
-      case 'physics': return 'border-blue-500 bg-blue-50';
-      case 'chemistry': return 'border-purple-500 bg-purple-50';
-      case 'biology': return 'border-green-500 bg-green-50';
-      default: return '';
-    }
-  };
-
   return (
-    <div className="bg-white border-r border-gray-200 w-28 flex-shrink-0 overflow-y-auto">
-      <div className="p-4 grid grid-cols-2 gap-3">
-        {filteredQuestions.map((question, index) => {
-          const isCurrentQuestion = index === currentQuestionIndex;
-          const isAnswered = !!question.answer;
-          const subjectColor = getSubjectColor(question.subject || question.Subject);
-
-          return (
-            <button
-              key={question.id}
-              onClick={() => onJumpToQuestion(index)}
-              className={`
-                h-12 w-12 flex items-center justify-center rounded-lg text-sm font-medium
-                transition-all border-2 relative
-                ${isCurrentQuestion ? 'bg-learnzy-purple text-white border-learnzy-purple ring-2 ring-learnzy-purple/30' : ''}
-                ${isAnswered && !isCurrentQuestion ? 'bg-learnzy-purple/10 border-learnzy-purple text-learnzy-purple' : ''}
-                ${!isAnswered && !isCurrentQuestion ? 'bg-white border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50' : ''}
-                ${subjectColor && !isCurrentQuestion && !isAnswered ? subjectColor : ''}
-                shadow-sm
-              `}
-            >
-              {isAnswered && !isCurrentQuestion && (
-                <Check className="absolute top-0.5 right-0.5 w-3 h-3 text-learnzy-purple" />
-              )}
-              {question.id}
-            </button>
-          )
-        })}
+    <div className="w-20 md:w-64 border-r border-gray-100 bg-white shadow-subtle h-[calc(100vh-57px)] overflow-y-auto p-4 hidden md:block">
+      <h3 className="text-sm font-medium text-muted-foreground mb-3 px-2 hidden md:block">Questions</h3>
+      
+      <div className="grid grid-cols-5 md:grid-cols-6 gap-2">
+        {questions.map((q, index) => (
+          <button
+            key={q.id}
+            onClick={() => onJumpToQuestion(index)}
+            className={`
+              w-full aspect-square flex items-center justify-center rounded-lg text-sm
+              ${index === currentQuestionIndex 
+                ? 'bg-learnzy-purple text-white' 
+                : q.answer 
+                  ? 'bg-learnzy-purple/20 text-learnzy-purple'
+                  : 'bg-gray-100 text-learnzy-dark/70'
+              }
+              hover:opacity-90 transition-opacity
+            `}
+          >
+            {q.id}
+          </button>
+        ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default QuestionNavigation
+export default QuestionNavigation;
