@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react'
-import { Info } from 'lucide-react'
+import { Info, AlertCircle } from 'lucide-react'
 import { usePreAnalysisState } from './hooks/usePreAnalysisState'
 import QuestionDisplay from './components/QuestionDisplay'
 import NavigationButtons from './components/NavigationButtons'
@@ -8,16 +7,20 @@ import { tagOptions } from './constants/tagOptions'
 import { Button } from '@/components/ui/button'
 import { QuestionFilterType } from '@/hooks/test/types'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { Link } from 'react-router-dom'
 
 const PreAnalysis: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<QuestionFilterType>('incorrect')
   const isMobile = useIsMobile()
   
   const {
+    subject,
+    sessionId,
     questions,
     currentQuestionIndex,
     isLoading,
     isSubmitting,
+    errorMessage,
     handleTagToggle,
     handleNextQuestion,
     handlePrevQuestion,
@@ -35,27 +38,38 @@ const PreAnalysis: React.FC = () => {
     ? incorrectQuestions 
     : unattemptedQuestions
 
-  if (filteredQuestions.length === 0 && !isLoading && questions.length > 0) {
-    console.log(`PreAnalysis: No ${activeFilter} questions, navigating to results`)
-    if (incorrectQuestions.length === 0 && unattemptedQuestions.length === 0) {
-      handleSubmitAnalysis()
-      return null
-    } else if (activeFilter === 'incorrect' && unattemptedQuestions.length > 0) {
-      setActiveFilter('unattempted')
-      return null
-    } else if (activeFilter === 'unattempted' && incorrectQuestions.length > 0) {
-      setActiveFilter('incorrect')
-      return null
-    }
-  }
-
-  const currentQuestion = filteredQuestions[currentQuestionIndex]
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="w-16 h-16 border-4 border-learnzy-purple/30 border-t-learnzy-purple rounded-full animate-spin mb-6"></div>
         <h2 className="text-xl font-medium ml-4">Preparing your analysis...</h2>
+      </div>
+    )
+  }
+
+  if (errorMessage) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl sm:text-2xl font-medium mb-4">Error Loading Analysis</h2>
+          <p className="text-muted-foreground mb-6">{errorMessage}</p>
+          
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link 
+              to="/subjects" 
+              className="button-primary py-2 px-6"
+            >
+              Start a New Test
+            </Link>
+            <Link 
+              to="/" 
+              className="button-secondary py-2 px-6"
+            >
+              Back to Home
+            </Link>
+          </div>
+        </div>
       </div>
     )
   }
@@ -71,6 +85,22 @@ const PreAnalysis: React.FC = () => {
       </div>
     )
   }
+
+  if (filteredQuestions.length === 0 && !isLoading && questions.length > 0) {
+    console.log(`PreAnalysis: No ${activeFilter} questions, navigating to results`)
+    if (incorrectQuestions.length === 0 && unattemptedQuestions.length === 0) {
+      handleSubmitAnalysis()
+      return null
+    } else if (activeFilter === 'incorrect' && unattemptedQuestions.length > 0) {
+      setActiveFilter('unattempted')
+      return null
+    } else if (activeFilter === 'unattempted' && incorrectQuestions.length > 0) {
+      setActiveFilter('incorrect')
+      return null
+    }
+  }
+
+  const currentQuestion = filteredQuestions[currentQuestionIndex]
 
   if (!currentQuestion) {
     return (

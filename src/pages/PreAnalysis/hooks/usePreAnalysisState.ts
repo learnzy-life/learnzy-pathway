@@ -17,29 +17,37 @@ export function usePreAnalysisState() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchTestData = async () => {
       setIsLoading(true)
+      setErrorMessage(null)
 
-      if (sessionId) {
-        try {
-          const session = await getTestSession(sessionId)
-          if (session && session.questions) {
-            console.log('PreAnalysis: Found session data with', session.questions.length, 'questions')
-            setQuestions(session.questions)
-            setIsLoading(false)
-            return
-          } else {
-            console.error('PreAnalysis: Session data is missing or has no questions')
-          }
-        } catch (error) {
-          console.error('PreAnalysis: Error fetching session data:', error)
-        }
-      } else {
+      if (!sessionId) {
         console.error('PreAnalysis: No sessionId provided')
+        setErrorMessage('No session ID provided. Please take a test first.')
+        setIsLoading(false)
+        return
       }
 
+      try {
+        const session = await getTestSession(sessionId)
+        if (session && session.questions && session.questions.length > 0) {
+          console.log('PreAnalysis: Found session data with', session.questions.length, 'questions')
+          setQuestions(session.questions)
+          setIsLoading(false)
+          return
+        } else {
+          console.error('PreAnalysis: Session data is missing or has no questions')
+          setErrorMessage('No questions found in this test session.')
+        }
+      } catch (error) {
+        console.error('PreAnalysis: Error fetching session data:', error)
+        setErrorMessage('Error loading test data. Please try again.')
+      }
+
+      // Fallback to localStorage if sessionId fails
       const storedResults = localStorage.getItem('testResults')
       if (storedResults) {
         try {
@@ -47,6 +55,7 @@ export function usePreAnalysisState() {
           setQuestions(parsedResults)
         } catch (error) {
           console.error('Error parsing stored results:', error)
+          setErrorMessage('Error loading test data from local storage.')
           setQuestions([])
         }
       } else {
@@ -115,7 +124,7 @@ export function usePreAnalysisState() {
     } else if (isMock) {
       url = `/results/mixed?sessionId=${sessionId}&mock=true`
     } else {
-      url = `/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`
+      url = `/results/${subject}?sessionId=${sessionId}`
     }
 
     setTimeout(() => {
@@ -131,6 +140,7 @@ export function usePreAnalysisState() {
     currentQuestionIndex,
     isLoading,
     isSubmitting,
+    errorMessage,
     handleTagToggle,
     handleNextQuestion,
     handlePrevQuestion,

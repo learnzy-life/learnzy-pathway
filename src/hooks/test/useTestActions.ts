@@ -141,12 +141,13 @@ export const useTestActions = (
           // Redirect to pre-analysis for mock tests with correct query parameters
           navigate(`/analysis/mixed?sessionId=${sessionId}&mock=true&cycle=${cycle}&testNumber=${testNumber}`)
         } else {
-          // Regular diagnostic test flow
+          // Regular diagnostic test flow - always navigate to pre-analysis
           navigate(`/analysis/${subject}?sessionId=${sessionId}`)
         }
       } else {
         console.error('No session ID available')
-        navigate(`/results/${subject}`)
+        toast.error('Session ID not available. Please try again.')
+        setIsSubmitting(false)
       }
     } catch (error) {
       console.error('Error submitting test:', error)
