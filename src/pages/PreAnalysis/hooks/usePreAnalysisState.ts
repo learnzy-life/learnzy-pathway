@@ -8,6 +8,9 @@ export function usePreAnalysisState() {
   const { subject } = useParams<{ subject: string }>()
   const [searchParams] = useSearchParams()
   const sessionId = searchParams.get('sessionId')
+  const isMock = searchParams.get('mock') === 'true'
+  const cycle = searchParams.get('cycle')
+  const testNumber = searchParams.get('testNumber')
   const navigate = useNavigate()
   const { toast } = useToast()
   const [questions, setQuestions] = useState<QuestionResult[]>([])
@@ -70,8 +73,8 @@ export function usePreAnalysisState() {
     )
   }
 
-  const handleNextQuestion = (incorrectQuestions: QuestionResult[]) => {
-    if (currentQuestionIndex < incorrectQuestions.length - 1) {
+  const handleNextQuestion = (filteredQuestions: QuestionResult[]) => {
+    if (currentQuestionIndex < filteredQuestions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1)
     } else {
       handleSubmitAnalysis()
@@ -95,10 +98,14 @@ export function usePreAnalysisState() {
         'Your test has been analyzed. View your detailed results now.',
     })
 
+    // Add mock test parameters to URL if this is a mock test
+    let url = `/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`
+    if (isMock && cycle && testNumber) {
+      url += `${sessionId ? '&' : '?'}mock=true&cycle=${cycle}&testNumber=${testNumber}`
+    }
+
     setTimeout(() => {
-      navigate(
-        `/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`
-      )
+      navigate(url)
     }, 800)
   }
 

@@ -1,3 +1,4 @@
+
 import { BarChart, Book, CheckCircle2, Clock, PieChart } from 'lucide-react'
 import React from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
@@ -20,12 +21,12 @@ const Results: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>()
   const [searchParams] = useSearchParams()
   const sessionId = searchParams.get('sessionId')
-  const mock = searchParams.get('mock') === 'true'
+  const isMock = searchParams.get('mock') === 'true'
   const cycle = parseInt(searchParams.get('cycle') || '0')
   const testNumber = searchParams.get('testNumber') || ''
 
   // Check if this is Mock 4 of a cycle
-  const isMock4 = mock && testNumber === '4' && cycle > 0
+  const isMock4 = isMock && testNumber === '4' && cycle > 0
 
   const { loading, resultsData, errorMessage, isFirstTest } = useResultsData(
     subject,
@@ -58,7 +59,9 @@ const Results: React.FC = () => {
     )
   }
 
-  const subjectTitle = getSubjectTitle(subject as Subject)
+  const subjectTitle = isMock 
+    ? `Mock Test ${testNumber}` 
+    : getSubjectTitle(subject as Subject)
 
   const improvementResources = resultsData.topics.map((topic) => {
     // Find matching resource from bioResources if available
@@ -158,7 +161,7 @@ const Results: React.FC = () => {
       </div>
 
       <div className="mb-12">
-        <SectionHeader icon={Book} title="Improve Before Your Next Mock" />
+        <SectionHeader icon={Book} title="Improve Before Your Next Test" />
         <ImprovementResources
           resources={improvementResources}
           bioResources={resultsData.bioResources}

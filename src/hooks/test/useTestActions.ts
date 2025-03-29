@@ -1,130 +1,104 @@
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
+import { getCurrentUser } from '../../lib/supabase'
 import { Subject } from '../../services/question'
-import { Question } from '../../types/dashboard'
-import { completeTestSession, updateQuestionAnswer } from '../../services/testSession'
+import { completeTestSession } from '../../services/testSession'
+import { isMockTestSession, getMockTestMetadata } from '../../services/testSession/dynamicTestService'
 
 export const useTestActions = (
-  subject: Subject | string,
-  questions: Question[],
-  setQuestions: React.Dispatch<React.SetStateAction<Question[]>>,
+  subject: Subject,
+  questions: any[],
+  setQuestions: (questions: any[]) => void,
   sessionId: string | null,
   startTime: number
 ) => {
-  const navigate = useNavigate()
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showWarning, setShowWarning] = useState(false)
+  const navigate = useNavigate()
 
-  // Always work with sorted questions to ensure consistent ordering
-  const sortedQuestions = [...questions].sort((a, b) => a.id - b.id)
-
-  const handleAnswerSelected = (
-    questionId: number,
-    answerId: string,
-    timeTaken: number
-  ) => {
-    setQuestions((prev) =>
-      prev.map((q) => (q.id === questionId ? { ...q, answer: answerId, timeTaken } : q))
+  const handleAnswerSelected = (questionId: number, answer: string) => {
+    setQuestions(
+      questions.map((q) =>
+        q.id === questionId
+          ? {
+              ...q,
+              answer: answer,
+            }
+          : q
+      )
     )
-    
-    if (sessionId) {
-      updateQuestionAnswer(sessionId, questionId, answerId, timeTaken)
-        .catch(error => console.error('Error updating question answer:', error))
-    }
   }
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < sortedQuestions.length - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1)
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1)
+      window.scrollTo(0, 0)
     }
   }
 
   const handlePrevQuestion = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex((prev) => prev - 1)
+      setCurrentQuestionIndex(currentQuestionIndex - 1)
+      window.scrollTo(0, 0)
     }
   }
 
   const handleJumpToQuestion = (index: number) => {
     setCurrentQuestionIndex(index)
-  }
-
-  const handleSubmitTest = () => {
-    setIsSubmitting(true)
-
-    const timeTaken = Math.floor((Date.now() - startTime) / 1000)
-
-    const questionResults = sortedQuestions.map((q) => {
-      const isCorrect =
-        q.answer && q.correctAnswer ? q.answer === q.correctAnswer : false
-
-      return {
-        id: q.id,
-        text: q.text,
-        userAnswer: q.answer || null,
-        correctAnswer: q.correctAnswer || '',
-        isCorrect,
-        timeTaken: q.timeTaken || timeTaken / sortedQuestions.length,
-        tags: [],
-        Subject: q.Subject || '',
-        Chapter_name: q.Chapter_name || '',
-        Topic: q.Topic || '',
-        Subtopic: q.Subtopic || '',
-        Difficulty_Level: q.Difficulty_Level || '',
-        Question_Structure: q.Question_Structure || '',
-        Bloom_Taxonomy: q.Bloom_Taxonomy || '',
-        Priority_Level: q.Priority_Level || '',
-        Time_to_Solve: q.Time_to_Solve || 0,
-        Key_Concept_Tested: q.Key_Concept_Tested || '',
-        Common_Pitfalls: q.Common_Pitfalls || '',
-        // Handle option fields safely with optional chaining
-        Option_A: q.Option_A || q.option_a || '',
-        Option_B: q.Option_B || q.option_b || '',
-        Option_C: q.Option_C || q.option_c || '',
-        Option_D: q.Option_D || q.option_d || '',
-        options: q.options || []
-      }
-    })
-
-    if (sessionId) {
-      completeTestSession(sessionId, questionResults)
-        .then(() => {
-          // Check if this is a mock test (sessionId starts with "mock-")
-          if (sessionId.startsWith('mock-')) {
-            // Extract cycle and test number from the sessionId
-            const parts = sessionId.split('-');
-            if (parts.length >= 3) {
-              const cycle = parts[1];
-              const testNumber = parts[2];
-              navigate(`/analysis/${subject}?sessionId=${sessionId}&mock=true&cycle=${cycle}&testNumber=${testNumber}`);
-              return;
-            }
-          }
-          
-          // Default path for diagnostic tests
-          navigate(`/analysis/${subject}?sessionId=${sessionId}`);
-        })
-        .catch((error) => {
-          console.error('Error completing test session:', error)
-          localStorage.setItem('testResults', JSON.stringify(questionResults))
-          navigate(`/analysis/${subject}`)
-        })
-    } else {
-      localStorage.setItem('testResults', JSON.stringify(questionResults))
-      setTimeout(() => {
-        navigate(`/analysis/${subject}`)
-      }, 1500)
-    }
+    window.scrollTo(0, 0)
   }
 
   const handleSubmitClick = () => {
-    const answeredCount = sortedQuestions.filter((q) => q.answer).length
-    if (answeredCount < sortedQuestions.length * 0.5) {
+    const unansweredCount = questions.filter((q) => !q.answer).length
+
+    if (unansweredCount > 0) {
       setShowWarning(true)
     } else {
       handleSubmitTest()
+    }
+  }
+
+  const handleSubmitTest = async () => {
+    setIsSubmitting(true)
+
+    try {
+      const user = await getCurrentUser()
+      const timeSpent = Math.floor((Date.now() - startTime) / 1000)
+
+      if (sessionId) {
+        await completeTestSession(
+          sessionId,
+          questions.map((q) => ({
+            id: q.id,
+            answer: q.answer || null,
+          })),
+          timeSpent
+        )
+
+        // Check if this is a mock test session
+        const isMock = await isMockTestSession(sessionId);
+        
+        if (isMock) {
+          // For mock tests, extract cycle and test number for results page
+          const { cycle, testNumber } = getMockTestMetadata(sessionId);
+          
+          // Redirect to pre-analysis for mock tests
+          navigate(`/analysis/${subject}?sessionId=${sessionId}&mock=true&cycle=${cycle}&testNumber=${testNumber}`);
+        } else {
+          // Regular diagnostic test flow
+          navigate(`/analysis/${subject}?sessionId=${sessionId}`);
+        }
+      } else {
+        console.error('No session ID available')
+        navigate(`/results/${subject}`)
+      }
+    } catch (error) {
+      console.error('Error submitting test:', error)
+      toast.error('Failed to submit test. Please try again.')
+      setIsSubmitting(false)
     }
   }
 
