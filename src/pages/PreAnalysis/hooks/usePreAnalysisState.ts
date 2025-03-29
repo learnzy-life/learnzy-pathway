@@ -23,12 +23,21 @@ export function usePreAnalysisState() {
       setIsLoading(true)
 
       if (sessionId) {
-        const session = await getTestSession(sessionId)
-        if (session && session.questions) {
-          setQuestions(session.questions)
-          setIsLoading(false)
-          return
+        try {
+          const session = await getTestSession(sessionId)
+          if (session && session.questions) {
+            console.log('PreAnalysis: Found session data with', session.questions.length, 'questions')
+            setQuestions(session.questions)
+            setIsLoading(false)
+            return
+          } else {
+            console.error('PreAnalysis: Session data is missing or has no questions')
+          }
+        } catch (error) {
+          console.error('PreAnalysis: Error fetching session data:', error)
         }
+      } else {
+        console.error('PreAnalysis: No sessionId provided')
       }
 
       const storedResults = localStorage.getItem('testResults')
@@ -56,9 +65,10 @@ export function usePreAnalysisState() {
     setQuestions((prevQuestions) =>
       prevQuestions.map((q) => {
         if (q.id === currentQuestion.id) {
-          const updatedTags = q.tags.includes(tagId)
-            ? q.tags.filter((t) => t !== tagId)
-            : [...q.tags, tagId]
+          const existingTags = q.tags || []
+          const updatedTags = existingTags.includes(tagId)
+            ? existingTags.filter((t) => t !== tagId)
+            : [...existingTags, tagId]
 
           if (sessionId) {
             updateQuestionTags(sessionId, q.id, updatedTags).catch((error) =>
@@ -98,10 +108,12 @@ export function usePreAnalysisState() {
         'Your test has been analyzed. View your detailed results now.',
     })
 
-    // Add mock test parameters to URL if this is a mock test
-    let url = `/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`
+    // Construct URL based on test type
+    let url
     if (isMock && cycle && testNumber) {
-      url += `${sessionId ? '&' : '?'}mock=true&cycle=${cycle}&testNumber=${testNumber}`
+      url = `/results/mixed?sessionId=${sessionId}&mock=true&cycle=${cycle}&testNumber=${testNumber}`
+    } else {
+      url = `/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`
     }
 
     setTimeout(() => {

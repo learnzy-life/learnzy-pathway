@@ -1,3 +1,4 @@
+
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Clock, Book } from 'lucide-react'
@@ -23,12 +24,25 @@ const TestHistorySection: React.FC<TestHistorySectionProps> = ({ loading, testSe
     }
   }
 
-  const getSubjectTitle = (subject: Subject) => {
+  const getTestTitle = (session: TestSession) => {
+    // Check if this is a mock test
+    if (session.id && session.id.startsWith('mock-')) {
+      const parts = session.id.split('-');
+      if (parts.length >= 3) {
+        const cycle = parts[1];
+        const testNumber = parts[2];
+        return `Mock Test ${testNumber} (Cycle ${cycle})`;
+      }
+      return 'Mock Test';
+    }
+    
+    // Regular subject test
     return {
-      biology: 'Biology',
-      physics: 'Physics',
-      chemistry: 'Chemistry'
-    }[subject] || subject
+      biology: 'Biology Diagnostic Test',
+      physics: 'Physics Diagnostic Test',
+      chemistry: 'Chemistry Diagnostic Test',
+      mixed: 'Mixed Subjects Test'
+    }[session.subject] || `${session.subject.charAt(0).toUpperCase() + session.subject.slice(1)} Test`;
   }
 
   return (
@@ -49,7 +63,7 @@ const TestHistorySection: React.FC<TestHistorySectionProps> = ({ loading, testSe
             <div key={session.id} className="p-4 bg-white border border-gray-100 rounded-lg hover:shadow-sm transition-shadow duration-200">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between">
                 <div>
-                  <h3 className="font-medium text-learnzy-dark">{getSubjectTitle(session.subject)} Test</h3>
+                  <h3 className="font-medium text-learnzy-dark">{getTestTitle(session)}</h3>
                   <div className="flex items-center text-sm text-muted-foreground mt-1">
                     <Clock className="w-4 h-4 mr-1" /> {formatDate(session.end_time)}
                   </div>
@@ -62,7 +76,9 @@ const TestHistorySection: React.FC<TestHistorySectionProps> = ({ loading, testSe
                   </div>
                   
                   <Link 
-                    to={`/results/${session.subject}?sessionId=${session.id}`}
+                    to={session.id.startsWith('mock-') 
+                      ? `/results/mixed?sessionId=${session.id}&mock=true` 
+                      : `/results/${session.subject}?sessionId=${session.id}`}
                     className="button-secondary text-sm py-1 px-3"
                   >
                     View Results

@@ -123,20 +123,26 @@ export const useTestActions = (
         }));
 
         // Complete the test session with the rich question data
-        await completeTestSession(sessionId, questionResults)
+        const success = await completeTestSession(sessionId, questionResults)
+        
+        if (!success) {
+          throw new Error('Failed to complete test session')
+        }
         
         // Check if this is a mock test session
-        const isMock = await isMockTestSession(sessionId);
+        const isMock = await isMockTestSession(sessionId)
+        console.log('Is mock test:', isMock, 'SessionId:', sessionId)
         
         if (isMock) {
           // For mock tests, extract cycle and test number for results page
-          const { cycle, testNumber } = getMockTestMetadata(sessionId);
+          const { cycle, testNumber } = await getMockTestMetadata(sessionId)
+          console.log('Mock test metadata:', { cycle, testNumber })
           
-          // First redirect to pre-analysis for mock tests
-          navigate(`/analysis/${subject}?sessionId=${sessionId}&mock=true&cycle=${cycle}&testNumber=${testNumber}`);
+          // Redirect to pre-analysis for mock tests with correct query parameters
+          navigate(`/analysis/mixed?sessionId=${sessionId}&mock=true&cycle=${cycle}&testNumber=${testNumber}`)
         } else {
           // Regular diagnostic test flow
-          navigate(`/analysis/${subject}?sessionId=${sessionId}`);
+          navigate(`/analysis/${subject}?sessionId=${sessionId}`)
         }
       } else {
         console.error('No session ID available')
