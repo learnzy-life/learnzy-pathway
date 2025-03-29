@@ -19,13 +19,14 @@ export const useTestActions = (
   const [showWarning, setShowWarning] = useState(false)
   const navigate = useNavigate()
 
-  const handleAnswerSelected = (questionId: number, answer: string) => {
+  const handleAnswerSelected = (questionId: number, answer: string, timeTaken?: number) => {
     setQuestions(
       questions.map((q) =>
         q.id === questionId
           ? {
               ...q,
               answer: answer,
+              timeTaken: timeTaken || 0, // Store time taken if provided
             }
           : q
       )
@@ -74,8 +75,7 @@ export const useTestActions = (
           questions.map((q) => ({
             id: q.id,
             answer: q.answer || null,
-          })),
-          timeSpent
+          }))
         )
 
         // Check if this is a mock test session

@@ -1,3 +1,4 @@
+
 import { toast } from 'sonner'
 import { supabase } from '../../lib/supabase'
 import { Question, Subject } from '../question'
@@ -85,13 +86,13 @@ export const generateReviewTest = async (
         }
 
         // Create a unique key for this question to avoid duplicates
-        const questionKey = `${q.id}-${q.Subject}`
+        const questionKey = `${q.id}-${q.subject || q.Subject}`
         if (addedQuestions.has(questionKey)) {
           return
         }
 
         // Determine the subject (case insensitive check)
-        const subject = (q.Subject || '').toLowerCase()
+        const subject = (q.subject || '').toLowerCase()
 
         if (subject === 'physics') {
           incorrectQuestions.physics.push(q)
@@ -143,7 +144,7 @@ export const generateReviewTest = async (
       text: q.text,
       options: q.options || [],
       correctAnswer: q.correctAnswer,
-      Subject: q.Subject,
+      Subject: q.subject,
       Chapter_name: q.Chapter_name,
       Topic: q.Topic,
       Subtopic: q.Subtopic,
