@@ -9,6 +9,7 @@ export interface TestState {
   showWarning: boolean
   isLoading: boolean
   sessionId: string | null
+  activeSubjectFilter: string | null
 }
 
 export interface TestActions {
@@ -20,6 +21,7 @@ export interface TestActions {
   handleSubmitClick: () => void
   formatTime: (seconds: number) => string
   setShowWarning: (show: boolean) => void
+  handleSubjectFilterChange: (subject: string | null) => void
 }
 
 export type QuestionFilterType = 'incorrect' | 'unattempted';

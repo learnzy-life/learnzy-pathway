@@ -24,12 +24,14 @@ export const useMockTestState = (cycle: string, testNumber: string): [TestState,
     isSubmitting,
     showWarning,
     setShowWarning,
+    activeSubjectFilter,
     handleAnswerSelected,
     handleNextQuestion,
     handlePrevQuestion,
     handleJumpToQuestion,
     handleSubmitTest,
     handleSubmitClick,
+    handleSubjectFilterChange,
   } = useTestActions(subject, questions, setQuestions, sessionId, startTime)
 
   // Mock tests use the same time limit as diagnostic tests (180 min = 3 hours)
@@ -44,6 +46,7 @@ export const useMockTestState = (cycle: string, testNumber: string): [TestState,
       showWarning,
       isLoading,
       sessionId,
+      activeSubjectFilter,
     },
     {
       handleAnswerSelected,
@@ -54,6 +57,7 @@ export const useMockTestState = (cycle: string, testNumber: string): [TestState,
       handleSubmitClick,
       formatTime,
       setShowWarning,
+      handleSubjectFilterChange,
     },
   ]
 }

@@ -10,7 +10,7 @@ export interface QuestionResult {
   isCorrect: boolean;
   timeTaken?: number;
   tags?: string[];
-  // Metadata fields
+  // Metadata fields (include both cases for maximum compatibility)
   subject?: string;
   Subject?: string;
   Chapter_name?: string;

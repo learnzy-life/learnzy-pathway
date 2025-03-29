@@ -7,6 +7,7 @@ import TestFooter from '../components/TestFooter'
 import TestHeader from '../components/TestHeader'
 import TestQuestion from '../components/TestQuestion'
 import { useMockTestState } from '../hooks/test/useMockTestState'
+import TestSubjectFilter from '../components/TestSubjectFilter'
 
 const MockTest: React.FC = () => {
   const { cycle, testNumber } = useParams<{ cycle: string; testNumber: string }>()
@@ -18,6 +19,7 @@ const MockTest: React.FC = () => {
       isSubmitting,
       showWarning,
       isLoading,
+      activeSubjectFilter,
     },
     {
       handleAnswerSelected,
@@ -28,14 +30,24 @@ const MockTest: React.FC = () => {
       handleSubmitClick,
       formatTime,
       setShowWarning,
+      handleSubjectFilterChange,
     },
   ] = useMockTestState(cycle || '1', testNumber || '1')
 
   // Sort questions by their ID to ensure numerical ascending order
   const sortedQuestions = [...questions].sort((a, b) => a.id - b.id)
   
-  const currentQuestion = sortedQuestions[currentQuestionIndex]
+  // Apply subject filter if active
+  const filteredQuestions = activeSubjectFilter 
+    ? sortedQuestions.filter(q => (q.subject || q.Subject || '').toLowerCase() === activeSubjectFilter.toLowerCase())
+    : sortedQuestions;
+  
+  const currentQuestion = filteredQuestions[currentQuestionIndex] || sortedQuestions[currentQuestionIndex]
   const answeredCount = sortedQuestions.filter((q) => q.answer).length
+
+  // Get unique subjects from questions
+  const subjects = Array.from(new Set(sortedQuestions.map(q => 
+    (q.subject || q.Subject || '').toLowerCase()))).filter(Boolean) as string[];
 
   if (isLoading) {
     return (
@@ -76,16 +88,25 @@ const MockTest: React.FC = () => {
         formatTime={formatTime}
       />
 
+      {subjects.length > 1 && (
+        <TestSubjectFilter 
+          subjects={subjects} 
+          activeFilter={activeSubjectFilter} 
+          onFilterChange={handleSubjectFilterChange}
+        />
+      )}
+
       <div className="flex flex-1 overflow-hidden">
         <QuestionNavigation
           questions={sortedQuestions}
           currentQuestionIndex={currentQuestionIndex}
           onJumpToQuestion={handleJumpToQuestion}
+          activeFilter={activeSubjectFilter}
         />
 
         <div className="flex-1 overflow-y-auto pb-32">
           <div className="container mx-auto px-6 py-8 max-w-3xl">
-            {sortedQuestions.map((question, index) => (
+            {filteredQuestions.map((question, index) => (
               <TestQuestion
                 key={question.id}
                 id={question.id}
@@ -94,6 +115,7 @@ const MockTest: React.FC = () => {
                 onAnswerSelected={handleAnswerSelected}
                 selectedAnswer={question.answer}
                 isCurrentQuestion={index === currentQuestionIndex}
+                subjectTag={question.subject || question.Subject}
               />
             ))}
           </div>
@@ -102,7 +124,7 @@ const MockTest: React.FC = () => {
 
       <TestFooter
         currentQuestionIndex={currentQuestionIndex}
-        questionsLength={sortedQuestions.length}
+        questionsLength={filteredQuestions.length}
         onPrevQuestion={handlePrevQuestion}
         onNextQuestion={handleNextQuestion}
         onSubmitClick={handleSubmitClick}
