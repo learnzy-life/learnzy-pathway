@@ -6,9 +6,14 @@ import { AlertCircle } from 'lucide-react';
 interface ResultsLoadingStateProps {
   loading: boolean;
   errorMessage: string | null;
+  sessionId?: string | null;
 }
 
-const ResultsLoadingState: React.FC<ResultsLoadingStateProps> = ({ loading, errorMessage }) => {
+const ResultsLoadingState: React.FC<ResultsLoadingStateProps> = ({ 
+  loading, 
+  errorMessage,
+  sessionId 
+}) => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

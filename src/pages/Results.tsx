@@ -1,6 +1,6 @@
 
 import { BarChart, Book, CheckCircle2, Clock, PieChart } from 'lucide-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 
 import ImprovementResources from '../components/ImprovementResources'
@@ -16,6 +16,7 @@ import TopicBreakdown from '../components/TopicBreakdown'
 import { getSubjectTitle } from '../data/mockResultsData'
 import { useResultsData } from '../hooks/useResultsData'
 import { Subject } from '../services/question'
+import { isMockTestSession, getMockTestMetadata } from '../services/testSession/dynamicTestService'
 
 const Results: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>()
@@ -27,6 +28,24 @@ const Results: React.FC = () => {
 
   // Check if this is Mock 4 of a cycle
   const isMock4 = isMock && testNumber === '4' && cycle > 0
+  
+  // Fetch test metadata for title
+  useEffect(() => {
+    const fetchMockTestMetadata = async () => {
+      if (sessionId && !testNumber && !cycle && isMock) {
+        try {
+          const { cycle: fetchedCycle, testNumber: fetchedTestNumber } = await getMockTestMetadata(sessionId);
+          // Update the URL with the metadata but don't reload the page
+          const newUrl = `/results/mixed?sessionId=${sessionId}&mock=true&cycle=${fetchedCycle}&testNumber=${fetchedTestNumber}`;
+          window.history.replaceState({}, '', newUrl);
+        } catch (error) {
+          console.error("Error fetching mock test metadata:", error);
+        }
+      }
+    };
+    
+    fetchMockTestMetadata();
+  }, [sessionId, isMock, testNumber, cycle]);
 
   const { loading, resultsData, errorMessage, isFirstTest } = useResultsData(
     subject,
@@ -34,11 +53,11 @@ const Results: React.FC = () => {
   )
 
   if (loading) {
-    return <ResultsLoadingState loading={true} errorMessage={null} />
+    return <ResultsLoadingState loading={true} errorMessage={null} sessionId={sessionId} />
   }
 
   if (errorMessage) {
-    return <ResultsLoadingState loading={false} errorMessage={errorMessage} />
+    return <ResultsLoadingState loading={false} errorMessage={errorMessage} sessionId={sessionId} />
   }
 
   if (!resultsData) {
@@ -46,6 +65,7 @@ const Results: React.FC = () => {
       <ResultsLoadingState
         loading={false}
         errorMessage="No data available. Please try taking a test first."
+        sessionId={sessionId}
       />
     )
   }
@@ -55,6 +75,7 @@ const Results: React.FC = () => {
       <ResultsLoadingState
         loading={false}
         errorMessage="Subject not specified. Please select a subject."
+        sessionId={sessionId}
       />
     )
   }

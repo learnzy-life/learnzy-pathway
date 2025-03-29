@@ -112,6 +112,8 @@ export function usePreAnalysisState() {
     let url
     if (isMock && cycle && testNumber) {
       url = `/results/mixed?sessionId=${sessionId}&mock=true&cycle=${cycle}&testNumber=${testNumber}`
+    } else if (isMock) {
+      url = `/results/mixed?sessionId=${sessionId}&mock=true`
     } else {
       url = `/results/${subject}${sessionId ? `?sessionId=${sessionId}` : ''}`
     }

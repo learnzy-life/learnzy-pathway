@@ -18,7 +18,7 @@ export const isMockTestSession = async (sessionId: string): Promise<boolean> => 
       .from('test_sessions')
       .select('id')
       .eq('id', sessionId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       console.error('Error checking if session is a mock test:', error)
@@ -62,7 +62,7 @@ export const getMockTestMetadata = async (sessionId: string): Promise<{
         .from('mock_tests')
         .select('cycle, test_number')
         .eq('session_id', sessionId)
-        .single()
+        .maybeSingle()
         
       if (!error && data) {
         cycle = data.cycle.toString()

@@ -99,7 +99,7 @@ export const useTestActions = (
           tags: q.tags || [],
           // Include both uppercase and lowercase metadata fields for compatibility
           subject: q.subject || q.Subject || subject,
-          Subject: q.Subject || q.subject || subject,
+          Subject: q.subject || q.Subject || subject,
           chapter_name: q.chapter_name || q.Chapter_name || '',
           Chapter_name: q.Chapter_name || q.chapter_name || '',
           topic: q.topic || q.Topic || '',
