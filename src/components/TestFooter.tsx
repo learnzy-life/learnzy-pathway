@@ -1,4 +1,6 @@
+
 import React from 'react'
+import { ArrowRight } from 'lucide-react'
 
 interface TestFooterProps {
   currentQuestionIndex: number
@@ -16,7 +18,7 @@ const TestFooter: React.FC<TestFooterProps> = ({
   onSubmitClick,
 }) => {
   return (
-    <div className="bg-white border-t border-gray-100 py-4 px-6 sticky bottom-0 z-10 shadow-subtle">
+    <div className="bg-white border-t border-gray-100 py-4 px-6 sticky bottom-0 z-10 shadow-md">
       <div className="container mx-auto flex items-center justify-between max-w-3xl">
         <button
           onClick={onPrevQuestion}
@@ -32,18 +34,21 @@ const TestFooter: React.FC<TestFooterProps> = ({
           <button
             onClick={onNextQuestion}
             disabled={currentQuestionIndex === questionsLength - 1}
-            className={`button-primary ${
+            className={`button-primary flex items-center ${
               currentQuestionIndex === questionsLength - 1
                 ? 'opacity-50 cursor-not-allowed'
                 : ''
             }`}
           >
             Next Question
+            {currentQuestionIndex !== questionsLength - 1 && (
+              <ArrowRight className="ml-1 w-4 h-4" />
+            )}
           </button>
 
           <button
             onClick={onSubmitClick}
-            className="button-primary bg-green-600 hover:bg-green-700"
+            className="button-primary bg-green-600 hover:bg-green-700 flex items-center"
           >
             Submit Test
           </button>

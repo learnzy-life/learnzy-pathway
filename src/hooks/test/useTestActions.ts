@@ -129,6 +129,9 @@ export const useTestActions = (
           throw new Error('Failed to complete test session')
         }
         
+        console.log('Test successfully submitted with session ID:', sessionId);
+        console.log('Navigating to analysis page for subject:', subject);
+        
         // Check if this is a mock test session
         const isMock = await isMockTestSession(sessionId)
         console.log('Is mock test:', isMock, 'SessionId:', sessionId)
@@ -138,12 +141,14 @@ export const useTestActions = (
           const { cycle, testNumber } = await getMockTestMetadata(sessionId)
           console.log('Mock test metadata:', { cycle, testNumber })
           
-          // Redirect to pre-analysis for mock tests with correct query parameters
+          // Navigate to pre-analysis with mock parameters
           navigate(`/analysis/mixed?sessionId=${sessionId}&mock=true&cycle=${cycle}&testNumber=${testNumber}`)
         } else {
-          // Regular diagnostic test flow - always navigate to pre-analysis
+          // Regular diagnostic test flow
           navigate(`/analysis/${subject}?sessionId=${sessionId}`)
         }
+
+        toast.success('Test submitted successfully!')
       } else {
         console.error('No session ID available')
         toast.error('Session ID not available. Please try again.')

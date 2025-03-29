@@ -32,6 +32,7 @@ export function usePreAnalysisState() {
       }
 
       try {
+        console.log('PreAnalysis: Fetching session data for ID:', sessionId)
         const session = await getTestSession(sessionId)
         if (session && session.questions && session.questions.length > 0) {
           console.log('PreAnalysis: Found session data with', session.questions.length, 'questions')
@@ -126,6 +127,8 @@ export function usePreAnalysisState() {
     } else {
       url = `/results/${subject}?sessionId=${sessionId}`
     }
+
+    console.log('Navigating to results page:', url)
 
     setTimeout(() => {
       navigate(url)
