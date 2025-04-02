@@ -1,9 +1,8 @@
-
+import { LogIn } from 'lucide-react'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LogIn } from 'lucide-react'
-import { useAuth } from '../../context/AuthContext'
 import { toast } from 'sonner'
+import { useAuth } from '../../context/AuthContext'
 
 interface AuthFormProps {
   isLogin: boolean
@@ -15,14 +14,14 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
-  
+
   const { signIn, signUp, signInWithGoogle, resetPassword } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    
+
     try {
       if (isLogin) {
         await signIn(email, password)
@@ -54,12 +53,12 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!email) {
       toast.error('Please enter your email address')
       return
     }
-    
+
     setLoading(true)
     try {
       await resetPassword(email)
@@ -78,12 +77,17 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
       <div className="card-glass p-8 animate-fade-in">
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold">Reset Password</h2>
-          <p className="text-muted-foreground">Enter your email to receive a password reset link</p>
+          <p className="text-muted-foreground">
+            Enter your email to receive a password reset link
+          </p>
         </div>
-        
+
         <form onSubmit={handleResetPassword}>
           <div className="mb-4">
-            <label htmlFor="reset-email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="reset-email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Email
             </label>
             <input
@@ -125,10 +129,13 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
   return (
     <div className="card-glass p-8 animate-fade-in">
       <AuthToggle isLogin={isLogin} setIsLogin={setIsLogin} />
-      
+
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Email
           </label>
           <input
@@ -142,7 +149,10 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
           />
         </div>
         <div className="mb-6">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Password
           </label>
           <input
@@ -182,7 +192,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
       <div className="mt-6">
         <div className="relative flex items-center justify-center">
           <div className="border-t border-gray-200 w-full"></div>
-          <div className="absolute bg-white px-3 text-sm text-muted-foreground">or continue with</div>
+          <div className="absolute bg-white px-3 text-sm text-muted-foreground">
+            or continue with
+          </div>
         </div>
       </div>
 
@@ -238,7 +250,11 @@ const AuthToggle: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
     <div className="flex justify-center mb-6">
       <div className="flex rounded-lg overflow-hidden border border-gray-100">
         <button
-          className={`px-4 py-2 ${isLogin ? 'bg-learnzy-purple text-white' : 'bg-white text-muted-foreground'}`}
+          className={`px-4 py-2 ${
+            isLogin
+              ? 'bg-learnzy-purple text-white'
+              : 'bg-white text-muted-foreground'
+          }`}
           onClick={() => {
             setIsLogin(true)
           }}
@@ -246,7 +262,11 @@ const AuthToggle: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
           Login
         </button>
         <button
-          className={`px-4 py-2 ${!isLogin ? 'bg-learnzy-purple text-white' : 'bg-white text-muted-foreground'}`}
+          className={`px-4 py-2 ${
+            !isLogin
+              ? 'bg-learnzy-purple text-white'
+              : 'bg-white text-muted-foreground'
+          }`}
           onClick={() => {
             setIsLogin(false)
           }}
