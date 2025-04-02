@@ -7,13 +7,20 @@ import { QuestionResult } from './types'
 export const createTestSession = async (
   subject: Subject,
   questions: Question[],
-  sourceSessionId: string
+  sourceSessionId?: string
 ): Promise<string | null> => {
   try {
     const {
       data: { user },
     } = await supabase.auth.getUser()
     const userId = user?.id || null
+
+    // Ensure we have a valid user ID
+    if (!userId) {
+      console.error('No user ID available. User must be authenticated.')
+      toast.error('Please log in to start a test')
+      return null
+    }
 
     // Get metadata from the first question
     const firstQuestion = questions.length > 0 ? questions[0] : null
@@ -36,7 +43,7 @@ export const createTestSession = async (
       time_to_solve: firstQuestion?.Time_to_Solve || null,
       key_concept_tested: firstQuestion?.Key_Concept_Tested || null,
       common_pitfalls: firstQuestion?.Common_Pitfalls || null,
-      source_session_id: sourceSessionId,
+      source_session_id: sourceSessionId || null,
       // Save all question data including metadata
       questions_data: questions.map((q) => ({
         id: q.id,

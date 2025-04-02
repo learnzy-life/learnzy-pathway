@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabase'
 import { Question, Subject } from '../../services/question'
 import { fetchMockQuestions } from '../../services/question/fetchMockQuestions'
@@ -13,12 +14,20 @@ export const useMockTestQuestions = (
   const [isLoading, setIsLoading] = useState(true)
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [startTime, setStartTime] = useState<number>(Date.now())
+  const { user } = useAuth()
 
   useEffect(() => {
     const loadQuestions = async () => {
       setIsLoading(true)
 
       try {
+        // Check if user is authenticated
+        if (!user) {
+          console.error('User not authenticated')
+          toast.error('Please log in to take mock tests')
+          return
+        }
+
         // Load the questions with full metadata
         const loadedQuestions = await fetchMockQuestions(cycle, testNumber)
 
@@ -56,29 +65,23 @@ export const useMockTestQuestions = (
 
         if (newSessionId) {
           // Save the preparation data
-          const {
-            data: { user },
-          } = await supabase.auth.getUser()
+          const { error } = await supabase
+            .from('user_test_preparations')
+            .insert({
+              user_id: user.id,
+              test_session_id: newSessionId,
+              subject,
+              mood,
+              ritual,
+              test_type: 'mock',
+              mock_cycle: cycle,
+              mock_number: testNumber,
+            })
+            .select()
+            .single()
 
-          if (user) {
-            const { error } = await supabase
-              .from('user_test_preparations')
-              .insert({
-                user_id: user.id,
-                test_session_id: newSessionId,
-                subject,
-                mood,
-                ritual,
-                test_type: 'mock',
-                mock_cycle: cycle,
-                mock_number: testNumber,
-              })
-              .select()
-              .single()
-
-            if (error) {
-              console.error('Error saving test preparation data:', error)
-            }
+          if (error) {
+            console.error('Error saving test preparation data:', error)
           }
         }
 
@@ -95,7 +98,7 @@ export const useMockTestQuestions = (
     }
 
     loadQuestions()
-  }, [cycle, testNumber])
+  }, [cycle, testNumber, user])
 
   return [questions, isLoading, sessionId, startTime]
 }

@@ -75,28 +75,28 @@
   }
 
   .button-primary {
-    @apply bg-learnzy-amber text-white px-6 py-3 rounded-xl font-medium 
-    shadow-sm hover:shadow-md transition-all duration-300 
-    hover:bg-learnzy-amber-dark focus:outline-none focus:ring-2 
+    @apply bg-learnzy-amber text-white px-6 py-3 rounded-xl font-medium
+    shadow-sm hover:shadow-md transition-all duration-300
+    hover:bg-learnzy-amber-dark focus:outline-none focus:ring-2
     focus:ring-learnzy-amber/30 active:scale-[0.98] flex items-center justify-center;
   }
 
   .button-secondary {
-    @apply bg-white text-learnzy-dark px-6 py-3 rounded-xl font-medium 
-    shadow-sm hover:shadow-md transition-all duration-300 
-    hover:bg-gray-50 focus:outline-none focus:ring-2 
+    @apply bg-white text-learnzy-dark px-6 py-3 rounded-xl font-medium
+    shadow-sm hover:shadow-md transition-all duration-300
+    hover:bg-gray-50 focus:outline-none focus:ring-2
     focus:ring-learnzy-amber/30 active:scale-[0.98] border border-gray-100 flex items-center justify-center;
   }
 
   .button-ghost {
-    @apply bg-transparent text-learnzy-dark/80 px-6 py-3 rounded-xl font-medium 
-    transition-all duration-300 hover:bg-gray-100/50 
+    @apply bg-transparent text-learnzy-dark/80 px-6 py-3 rounded-xl font-medium
+    transition-all duration-300 hover:bg-gray-100/50
     focus:outline-none focus:ring-2 focus:ring-learnzy-amber/30 active:scale-[0.98] flex items-center justify-center;
   }
 
   .input-field {
     @apply bg-white/80 backdrop-blur-sm border border-gray-100 rounded-xl px-4 py-3
-    focus:outline-none focus:ring-2 focus:ring-learnzy-amber/30 
+    focus:outline-none focus:ring-2 focus:ring-learnzy-amber/30
     focus:border-transparent transition-all duration-300 w-full;
   }
 
@@ -137,16 +137,18 @@
   .container {
     @apply px-4;
   }
-  
+
   h1 {
     @apply text-3xl;
   }
-  
+
   h2 {
     @apply text-2xl;
   }
-  
-  .button-primary, .button-secondary, .button-ghost {
+
+  .button-primary,
+  .button-secondary,
+  .button-ghost {
     @apply w-full justify-center text-center;
   }
 
@@ -166,7 +168,8 @@
 
 /* Animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -175,17 +178,26 @@
 }
 
 @keyframes grow {
-  0% { width: 0; }
-  100% { width: 100%; }
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
 }
 
 @keyframes shrink {
-  0% { width: 100%; }
-  100% { width: 0; }
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0;
+  }
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 0.5;
   }
@@ -197,33 +209,34 @@
 
 /* Enhanced breathing-specific animations */
 @keyframes breatheIn {
-  0% { 
+  0% {
     transform: scale(1);
     box-shadow: 0 0 5px 2px rgba(155, 135, 245, 0.3);
   }
-  100% { 
+  100% {
     transform: scale(1.5);
     box-shadow: 0 0 25px 12px rgba(155, 135, 245, 0.6);
   }
 }
 
 @keyframes breatheHold {
-  0%, 100% { 
+  0%,
+  100% {
     transform: scale(1.5);
     box-shadow: 0 0 22px 10px rgba(155, 135, 245, 0.55);
   }
-  50% { 
+  50% {
     transform: scale(1.48);
     box-shadow: 0 0 20px 10px rgba(155, 135, 245, 0.5);
   }
 }
 
 @keyframes breatheOut {
-  0% { 
+  0% {
     transform: scale(1.5);
     box-shadow: 0 0 25px 12px rgba(155, 135, 245, 0.6);
   }
-  100% { 
+  100% {
     transform: scale(1);
     box-shadow: 0 0 5px 2px rgba(155, 135, 245, 0.3);
   }
@@ -231,16 +244,31 @@
 
 /* Meditation-specific animations */
 @keyframes cloudDrift {
-  0% { transform: translateX(0) translateY(0); }
-  25% { transform: translateX(5px) translateY(-5px); }
-  50% { transform: translateX(10px) translateY(0); }
-  75% { transform: translateX(5px) translateY(5px); }
-  100% { transform: translateX(0) translateY(0); }
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  25% {
+    transform: translateX(5px) translateY(-5px);
+  }
+  50% {
+    transform: translateX(10px) translateY(0);
+  }
+  75% {
+    transform: translateX(5px) translateY(5px);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
 }
 
 @keyframes fadeInOut {
-  0%, 100% { opacity: 0; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .animate-float {
@@ -266,10 +294,12 @@
 
 /* Improve readability on small screens */
 @media (max-width: 640px) {
-  p, span, li {
+  p,
+  span,
+  li {
     @apply text-sm leading-relaxed;
   }
-  
+
   .card-glass {
     @apply rounded-xl p-4;
   }

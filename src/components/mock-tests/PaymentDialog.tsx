@@ -1,59 +1,64 @@
-
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { CreditCard, Lock } from 'lucide-react';
-import { MockTest } from '../../types/mock-test';
-import { initiateRazorpayPayment } from '../../utils/razorpayPayment';
-import { toast } from 'sonner';
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { CreditCard, Lock } from 'lucide-react'
+import React, { useState } from 'react'
+import { toast } from 'sonner'
+import { MockTest } from '../../types/mock-test'
+import { initiateRazorpayPayment } from '../../utils/razorpayPayment'
 
 interface PaymentDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  selectedTest: MockTest | null;
-  onPaymentComplete: (test: MockTest) => Promise<void>;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  selectedTest: MockTest | null
+  onPaymentComplete: (test: MockTest) => Promise<void>
 }
 
-const PaymentDialog: React.FC<PaymentDialogProps> = ({ 
-  open, 
-  onOpenChange, 
-  selectedTest, 
-  onPaymentComplete 
+const PaymentDialog: React.FC<PaymentDialogProps> = ({
+  open,
+  onOpenChange,
+  selectedTest,
+  onPaymentComplete,
 }) => {
-  const [isProcessing, setIsProcessing] = useState(false);
-  
+  const [isProcessing, setIsProcessing] = useState(false)
+
   const handlePayNow = async () => {
-    if (!selectedTest) return;
-    
-    setIsProcessing(true);
+    if (!selectedTest) return
+
+    setIsProcessing(true)
     try {
-      // Create a unique order ID
-      const orderId = `order_${Date.now()}`;
-      
       // Set up payment options
       const paymentResult = await initiateRazorpayPayment({
         amount: 49900, // ₹499 in paise
         currency: 'INR',
         name: 'Learnzy',
-        description: `Access to ${selectedTest.cycle > 1 ? `Cycle ${selectedTest.cycle}` : 'Premium'} Mock Tests`,
-        orderId: orderId,
+        description: `Access to ${
+          selectedTest.cycle > 1 ? `Cycle ${selectedTest.cycle}` : 'Premium'
+        } Mock Tests`,
         email: 'user@example.com', // Ideally this should come from user context
-      });
-      
+      })
+
       if (paymentResult.success) {
-        toast.success(`Payment successful! Transaction ID: ${paymentResult.paymentId}`);
-        await onPaymentComplete(selectedTest);
-        onOpenChange(false);
+        toast.success(
+          `Payment successful! Transaction ID: ${paymentResult.paymentId}`
+        )
+        await onPaymentComplete(selectedTest)
+        onOpenChange(false)
       } else {
-        toast.error(paymentResult.error || "Payment failed. Please try again.");
+        toast.error(paymentResult.error || 'Payment failed. Please try again.')
       }
     } catch (error) {
-      console.error("Payment error:", error);
-      toast.error("An error occurred during payment processing");
+      console.error('Payment error:', error)
+      toast.error('An error occurred during payment processing')
     } finally {
-      setIsProcessing(false);
+      setIsProcessing(false)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -61,8 +66,8 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Lock className="h-5 w-5 text-amber-500" />
-            {selectedTest?.cycle > 1 && selectedTest?.requiresPayment 
-              ? `Unlock Cycle ${selectedTest?.cycle}` 
+            {selectedTest?.cycle > 1 && selectedTest?.requiresPayment
+              ? `Unlock Cycle ${selectedTest?.cycle}`
               : 'Unlock Premium Mock Test'}
           </DialogTitle>
           <DialogDescription>
@@ -98,7 +103,7 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold mb-4">₹499</p>
-            <Button 
+            <Button
               className="bg-amber-500 hover:bg-amber-600 text-white w-full flex items-center justify-center gap-2"
               onClick={handlePayNow}
               disabled={isProcessing}
@@ -119,7 +124,7 @@ const PaymentDialog: React.FC<PaymentDialogProps> = ({
         </div>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
 
-export default PaymentDialog;
+export default PaymentDialog

@@ -1,15 +1,32 @@
-
-import React from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 import QuestionNavigation from '../components/QuestionNavigation'
 import SubmitWarningDialog from '../components/SubmitWarningDialog'
 import TestFooter from '../components/TestFooter'
 import TestHeader from '../components/TestHeader'
 import TestQuestion from '../components/TestQuestion'
+import { useAuth } from '../context/AuthContext'
 import { useMockTestState } from '../hooks/test/useMockTestState'
 
 const MockTest: React.FC = () => {
-  const { cycle, testNumber } = useParams<{ cycle: string; testNumber: string }>()
+  const { cycle, testNumber } = useParams<{
+    cycle: string
+    testNumber: string
+  }>()
+  const navigate = useNavigate()
+  const { user, isLoading: isAuthLoading } = useAuth()
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!isAuthLoading && !user) {
+      toast.error('Please log in to take mock tests')
+      navigate('/auth', {
+        state: { from: `/mock-test/${cycle}/${testNumber}` },
+      })
+    }
+  }, [user, isAuthLoading, navigate, cycle, testNumber])
+
   const [
     {
       questions,
@@ -33,15 +50,32 @@ const MockTest: React.FC = () => {
 
   // Sort questions by their ID to ensure numerical ascending order
   const sortedQuestions = [...questions].sort((a, b) => a.id - b.id)
-  
+
   const currentQuestion = sortedQuestions[currentQuestionIndex]
   const answeredCount = sortedQuestions.filter((q) => q.answer).length
+
+  // Show loading state while checking authentication
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-learnzy-purple/30 border-t-learnzy-purple rounded-full animate-spin mb-6"></div>
+        <h2 className="text-xl font-medium ml-4">Loading...</h2>
+      </div>
+    )
+  }
+
+  // Don't render anything if not authenticated
+  if (!user) {
+    return null
+  }
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-16 h-16 border-4 border-learnzy-purple/30 border-t-learnzy-purple rounded-full animate-spin mb-6"></div>
-        <h2 className="text-xl font-medium ml-4">Loading mock test questions...</h2>
+        <h2 className="text-xl font-medium ml-4">
+          Loading mock test questions...
+        </h2>
       </div>
     )
   }

@@ -1,25 +1,24 @@
-
-import React from 'react';
-import { format } from 'date-fns';
-import { Lock } from 'lucide-react';
-import { MockTest } from '../../types/mock-test';
+import { format } from 'date-fns'
+import { CheckCircle } from 'lucide-react'
+import React from 'react'
+import { MockTest } from '../../types/mock-test'
 
 interface MockTestCardProps {
-  test: MockTest;
-  onClick: (test: MockTest) => void;
+  test: MockTest
+  onClick: (test: MockTest) => void
 }
 
 const MockTestCard: React.FC<MockTestCardProps> = ({ test, onClick }) => {
+  const isClickable = !test.isLocked && !test.isCompleted
+
   return (
     <div
-      onClick={() => onClick(test)}
+      onClick={isClickable ? () => onClick(test) : undefined}
       className={`bg-white rounded-lg p-4 border ${
-        test.isDynamic 
-          ? 'border-learnzy-amber' 
-          : 'border-gray-100'
+        test.isDynamic ? 'border-learnzy-amber' : 'border-gray-100'
       } ${
-        !test.isLocked 
-          ? 'hover:border-learnzy-amber/60 cursor-pointer' 
+        isClickable
+          ? 'hover:border-learnzy-amber/60 cursor-pointer'
           : 'opacity-60 cursor-not-allowed'
       } transition-all duration-200 relative`}
     >
@@ -36,18 +35,23 @@ const MockTestCard: React.FC<MockTestCardProps> = ({ test, onClick }) => {
       ) : test.isLocked ? (
         <p className="text-sm text-gray-500">
           <span className="inline-flex items-center">
-            {test.requiresPayment 
-              ? "Unlock Cycle to Access" 
-              : test.isDynamic 
-                ? "Complete previous tests to unlock"
-                : "🔒 Locked"}
+            {test.requiresPayment
+              ? 'Unlock Cycle to Access'
+              : test.isDynamic
+              ? 'Complete previous tests to unlock'
+              : '🔒 Locked'}
           </span>
+        </p>
+      ) : test.isCompleted ? (
+        <p className="text-sm text-green-600 flex items-center">
+          <CheckCircle className="w-4 h-4 mr-1" />
+          Completed
         </p>
       ) : (
         <p className="text-sm text-learnzy-amber">Available Now</p>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default MockTestCard;
+export default MockTestCard
