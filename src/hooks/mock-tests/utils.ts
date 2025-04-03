@@ -1,6 +1,4 @@
-
-import { toast } from 'sonner';
-import { MockTest } from '../../types/mock-test';
+import { MockTest } from '../../types/mock-test'
 
 /**
  * Initializes the mock tests data structure
@@ -8,8 +6,8 @@ import { MockTest } from '../../types/mock-test';
  * @returns Array of mock tests
  */
 export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
-  const tests: MockTest[] = [];
-  
+  const tests: MockTest[] = []
+
   // Cycle 1
   for (let i = 1; i <= 4; i++) {
     tests.push({
@@ -21,10 +19,10 @@ export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
       isDynamic: false,
       isCompleted: false,
       isPremium: false,
-      requiresPayment: false
-    });
+      requiresPayment: false,
+    })
   }
-  
+
   tests.push({
     id: `mock-1-5`,
     title: `AI-Powered Review Test`,
@@ -34,9 +32,9 @@ export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
     isDynamic: true,
     isCompleted: false,
     isPremium: false,
-    requiresPayment: false
-  });
-  
+    requiresPayment: false,
+  })
+
   // Cycle 2
   for (let i = 1; i <= 4; i++) {
     tests.push({
@@ -48,10 +46,10 @@ export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
       isDynamic: false,
       isCompleted: false,
       isPremium: false,
-      requiresPayment: true
-    });
+      requiresPayment: true,
+    })
   }
-  
+
   tests.push({
     id: `mock-2-5`,
     title: `AI-Powered Review Test`,
@@ -61,9 +59,9 @@ export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
     isDynamic: true,
     isCompleted: false,
     isPremium: false,
-    requiresPayment: true
-  });
-  
+    requiresPayment: true,
+  })
+
   // Cycle 3
   for (let i = 1; i <= 4; i++) {
     tests.push({
@@ -75,10 +73,10 @@ export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
       isDynamic: false,
       isCompleted: false,
       isPremium: false,
-      requiresPayment: true
-    });
+      requiresPayment: true,
+    })
   }
-  
+
   tests.push({
     id: `mock-3-5`,
     title: `AI-Powered Review Test`,
@@ -88,9 +86,9 @@ export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
     isDynamic: true,
     isCompleted: false,
     isPremium: false,
-    requiresPayment: true
-  });
-  
+    requiresPayment: true,
+  })
+
   // Cycle 4
   for (let i = 1; i <= 4; i++) {
     tests.push({
@@ -102,10 +100,10 @@ export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
       isDynamic: false,
       isCompleted: false,
       isPremium: false,
-      requiresPayment: true
-    });
+      requiresPayment: true,
+    })
   }
-  
+
   tests.push({
     id: `mock-4-5`,
     title: `AI-Powered Review Test`,
@@ -115,11 +113,11 @@ export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
     isDynamic: true,
     isCompleted: false,
     isPremium: false,
-    requiresPayment: true
-  });
-  
-  return tests;
-};
+    requiresPayment: true,
+  })
+
+  return tests
+}
 
 /**
  * Checks if a user can start a dynamic test in a given cycle
@@ -129,27 +127,35 @@ export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
  * @returns Boolean indicating if user can start dynamic test
  */
 export const canStartDynamicTest = (
-  cycle: number, 
-  mockTests: MockTest[], 
+  cycle: number,
+  mockTests: MockTest[],
   completedTests: string[]
 ): boolean => {
-  const cycleTests = mockTests.filter(test => test.cycle === cycle && !test.isDynamic);
-  return cycleTests.every(test => completedTests.includes(test.id));
-};
+  const cycleTests = mockTests.filter(
+    (test) => test.cycle === cycle && !test.isDynamic
+  )
+  return cycleTests.every((test) => completedTests.includes(test.id))
+}
 
 /**
  * Store unlocked cycles in localStorage
  * @param userId User ID
  * @param unlockedCycles Array of unlocked cycle numbers
  */
-export const storeUnlockedCycles = (userId: string, unlockedCycles: number[]): void => {
-  if (!userId) return;
+export const storeUnlockedCycles = (
+  userId: string,
+  unlockedCycles: number[]
+): void => {
+  if (!userId) return
   try {
-    localStorage.setItem(`unlockedCycles_${userId}`, JSON.stringify(unlockedCycles));
+    localStorage.setItem(
+      `unlockedCycles_${userId}`,
+      JSON.stringify(unlockedCycles)
+    )
   } catch (error) {
-    console.error('Error storing unlocked cycles:', error);
+    console.error('Error storing unlocked cycles:', error)
   }
-};
+}
 
 /**
  * Load unlocked cycles from localStorage
@@ -157,14 +163,16 @@ export const storeUnlockedCycles = (userId: string, unlockedCycles: number[]): v
  * @returns Array of unlocked cycle numbers
  */
 export const loadUnlockedCycles = (userId: string): number[] => {
-  if (!userId) return [1];
+  if (!userId) return [1]
   try {
-    const storedUnlockedCycles = localStorage.getItem(`unlockedCycles_${userId}`);
+    const storedUnlockedCycles = localStorage.getItem(
+      `unlockedCycles_${userId}`
+    )
     if (storedUnlockedCycles) {
-      return JSON.parse(storedUnlockedCycles);
+      return JSON.parse(storedUnlockedCycles)
     }
   } catch (error) {
-    console.error('Error loading unlocked cycles:', error);
+    console.error('Error loading unlocked cycles:', error)
   }
-  return [1]; // Default to cycle 1 unlocked
-};
+  return [1] // Default to cycle 1 unlocked
+}

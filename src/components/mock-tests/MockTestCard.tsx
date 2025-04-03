@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 import { CheckCircle } from 'lucide-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { MockTest } from '../../types/mock-test'
 
 interface MockTestCardProps {
@@ -9,7 +9,39 @@ interface MockTestCardProps {
 }
 
 const MockTestCard: React.FC<MockTestCardProps> = ({ test, onClick }) => {
-  const isClickable = !test.isLocked && !test.isCompleted
+  // For dynamic test, make it clickable even when locked (but not if completed)
+  const isClickable = test.isDynamic
+    ? !test.isCompleted
+    : !test.isLocked && !test.isCompleted
+
+  useEffect(() => {
+    console.log('Test:', test.title, {
+      isLocked: test.isLocked,
+      isCompleted: test.isCompleted,
+      isDynamic: test.isDynamic,
+      requiresPayment: test.requiresPayment,
+      unlockDate: test.unlockDate,
+      condition: test.isLocked
+        ? test.requiresPayment
+          ? 'Showing: Unlock Cycle to Access'
+          : test.isDynamic
+          ? 'Showing: Complete previous tests to unlock'
+          : 'Showing: 🔒 Locked'
+        : test.isCompleted
+        ? 'Showing: Completed'
+        : 'Showing: Available Now',
+    })
+  }, [test])
+
+  // This function should be called in your parent component to automatically unlock
+  // the dynamic test when all regular tests are completed
+  const shouldDynamicTestBeUnlocked = () => {
+    // This is a placeholder - the actual check would happen in the parent component
+    console.log(
+      'Note: Parent component should unlock dynamic test when all tests completed'
+    )
+    return false
+  }
 
   return (
     <div
@@ -38,7 +70,7 @@ const MockTestCard: React.FC<MockTestCardProps> = ({ test, onClick }) => {
             {test.requiresPayment
               ? 'Unlock Cycle to Access'
               : test.isDynamic
-              ? 'Complete previous tests to unlock'
+              ? '🔒 Click to Generate AI Test'
               : '🔒 Locked'}
           </span>
         </p>
