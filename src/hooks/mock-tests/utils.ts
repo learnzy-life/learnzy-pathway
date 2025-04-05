@@ -25,7 +25,7 @@ export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
 
   tests.push({
     id: `mock-1-5`,
-    title: `AI-Powered Review Test`,
+    title: `Personalized Mock Test`,
     cycle: 1,
     isLocked: true,
     unlockDate: null,
@@ -52,7 +52,7 @@ export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
 
   tests.push({
     id: `mock-2-5`,
-    title: `AI-Powered Review Test`,
+    title: `Personalized Mock Test`,
     cycle: 2,
     isLocked: !unlockedCycles.includes(2),
     unlockDate: null,
@@ -79,7 +79,7 @@ export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
 
   tests.push({
     id: `mock-3-5`,
-    title: `AI-Powered Review Test`,
+    title: `Personalized Mock Test`,
     cycle: 3,
     isLocked: !unlockedCycles.includes(3),
     unlockDate: null,
@@ -106,7 +106,7 @@ export const initializeMockTests = (unlockedCycles: number[]): MockTest[] => {
 
   tests.push({
     id: `mock-4-5`,
-    title: `AI-Powered Review Test`,
+    title: `Personalized Mock Test`,
     cycle: 4,
     isLocked: !unlockedCycles.includes(4),
     unlockDate: null,
@@ -131,10 +131,76 @@ export const canStartDynamicTest = (
   mockTests: MockTest[],
   completedTests: string[]
 ): boolean => {
-  const cycleTests = mockTests.filter(
+  // Get all regular tests for this cycle (non-dynamic)
+  const regularTests = mockTests.filter(
     (test) => test.cycle === cycle && !test.isDynamic
   )
-  return cycleTests.every((test) => completedTests.includes(test.id))
+
+  // Check if all regular tests in this cycle are completed
+  return regularTests.every((test) => completedTests.includes(test.id))
+}
+
+/**
+ * Checks if a dynamic test should be marked as completed
+ * @param cycle Cycle number
+ * @param completedTests Array of completed test session IDs
+ * @returns Boolean indicating if the dynamic test is completed
+ */
+export const isDynamicTestCompleted = (
+  cycle: number,
+  completedTests: string[]
+): boolean => {
+  // Check if any completed test matches a dynamic test session pattern
+  return completedTests.some((sessionId) => {
+    // Look for pattern: 'mock-{cycle}-5-{timestamp}' or if the source_session_id was 'mock-{cycle}-5'
+    return (
+      sessionId.startsWith(`mock-${cycle}-5-`) ||
+      sessionId === `mock-${cycle}-5`
+    )
+  })
+}
+
+/**
+ * Updates the mock tests with completion status and dynamic test availability
+ * @param mockTests Array of mock tests
+ * @param completedTests Array of completed test IDs
+ * @returns Updated array of mock tests
+ */
+export const updateMockTestStatus = (
+  mockTests: MockTest[],
+  completedTests: string[]
+): MockTest[] => {
+  return mockTests.map((test) => {
+    // Mark tests as completed if they're in completedTests
+    const isCompleted = completedTests.includes(test.id)
+
+    // Special handling for dynamic tests
+    if (test.isDynamic) {
+      // Check if this dynamic test is completed
+      const dynamicTestCompleted = isDynamicTestCompleted(
+        test.cycle,
+        completedTests
+      )
+
+      // Check if all regular tests in this cycle are completed
+      const canStart = canStartDynamicTest(
+        test.cycle,
+        mockTests,
+        completedTests
+      )
+
+      return {
+        ...test,
+        isCompleted: dynamicTestCompleted,
+        isLocked: !canStart && !test.requiresPayment, // Only lock based on completion status if it's not a premium test
+      }
+    }
+
+    return {
+      ...test,
+      isCompleted,
+    }
+  })
 }
 
 /**

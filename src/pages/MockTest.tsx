@@ -17,6 +17,9 @@ const MockTest: React.FC = () => {
   const navigate = useNavigate()
   const { user, isLoading: isAuthLoading } = useAuth()
 
+  // Determine if this is the dynamic 5th test
+  const isDynamicTest = testNumber === '5'
+
   // Redirect to auth if not logged in
   useEffect(() => {
     if (!isAuthLoading && !user) {
@@ -54,6 +57,11 @@ const MockTest: React.FC = () => {
   const currentQuestion = sortedQuestions[currentQuestionIndex]
   const answeredCount = sortedQuestions.filter((q) => q.answer).length
 
+  // Get the appropriate test title
+  const testTitle = isDynamicTest
+    ? 'Personalized Mock Test'
+    : `Mock Test ${testNumber}`
+
   // Show loading state while checking authentication
   if (isAuthLoading) {
     return (
@@ -72,10 +80,18 @@ const MockTest: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-learnzy-purple/30 border-t-learnzy-purple rounded-full animate-spin mb-6"></div>
-        <h2 className="text-xl font-medium ml-4">
-          Loading mock test questions...
-        </h2>
+        <div className="flex flex-col items-center">
+          <div className="w-16 h-16 border-4 border-learnzy-purple/30 border-t-learnzy-purple rounded-full animate-spin mb-6"></div>
+          <h2 className="text-xl font-medium mb-2">
+            Loading {isDynamicTest ? 'personalized' : 'mock'} test questions...
+          </h2>
+          {isDynamicTest && (
+            <p className="text-center text-muted-foreground max-w-md">
+              This test is tailored to your performance in the previous 4 mock
+              tests, focusing on areas where you can improve.
+            </p>
+          )}
+        </div>
       </div>
     )
   }
@@ -83,7 +99,17 @@ const MockTest: React.FC = () => {
   if (sortedQuestions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        No questions available. Please try again later.
+        <div className="text-center">
+          <p className="text-xl mb-4">
+            No questions available. Please try again later.
+          </p>
+          <button
+            onClick={() => navigate('/subjects')}
+            className="button-primary"
+          >
+            Return to Dashboard
+          </button>
+        </div>
       </div>
     )
   }
@@ -103,7 +129,7 @@ const MockTest: React.FC = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <TestHeader
-        subject={`Mock Test ${testNumber}`}
+        subject={testTitle}
         answeredCount={answeredCount}
         totalQuestions={sortedQuestions.length}
         timeRemaining={timeRemaining}

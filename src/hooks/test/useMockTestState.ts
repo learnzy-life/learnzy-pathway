@@ -1,23 +1,26 @@
-
 import { useState } from 'react'
-import { useTestTimer } from './useTestTimer'
+import { TestActions, TestState } from './types'
 import { useMockTestQuestions } from './useMockTestQuestions'
-import { TestState, TestActions } from './types'
 import { useTestActions } from './useTestActions'
+import { useTestTimer } from './useTestTimer'
 
-export const useMockTestState = (cycle: string, testNumber: string): [TestState, TestActions] => {
+export const useMockTestState = (
+  cycle: string,
+  testNumber: string
+): [TestState, TestActions] => {
   const [questions, setQuestions] = useState([])
-  const [questionsData, isLoading, sessionId, startTime] = useMockTestQuestions(cycle, testNumber)
-  
+  const [questionsData, isLoading, sessionId, startTime] = useMockTestQuestions(
+    cycle,
+    testNumber
+  )
+
   // Sync questions from questionsData when it changes
   if (questionsData.length > 0 && questions.length === 0) {
     setQuestions(questionsData)
   }
 
   // Determine subject from the first question or use "mixed" for mock tests
-  const subject = questions.length > 0 
-    ? (questions[0].subject as any) 
-    : 'mixed';
+  const subject = questions.length > 0 ? (questions[0].subject as any) : 'mixed'
 
   const {
     currentQuestionIndex,
@@ -32,8 +35,13 @@ export const useMockTestState = (cycle: string, testNumber: string): [TestState,
     handleSubmitClick,
   } = useTestActions(subject, questions, setQuestions, sessionId, startTime)
 
-  // Mock tests use the same time limit as diagnostic tests (180 min = 3 hours)
-  const [timeRemaining, formatTime] = useTestTimer(180 * 60, handleSubmitTest, subject)
+  // All mock tests (including the dynamic 5th test) use the same time limit (180 min = 3 hours)
+  // This ensures a consistent experience across all tests in a cycle
+  const [timeRemaining, formatTime] = useTestTimer(
+    180 * 60,
+    handleSubmitTest,
+    subject
+  )
 
   return [
     {

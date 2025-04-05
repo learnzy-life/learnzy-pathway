@@ -15,6 +15,28 @@ export const useTestNavigation = (
   onShowPayment: (test: MockTest) => void
 ) => {
   const handleMockTestClick = (test: MockTest) => {
+    // For dynamic tests, always allow clicking unless completed
+    if (test.isDynamic) {
+      // If already completed, show results
+      if (test.isCompleted) {
+        window.location.href = `/results/mixed?sessionId=${test.id}`
+        return
+      }
+
+      // Check if all previous tests in the cycle are completed before allowing generation
+      if (!canStartDynamicTest(test.cycle, mockTests, completedTests)) {
+        toast.error(
+          'Complete all regular tests in this cycle first to unlock the AI-powered test.'
+        )
+        return
+      }
+
+      // Navigate to the dynamic test generation page
+      window.location.href = `/pre-dynamic-test/${test.cycle}`
+      return
+    }
+
+    // Handle regular (non-dynamic) tests
     if (test.isLocked) {
       if (test.requiresPayment) {
         onShowPayment(test)
@@ -27,23 +49,12 @@ export const useTestNavigation = (
     const isCompleted = completedTests.includes(test.id)
     test.isCompleted = isCompleted
 
-    if (test.isDynamic) {
-      if (!canStartDynamicTest(test.cycle, mockTests, completedTests)) {
-        toast.error(
-          'Complete all tests in this cycle to unlock the AI-powered test.'
-        )
-        return
-      }
+    const testNumber = test.id.split('-').pop() || '1'
 
-      window.location.href = `/pre-dynamic-test/${test.cycle}`
+    if (isCompleted) {
+      window.location.href = `/results/mixed?sessionId=${test.id}`
     } else {
-      const testNumber = test.id.split('-').pop() || '1'
-
-      if (isCompleted) {
-        window.location.href = `/results/mixed?sessionId=${test.id}`
-      } else {
-        window.location.href = `/pre-mock-test/${test.cycle}/${testNumber}`
-      }
+      window.location.href = `/pre-mock-test/${test.cycle}/${testNumber}`
     }
   }
 

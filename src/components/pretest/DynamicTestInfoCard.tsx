@@ -1,6 +1,4 @@
-
-import React from 'react';
-import { Book } from 'lucide-react';
+import { Book } from 'lucide-react'
 
 const DynamicTestInfoCard = () => {
   return (
@@ -8,16 +6,25 @@ const DynamicTestInfoCard = () => {
       <div className="flex">
         <Book className="w-6 h-6 text-amber-600 mr-3 flex-shrink-0 mt-1" />
         <div className="text-left">
-          <h3 className="font-semibold text-amber-800 mb-2">About AI-Powered Tests</h3>
+          <h3 className="font-semibold text-amber-800 mb-2">
+            About Your Personalized Test
+          </h3>
+          <p className="text-amber-700 text-sm mb-3">
+            This specially crafted test focuses on your weak areas from the
+            previous 4 tests in this cycle. It contains 60 questions each from
+            Physics, Chemistry, and Biology (180 total), prioritizing topics
+            where you need the most improvement.
+          </p>
           <p className="text-amber-700 text-sm">
-            This specially crafted test focuses on your weak areas from the previous 4 tests in this cycle.
-            It contains 45 questions each from Physics and Chemistry, and 90 from Biology, just like your
-            regular tests, but targeted to help you improve where you need it most.
+            The questions are selected based on your performance patterns,
+            emphasizing areas where you answered incorrectly or struggled. This
+            targeted approach helps you maximize your study time and improve
+            your overall performance.
           </p>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DynamicTestInfoCard;
+export default DynamicTestInfoCard

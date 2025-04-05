@@ -5,7 +5,7 @@ import { useCompletedTests } from './useCompletedTests'
 import { usePayment } from './usePayment'
 import { useTestNavigation } from './useTestNavigation'
 import { useUnlockedCycles } from './useUnlockedCycles'
-import { initializeMockTests } from './utils'
+import { initializeMockTests, updateMockTestStatus } from './utils'
 
 /**
  * Main hook for managing mock tests
@@ -43,13 +43,11 @@ export const useMockTests = (
 
   // Initialize mock tests when unlockedCycles or completedTests change
   useEffect(() => {
-    const tests = initializeMockTests(unlockedCycles)
+    // Initialize basic test structure with cycle unlocks
+    const initialTests = initializeMockTests(unlockedCycles)
 
-    // Update completion status for each test
-    const updatedTests = tests.map((test) => ({
-      ...test,
-      isCompleted: completedTests.includes(test.id),
-    }))
+    // Update test status based on completed tests and dynamic test availability
+    const updatedTests = updateMockTestStatus(initialTests, completedTests)
 
     setMockTests(updatedTests)
   }, [unlockedCycles, completedTests])

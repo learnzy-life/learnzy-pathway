@@ -1,9 +1,11 @@
-
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Subject } from '../../services/question'
+import {
+  completeTestSession,
+  updateQuestionAnswer,
+} from '../../services/testSession'
 import { Question } from '../../types/dashboard'
-import { completeTestSession, updateQuestionAnswer } from '../../services/testSession'
 
 export const useTestActions = (
   subject: Subject | string,
@@ -26,12 +28,15 @@ export const useTestActions = (
     timeTaken: number
   ) => {
     setQuestions((prev) =>
-      prev.map((q) => (q.id === questionId ? { ...q, answer: answerId, timeTaken } : q))
+      prev.map((q) =>
+        q.id === questionId ? { ...q, answer: answerId, timeTaken } : q
+      )
     )
-    
+
     if (sessionId) {
-      updateQuestionAnswer(sessionId, questionId, answerId, timeTaken)
-        .catch(error => console.error('Error updating question answer:', error))
+      updateQuestionAnswer(sessionId, questionId, answerId, timeTaken).catch(
+        (error) => console.error('Error updating question answer:', error)
+      )
     }
   }
 
@@ -84,7 +89,7 @@ export const useTestActions = (
         Option_B: q.Option_B || q.option_b || '',
         Option_C: q.Option_C || q.option_c || '',
         Option_D: q.Option_D || q.option_d || '',
-        options: q.options || []
+        options: q.options || [],
       }
     })
 
@@ -94,17 +99,23 @@ export const useTestActions = (
           // Check if this is a mock test (sessionId starts with "mock-")
           if (sessionId.startsWith('mock-')) {
             // Extract cycle and test number from the sessionId
-            const parts = sessionId.split('-');
+            const parts = sessionId.split('-')
             if (parts.length >= 3) {
-              const cycle = parts[1];
-              const testNumber = parts[2];
-              navigate(`/analysis/${subject}?sessionId=${sessionId}&mock=true&cycle=${cycle}&testNumber=${testNumber}`);
-              return;
+              const cycle = parts[1]
+              const testNumber = parts[2]
+
+              // For the dynamic 5th test, always use 'mixed' as the subject
+              const testSubject = testNumber === '5' ? 'mixed' : subject
+
+              navigate(
+                `/analysis/${testSubject}?sessionId=${sessionId}&mock=true&cycle=${cycle}&testNumber=${testNumber}`
+              )
+              return
             }
           }
-          
+
           // Default path for diagnostic tests
-          navigate(`/analysis/${subject}?sessionId=${sessionId}`);
+          navigate(`/analysis/${subject}?sessionId=${sessionId}`)
         })
         .catch((error) => {
           console.error('Error completing test session:', error)

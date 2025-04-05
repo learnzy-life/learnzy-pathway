@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabase'
@@ -15,6 +16,7 @@ export const useMockTestQuestions = (
   const [sessionId, setSessionId] = useState<string | null>(null)
   const [startTime, setStartTime] = useState<number>(Date.now())
   const { user } = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const loadQuestions = async () => {
@@ -28,7 +30,68 @@ export const useMockTestQuestions = (
           return
         }
 
-        // Load the questions with full metadata
+        // Special handling for the dynamic 5th test
+        if (testNumber === '5') {
+          console.log(`Loading dynamic 5th test for cycle ${cycle}...`)
+
+          // Fetch the most recent dynamic test session for this user and cycle
+          const { data: dynamicSession, error: dynamicError } = await supabase
+            .from('test_sessions')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('source_session_id', `mock-${cycle}-5`)
+            .order('start_time', { ascending: false })
+            .limit(1)
+            .single()
+
+          if (dynamicError || !dynamicSession) {
+            console.error('Dynamic test session not found:', dynamicError)
+            toast.error(
+              'Your personalized test is not ready. Redirecting to preparation page.'
+            )
+            navigate(`/pre-dynamic-test/${cycle}`)
+            return
+          }
+
+          // Ensure the questions_data array exists and has content
+          if (
+            !dynamicSession.questions_data ||
+            !Array.isArray(dynamicSession.questions_data) ||
+            dynamicSession.questions_data.length === 0
+          ) {
+            console.error('Dynamic test questions are missing')
+            toast.error(
+              'Your test data is incomplete. Redirecting to preparation page.'
+            )
+            navigate(`/pre-dynamic-test/${cycle}`)
+            return
+          }
+
+          console.log(
+            `Found dynamic test with ${dynamicSession.questions_data.length} questions`
+          )
+
+          // Use the questions from the dynamic session
+          const dynamicQuestions = dynamicSession.questions_data
+
+          // Update the session with current time (in case the user is retaking the test)
+          await supabase
+            .from('test_sessions')
+            .update({
+              start_time: new Date().toISOString(),
+              end_time: null,
+              score: null,
+            })
+            .eq('id', dynamicSession.id)
+
+          setSessionId(dynamicSession.id)
+          setStartTime(Date.now())
+          setQuestions(dynamicQuestions)
+          setIsLoading(false)
+          return
+        }
+
+        // Regular flow for standard mock tests (1-4)
         const loadedQuestions = await fetchMockQuestions(cycle, testNumber)
 
         // Sort questions by their ID to ensure numerical ascending order
@@ -98,7 +161,7 @@ export const useMockTestQuestions = (
     }
 
     loadQuestions()
-  }, [cycle, testNumber, user])
+  }, [cycle, testNumber, user, navigate])
 
   return [questions, isLoading, sessionId, startTime]
 }
