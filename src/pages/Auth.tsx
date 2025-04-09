@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
-import AuthHeader from '../components/auth/AuthHeader'
 import AuthForm from '../components/auth/AuthForm'
+import AuthHeader from '../components/auth/AuthHeader'
 import { useAuth } from '../context/AuthContext'
 
 const Auth: React.FC = () => {
@@ -11,10 +10,10 @@ const Auth: React.FC = () => {
   const { user, isLoading, bypassAuth, isDevelopmentBypass } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  
+
   // Check if coming from a specific page that requires auth
   const from = location.state?.from || '/'
-  
+
   // If the user is already logged in, redirect to home page or the page they came from
   useEffect(() => {
     if ((user || isDevelopmentBypass) && !isLoading) {
@@ -40,16 +39,16 @@ const Auth: React.FC = () => {
         <section className="py-12 max-w-md mx-auto">
           <AuthHeader isLogin={isLogin} />
           <AuthForm isLogin={isLogin} setIsLogin={setIsLogin} />
-          
+
           {/* Development bypass button */}
-          <div className="mt-8 text-center">
+          {/* <div className="mt-8 text-center">
             <button
               onClick={bypassAuth}
               className="text-sm text-gray-500 hover:text-learnzy-purple"
             >
               [DEV] Bypass Authentication
             </button>
-          </div>
+          </div> */}
         </section>
       </main>
     </div>
