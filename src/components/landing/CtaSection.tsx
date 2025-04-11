@@ -1,13 +1,27 @@
 
 import React from 'react';
 import { ArrowRight, Clock } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { toast } from 'sonner';
 
 const CtaSection = () => {
+  const { user, isDevelopmentBypass } = useAuth();
+  const navigate = useNavigate();
+  
   // Calculate days until NEET 2025 (assuming May 5, 2025)
   const neetDate = new Date(2025, 4, 5); // May 5, 2025
   const today = new Date();
   const daysUntilNeet = Math.ceil((neetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  
+  const handleDiagnosticClick = (e: React.MouseEvent) => {
+    // If user is not authenticated, redirect to auth page
+    if (!user && !isDevelopmentBypass) {
+      e.preventDefault();
+      toast.info('Please log in to take a diagnostic test');
+      navigate('/auth', { state: { from: '/subjects' } });
+    }
+  };
   
   return (
     <section className="py-16 md:py-20 bg-gradient-to-r from-amber-50 to-learnzy-purple/5 rounded-t-3xl">
@@ -26,12 +40,21 @@ const CtaSection = () => {
         </div>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-          <Link
-            to="/subjects"
-            className="button-primary inline-flex items-center"
-          >
-            Start Your Diagnostic Test <ArrowRight className="ml-2 w-5 h-5" />
-          </Link>
+          {user || isDevelopmentBypass ? (
+            <Link
+              to="/subjects"
+              className="button-primary inline-flex items-center"
+            >
+              Start Your Diagnostic Test <ArrowRight className="ml-2 w-5 h-5" />
+            </Link>
+          ) : (
+            <button
+              onClick={handleDiagnosticClick}
+              className="button-primary inline-flex items-center"
+            >
+              Start Your Diagnostic Test <ArrowRight className="ml-2 w-5 h-5" />
+            </button>
+          )}
           
           <Link
             to="/learn-more"

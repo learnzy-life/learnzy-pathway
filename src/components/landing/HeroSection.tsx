@@ -1,12 +1,26 @@
-
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, BookOpen, Brain } from 'lucide-react';
 import { trackButtonClick } from '../../utils/analytics/googleAnalytics';
+import { useAuth } from '../../context/AuthContext';
+import { toast } from 'sonner';
 
 const HeroSection: React.FC = () => {
+  const { user, isDevelopmentBypass } = useAuth();
+  const navigate = useNavigate();
+
   const handleStartTestClick = () => {
     trackButtonClick('start_free_test', 'hero_section');
+    
+    // Redirect to auth if not logged in
+    if (!user && !isDevelopmentBypass) {
+      toast.info('Please log in to take a test');
+      navigate('/auth', { state: { from: '/subjects' } });
+      return;
+    }
+    
+    // Otherwise, proceed to subjects page
+    navigate('/subjects');
   };
 
   const handleLearnMoreClick = () => {
@@ -37,13 +51,12 @@ const HeroSection: React.FC = () => {
       </p>
       
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-xs sm:max-w-none sm:w-auto px-4 sm:px-0">
-        <Link 
-          to="/subjects" 
-          className="button-primary" 
+        <button 
           onClick={handleStartTestClick}
+          className="button-primary" 
         >
           Start Free Test <ArrowRight className="ml-2 w-5 h-5" />
-        </Link>
+        </button>
         <Link 
           to="/learn-more" 
           className="button-secondary"
