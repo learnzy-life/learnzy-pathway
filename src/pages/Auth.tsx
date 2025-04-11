@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
@@ -8,7 +7,7 @@ import { useAuth } from '../context/AuthContext'
 
 const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true)
-  const { user, isLoading, isDevelopmentBypass } = useAuth()
+  const { user, isLoading, bypassAuth, isDevelopmentBypass } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -41,20 +40,15 @@ const Auth: React.FC = () => {
           <AuthHeader isLogin={isLogin} />
           <AuthForm isLogin={isLogin} setIsLogin={setIsLogin} />
 
-          {/* Development bypass button - Uncomment when needed */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="mt-8 text-center">
-              <button
-                onClick={() => {
-                  navigate(from, { replace: true });
-                  window.location.reload();
-                }}
-                className="text-sm text-gray-500 hover:text-learnzy-purple"
-              >
-                [DEV] Skip Authentication
-              </button>
-            </div>
-          )}
+          {/* Development bypass button */}
+          {/* <div className="mt-8 text-center">
+            <button
+              onClick={bypassAuth}
+              className="text-sm text-gray-500 hover:text-learnzy-purple"
+            >
+              [DEV] Bypass Authentication
+            </button>
+          </div> */}
         </section>
       </main>
     </div>

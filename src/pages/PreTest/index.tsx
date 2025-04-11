@@ -7,7 +7,6 @@ import PreTestHeader from './components/PreTestHeader'
 import { Subject, getSubjectTitle } from './utils/subjectUtils'
 import PreTestContent from './components/PreTestContent'
 import { useAuth } from '../../context/AuthContext'
-import { toast } from 'sonner'
 
 const PreTest: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>()
@@ -17,7 +16,6 @@ const PreTest: React.FC = () => {
   // Redirect to auth page if not authenticated or using dev bypass
   useEffect(() => {
     if (!isLoading && !user && !isDevelopmentBypass) {
-      toast.info('Please log in to take a test')
       navigate('/auth', { state: { from: `/pre-test/${subject}` } })
     }
   }, [user, isLoading, navigate, subject, isDevelopmentBypass])
