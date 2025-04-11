@@ -1,3 +1,4 @@
+
 import { toast } from 'sonner'
 import { supabase } from '../../lib/supabase'
 import { Question, Subject } from '../question'
@@ -85,13 +86,14 @@ export const generateReviewTest = async (
         }
 
         // Create a unique key for this question to avoid duplicates
-        const questionKey = `${q.id}-${q.Subject}`
+        const questionKey = `${q.id}-${q.subject || q.Subject}`
         if (addedQuestions.has(questionKey)) {
           return
         }
 
         // Determine the subject (case insensitive check)
-        const subject = (q.Subject || '').toLowerCase()
+        // Use either lowercase subject or uppercase Subject property
+        const subject = ((q.subject || q.Subject) || '').toLowerCase()
 
         if (subject === 'physics') {
           incorrectQuestions.physics.push(q)
@@ -116,8 +118,8 @@ export const generateReviewTest = async (
     const sortByPriority = (questions: QuestionResult[]): QuestionResult[] => {
       return [...questions].sort((a, b) => {
         const priorityOrder = { High: 0, Medium: 1, Low: 2 }
-        const aPriority = priorityOrder[a.Priority_Level || 'Medium'] || 1
-        const bPriority = priorityOrder[b.Priority_Level || 'Medium'] || 1
+        const aPriority = priorityOrder[a.Priority_Level || a.priority_level || 'Medium'] || 1
+        const bPriority = priorityOrder[b.Priority_Level || b.priority_level || 'Medium'] || 1
         return aPriority - bPriority
       })
     }
@@ -143,17 +145,17 @@ export const generateReviewTest = async (
       text: q.text,
       options: q.options || [],
       correctAnswer: q.correctAnswer,
-      Subject: q.Subject,
-      Chapter_name: q.Chapter_name,
-      Topic: q.Topic,
-      Subtopic: q.Subtopic,
-      Difficulty_Level: q.Difficulty_Level,
-      Question_Structure: q.Question_Structure,
-      Bloom_Taxonomy: q.Bloom_Taxonomy,
-      Priority_Level: q.Priority_Level,
-      Time_to_Solve: q.Time_to_Solve,
-      Key_Concept_Tested: q.Key_Concept_Tested,
-      Common_Pitfalls: q.Common_Pitfalls,
+      Subject: q.subject || q.Subject, // Handle both lowercase and uppercase properties
+      Chapter_name: q.Chapter_name || q.chapter_name,
+      Topic: q.Topic || q.topic,
+      Subtopic: q.Subtopic || q.subtopic,
+      Difficulty_Level: q.Difficulty_Level || q.difficulty_level,
+      Question_Structure: q.Question_Structure || q.question_structure,
+      Bloom_Taxonomy: q.Bloom_Taxonomy || q.bloom_taxonomy,
+      Priority_Level: q.Priority_Level || q.priority_level,
+      Time_to_Solve: q.Time_to_Solve || q.time_to_solve,
+      Key_Concept_Tested: q.Key_Concept_Tested || q.key_concept_tested,
+      Common_Pitfalls: q.Common_Pitfalls || q.common_pitfalls,
       Option_A: q.Option_A,
       Option_B: q.Option_B,
       Option_C: q.Option_C,
