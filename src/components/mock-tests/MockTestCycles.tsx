@@ -1,4 +1,5 @@
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { LockKeyhole } from 'lucide-react'
 import React from 'react'
 import { useGlobalPayment } from '../../context/GlobalPaymentContext'
 import { MockTest } from '../../types/mock-test'
@@ -23,19 +24,41 @@ const MockTestCycles: React.FC<MockTestCyclesProps> = ({
   const { hasPaid } = useGlobalPayment()
 
   return (
-    <div className="mt-16">
-      <div className="flex items-center justify-between mb-8">
+    <div className="">
+      <div className="mb-8">
         <h2 className="text-2xl font-display font-bold text-learnzy-dark">
           Mock Test Cycles
         </h2>
-        {!hasPaid && (
-          <UnlockAllButton
-            variant="prominent"
-            size="md"
-            className="shadow-lg transform hover:scale-105 transition-transform duration-200"
-          />
-        )}
+        <p className="text-muted-foreground mt-1">
+          Complete practice tests to assess your knowledge
+        </p>
       </div>
+
+      {!hasPaid && (
+        <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl p-4 mb-8 border border-amber-200 shadow-sm">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            <div className="flex items-start space-x-3 mb-4 md:mb-0">
+              <div className="bg-amber-200 rounded-full p-2 mt-1">
+                <LockKeyhole className="h-5 w-5 text-amber-700" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-learnzy-dark">
+                  Unlock All Test Cycles
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Get unlimited access to all mock test cycles and boost your
+                  exam preparation
+                </p>
+              </div>
+            </div>
+            <UnlockAllButton
+              variant="prominent"
+              size="md"
+              className="shadow-lg w-full md:w-auto transform hover:scale-105 transition-transform duration-200"
+            />
+          </div>
+        </div>
+      )}
 
       <Tabs defaultValue="cycle-1" className="w-full">
         <TabsList className="grid grid-cols-4 mb-6 w-full md:w-3/4 mx-auto">

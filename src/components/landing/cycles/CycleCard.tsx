@@ -1,5 +1,5 @@
 import { Card } from '@/components/ui/card'
-import { Brain, Lock } from 'lucide-react'
+import { Brain } from 'lucide-react'
 import React from 'react'
 import { useGlobalPayment } from '../../../context/GlobalPaymentContext'
 import { cn } from '../../../lib/utils'
@@ -31,13 +31,13 @@ const CycleCard: React.FC<CycleCardProps> = ({
         isCycleLocked && 'bg-gray-50'
       )}
     >
-      {isCycleLocked && (
+      {/* {isCycleLocked && (
         <div className="absolute inset-0 bg-gray-200/50 backdrop-blur-[1px] flex items-center justify-center z-10 rounded-lg">
           <div className="bg-white p-3 rounded-full shadow-md">
             <Lock className="w-6 h-6 text-learnzy-amber" />
           </div>
         </div>
-      )}
+      )} */}
 
       <div className="relative p-4 sm:p-5 h-full">
         <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-learnzy-amber flex items-center justify-center text-white font-semibold text-sm">

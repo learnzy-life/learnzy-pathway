@@ -1,0 +1,59 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Code Cleanup & Refactoring Suggestions
+
+This document outlines potential areas for cleanup and refactoring within the `src` directory based on recent development activities, focusing on improving structure, reducing redundancy, and clarifying logic.
+
+## 1. Hooks (`src/hooks`)
+
+*   **`useMockTests.ts` Complexity:**
+    *   This hook orchestrates several other hooks (`useUnlockedCycles`, `useCompletedTests`, `usePayment`, `useTestNavigation`). While custom hooks are good, this central hook might be becoming a bit large and doing too much.
+    *   **Suggestion:** Evaluate if some logic within `useMockTests` could be further encapsulated or if the composition of hooks can be simplified. For example, could the initialization logic (`initializeMockTests`, `updateMockTestStatus`) be managed more directly where `unlockedCycles` and `completedTests` state lives?
+*   **`usePayment.ts` Simplification:**
+    *   Now that individual cycle payments and the `PaymentDialog` are removed, this hook is primarily responsible for triggering the global payment and reacting to the global `hasPaid` state.
+    *   **Suggestion:** Ensure the `useEffect` within `usePayment` that unlocks tests/cycles based on `hasPaid` is efficient and doesn't cause unnecessary re-renders. Confirm its dependencies (`[hasPaid, mockTests.length > 0]`) are optimal. Consider if this effect could live directly within `useMockTests` now that `usePayment` is simpler.
+*   **`useUnlockedCycles.ts` & LocalStorage:**
+    *   This hook manages `unlockedCycles` based on `localStorage`. However, the primary source of truth for payment is now the `has_paid` flag in the database (via `GlobalPaymentContext`).
+    *   **Suggestion:** Re-evaluate the need for `useUnlockedCycles` and storing unlocked cycle numbers in `localStorage`. If `hasPaid` from the context is the sole determinant for unlocking *all* cycles, this local state might be redundant or lead to inconsistencies. The logic might be simplified to directly rely on `hasPaid`. If individual cycle unlocking *might* return in the future, keeping it might make sense, but it needs clear documentation.
+
+## 2. State Management & Context (`src/context`)
+
+*   **`GlobalPaymentContext.tsx` as Single Source of Truth:**
+    *   The context now correctly holds the `hasPaid` status fetched from the database.
+    *   **Suggestion:** Ensure all components and hooks consistently use `hasPaid` from this context instead of relying on potentially stale or redundant local state (like the `unlockedCycles` in `localStorage`). Double-check components like `MockTestCard`, `CycleCard`, `MockTestCycles`, etc., to ensure they *only* use `hasPaid` for payment-related locking.
+*   **Clarity of State Updates:**
+    *   When `hasPaid` becomes true, effects trigger (`usePayment`) to update `mockTests` state (unlocking them) and `unlockedCycles`.
+    *   **Suggestion:** Ensure this flow is clear and predictable. Add comments explaining *why* certain effects run and what state they are intended to synchronize.
+
+## 3. Components (`src/components`)
+
+*   **Logic in Components (`MockTestCard.tsx`):**
+    *   `MockTestCard` now contains logic to determine `isLockedForDisplay` and `isClickable` based on `test.isDynamic`, `test.isLocked`, and the global `hasPaid`.
+    *   **Suggestion:** This logic is becoming complex. Consider moving parts of this display logic into helper functions or potentially back into the `useMockTests` hook if it simplifies the component significantly. The goal is to keep components focused on rendering UI based on props.
+*   **Redundant Checks (`CycleInfo.tsx`, `CycleContent.tsx`):**
+    *   These components previously had logic differentiating cycle 1 or checking `cycle.number > 1`. Much of this was removed.
+    *   **Suggestion:** Perform a final pass on these and related components (`MockTestCycles`) to ensure no lingering logic exists that assumes cycle 1 is free or handles cycles differently based on their number (unless intended for future features). The `isUnlocked` prop passed to `CycleContent` now seems directly tied to `hasPaid`.
+
+## 4. Utility Functions (`src/utils`)
+
+*   **`mock-tests/utils.ts`:**
+    *   `initializeMockTests`: This function now sets `requiresPayment: true` and `isLocked: !unlockedCycles.includes(cycleNumber)` for *all* cycles, including cycle 1. This seems correct based on the requirement that all cycles are paid.
+    *   `loadUnlockedCycles`: Defaults to an empty array `[]` instead of `[1]`. Correct.
+    *   `updateMockTestStatus`: This function updates completion status and the prerequisite-based `isLocked` status for *dynamic* tests.
+    *   **Suggestion:** Ensure the naming and comments within this file clearly distinguish between the *prerequisite* lock status (`isLocked` field on the dynamic test object) and the *payment* lock status (determined globally by `hasPaid`). The `isLocked` field set here for dynamic tests should *only* reflect prerequisite completion.
+
+## 5. General Redundancy
+
+*   **Payment Checks:** With the move to `GlobalPaymentContext`, ensure that checks for payment status are consistently using `const { hasPaid } = useGlobalPayment()` and not duplicated across different hooks or components using different mechanisms.
+*   **Cycle Unlocking Logic:** The logic to unlock all cycles/tests should primarily reside in the `useEffect` within `usePayment` (or potentially moved to `useMockTests`) reacting to `hasPaid`. Avoid scattering similar unlocking logic elsewhere.
+
+## Summary
+
+The recent refactoring towards a global payment system was a good step. The main areas for potential cleanup involve:
+1.  Simplifying the `useMockTests` hook or better organizing its responsibilities.
+2.  Removing the potentially redundant `useUnlockedCycles` hook and `localStorage` state if `hasPaid` is the sole determinant.
+3.  Ensuring components rely solely on `hasPaid` for payment locks and minimizing complex display logic within them.
+4.  Clarifying the distinction between prerequisite locks and payment locks, especially concerning dynamic tests.

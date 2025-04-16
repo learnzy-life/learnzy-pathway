@@ -26,6 +26,7 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
   const { user, isDevelopmentBypass } = useAuth()
   const navigate = useNavigate()
   const [isCompleted, setIsCompleted] = useState(attempted)
+  const [sessionId, setSessionId] = useState<string | null>(null)
 
   // Check for completed diagnostic test
   useEffect(() => {
@@ -43,6 +44,7 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
           .or(
             `source_session_id.eq.diagnostic-test-${subject},source_session_id.eq.null`
           )
+          .order('created_at', { ascending: false })
           .limit(1)
 
         if (error) throw error
@@ -50,6 +52,7 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
         // Mark as completed if we found any sessions
         if (data && data.length > 0) {
           setIsCompleted(true)
+          setSessionId(data[0].id)
         }
       } catch (error) {
         console.error('Error checking completed diagnostic tests:', error)
@@ -81,29 +84,31 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
 
   return (
     <div
-      className={`card-glass p-6 card-hover h-full ${
-        isCompleted ? 'opacity-60' : ''
+      className={`bg-white border border-gray-100 rounded-lg p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:border-amber-100 h-full ${
+        isCompleted ? 'opacity-70' : ''
       } ${locked ? 'opacity-70' : ''}`}
     >
       <div className="flex flex-col h-full">
         <div
-          className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-sm ${colorClass}`}
+          className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 ${colorClass}`}
         >
-          <span className="text-2xl">{icon}</span>
+          <span className="text-3xl">{icon}</span>
         </div>
 
-        <h3 className="text-xl font-semibold text-learnzy-dark mb-2">
+        <h3 className="text-xl font-semibold text-learnzy-dark mb-2 flex items-center gap-2">
           {title}
           {locked && (
-            <span className="ml-2 inline-flex items-center">
-              <Lock size={16} className="text-muted-foreground" />
+            <span className="inline-flex">
+              <Lock size={16} className="text-amber-500" />
             </span>
           )}
         </h3>
-        <p className="text-muted-foreground mb-6 flex-grow">{description}</p>
+        <p className="text-muted-foreground mb-6 flex-grow text-sm">
+          {description}
+        </p>
 
         {locked ? (
-          <div className="flex items-center justify-center w-full p-2 bg-learnzy-amber-light text-learnzy-amber-dark rounded-md font-medium">
+          <div className="flex items-center justify-center w-full p-2 bg-amber-50 text-amber-600 rounded-md font-medium border border-amber-100">
             <Lock size={16} className="mr-2" /> Coming Soon
           </div>
         ) : isCompleted ? (
@@ -112,8 +117,12 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
               Test Completed
             </span>
             <Link
-              to={`/results/${subject}`}
-              className="flex items-center text-learnzy-amber-dark font-medium text-sm hover:underline"
+              to={
+                sessionId
+                  ? `/results/${subject}?sessionId=${sessionId}`
+                  : `/results/${subject}`
+              }
+              className="flex items-center text-amber-600 font-medium text-sm hover:text-amber-700"
             >
               View Results <ArrowRight className="ml-1 w-4 h-4" />
             </Link>
@@ -122,7 +131,7 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
           <Link
             to={user || isDevelopmentBypass ? `/pre-test/${subject}` : '#'}
             onClick={handleSubjectClick}
-            className="button-primary inline-flex items-center justify-center w-full mt-auto"
+            className="bg-amber-500 text-white hover:bg-amber-600 rounded-md py-2 px-4 flex items-center justify-center w-full mt-auto font-medium transition-colors"
           >
             Start Test <ArrowRight className="ml-2 w-4 h-4" />
           </Link>
