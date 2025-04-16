@@ -1,0 +1,207 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Post-Payment Flow Documentation
+
+## Overview
+
+This document outlines the complete flow that occurs after a successful payment in the Learnzy Pathway application. It covers both technical implementation details and expected user experience.
+
+## Payment Completion Flow
+
+### 1. Payment Verification
+
+When a user completes a payment via Razorpay:
+
+1. **Client-Side**: 
+   - Razorpay calls the `handler` function with payment details
+   - These details include `razorpay_order_id`, `razorpay_payment_id`, and `razorpay_signature`
+
+2. **Edge Function**:
+   - `verifyGlobalRazorpayPayment` function is called with these parameters
+   - The Edge Function verifies the signature using HMAC-SHA256
+   - It checks if the order was created for this user by validating `orderDetails.notes.user_id`
+   - If valid, it updates the user's profile in Supabase: `has_paid: true`
+
+3. **Success Response**:
+   - The Edge Function returns `{ success: true, message: 'Payment verified and user profile updated' }`
+   - Client resolves the payment promise with `{ success: true, paymentId: response.razorpay_payment_id }`
+
+### 2. State Updates
+
+After verification succeeds:
+
+1. **GlobalPaymentContext**:
+   - Sets `hasPaid` to `true` (in-memory state)
+   - Sets `isLoading` to `false`
+   - Displays success toast: "Payment successful! You now have access to all cycles"
+
+2. **Client-Side Storage**:
+   - No localStorage updates are needed since payment status is stored in database
+   - On next page load/refresh, the context will load `has_paid` from the database
+
+### 3. UI Updates
+
+After state updates:
+
+1. **MockTestCycles Component**:
+   - The `UnlockAllButton` disappears (conditionally rendered when `!hasPaid`)
+   - All cycles are displayed as unlocked (using `isUnlocked={unlockedCycles.includes(cycle.number) || hasPaid}`)
+
+2. **CycleInfo Component**:
+   - No unlock buttons are displayed for any cycles
+
+3. **MockTestsGrid**:
+   - All tests become accessible and clickable
+   - Lock icons are removed from all tests
+
+## Implementation Details
+
+### Database Schema
+
+```sql
+-- Profiles table
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users,
+  has_paid BOOLEAN DEFAULT FALSE,
+  razorpay_payment_id TEXT,
+  payment_date TIMESTAMP
+);
+```
+
+### Edge Function Logic
+
+```typescript
+// Key part of verify-razorpay-payment edge function
+const { error: updateError } = await supabase
+  .from('profiles')
+  .update({
+    has_paid: true,
+    razorpay_payment_id,
+    payment_date: new Date().toISOString(),
+  })
+  .eq('id', user.id)
+```
+
+### Client-Side State Management
+
+```typescript
+// In GlobalPaymentContext
+const initiateSinglePayment = async () => {
+  if (!user) {
+    toast.error('You need to be logged in to make a payment')
+    return
+  }
+
+  try {
+    setIsLoading(true)
+    const result = await initiateGlobalPayment()
+
+    if (result.success) {
+      // Update local state
+      setHasPaid(true)
+      toast.success('Payment successful! You now have access to all cycles')
+    } else {
+      toast.error(result.error || 'Payment failed. Please try again.')
+    }
+  } catch (error) {
+    console.error('Payment error:', error)
+    toast.error('An error occurred during payment processing')
+  } finally {
+    setIsLoading(false)
+  }
+}
+```
+
+## User Experience
+
+### Immediate Post-Payment
+
+1. **Success Feedback**:
+   - Toast notification: "Payment successful! You now have access to all cycles"
+   - Visual change as lock icons disappear from all cycles
+   - Unlock button disappears from the UI
+
+2. **Access Change**:
+   - User can immediately access all previously locked cycles
+   - All mock tests become available without further payments
+
+### Persistent Access
+
+1. **Session Persistence**:
+   - Payment status persists across browser sessions
+   - User maintains access after logging out and back in
+   - No localStorage dependency for payment status
+
+2. **Cross-Device Access**:
+   - User can access unlocked content from any device
+   - Payment status is tied to user account, not device
+
+## Error Handling
+
+### Failed Payments
+
+If payment verification fails:
+
+1. User is shown an error toast: "Payment failed. Please try again."
+2. The `hasPaid` state remains `false`
+3. UI continues to show locked cycles and payment button
+
+### Recovery Options
+
+If a user claims to have paid but cycles are locked:
+
+1. Check database directly to verify `has_paid` status
+2. Verify payment with Razorpay dashboard
+3. Admin can manually update user's `has_paid` status if needed
+
+## Multi-User Considerations
+
+### Family Sharing Prevention
+
+- Payment status is tied to individual user accounts
+- Each user must make their own payment to unlock content
+- No mechanism exists for sharing unlocked content between accounts
+
+### Business Accounts
+
+- No special handling for business/team accounts in current implementation
+- Each user authenticates and pays separately
+
+## Analytics & Reporting
+
+After successful payment:
+
+1. The payment date and Razorpay payment ID are stored in the profiles table
+2. This enables:
+   - Payment reports by date
+   - Revenue analysis
+   - User conversion metrics
+
+## Maintenance Considerations
+
+### Database Backups
+
+- Regular backups of the profiles table should be maintained
+- Critical to preserve `has_paid` status for all users
+
+### Payment Verification Logs
+
+- Payment verification attempts are logged
+- Includes successful and failed verification attempts
+- Useful for troubleshooting payment issues
+
+## Future Enhancements
+
+Potential improvements to the post-payment flow:
+
+1. **Payment Receipt**: Email receipt/invoice to user after successful payment
+2. **Progressive Unlocking**: Configure timed release of content after payment
+3. **Referral Program**: Offer discounts for referring other users
+4. **Subscription Option**: Convert to recurring subscription model
+
+---
+
+This document serves as the definitive reference for how the Learnzy Pathway application handles the post-payment flow. Any changes to the payment system should be reflected in this document to maintain accurate documentation.

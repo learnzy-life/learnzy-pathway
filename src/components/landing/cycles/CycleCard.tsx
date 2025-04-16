@@ -1,25 +1,44 @@
-
-import React from 'react';
-import { Brain } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components/ui/card'
+import { Brain, Lock } from 'lucide-react'
+import React from 'react'
+import { useGlobalPayment } from '../../../context/GlobalPaymentContext'
+import { cn } from '../../../lib/utils'
 
 export interface CycleCardProps {
-  number: number;
-  title: string;
-  focus: string;
-  testDescription: string;
-  icon: React.ReactNode;
+  number: number
+  title: string
+  focus: string
+  testDescription: string
+  icon: React.ReactNode
 }
 
-const CycleCard: React.FC<CycleCardProps> = ({ 
-  number, 
-  title, 
-  focus, 
-  testDescription, 
-  icon 
+const CycleCard: React.FC<CycleCardProps> = ({
+  number,
+  title,
+  focus,
+  testDescription,
+  icon,
 }) => {
+  const { hasPaid } = useGlobalPayment()
+
+  // For demo purposes, we'll consider cycle 1 always free
+  const isCycleLocked = number > 1 && !hasPaid
+
   return (
-    <Card className="bg-white border border-learnzy-amber/30 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col">
+    <Card
+      className={cn(
+        'bg-white border border-learnzy-amber/30 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col relative',
+        isCycleLocked && 'bg-gray-50'
+      )}
+    >
+      {isCycleLocked && (
+        <div className="absolute inset-0 bg-gray-200/50 backdrop-blur-[1px] flex items-center justify-center z-10 rounded-lg">
+          <div className="bg-white p-3 rounded-full shadow-md">
+            <Lock className="w-6 h-6 text-learnzy-amber" />
+          </div>
+        </div>
+      )}
+
       <div className="relative p-4 sm:p-5 h-full">
         <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-learnzy-amber flex items-center justify-center text-white font-semibold text-sm">
           {number}
@@ -40,7 +59,7 @@ const CycleCard: React.FC<CycleCardProps> = ({
         </div>
       </div>
     </Card>
-  );
-};
+  )
+}
 
-export default CycleCard;
+export default CycleCard

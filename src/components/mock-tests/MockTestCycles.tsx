@@ -1,7 +1,9 @@
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import React from 'react'
+import { useGlobalPayment } from '../../context/GlobalPaymentContext'
 import { MockTest } from '../../types/mock-test'
 import { getCyclesData } from '../landing/cycles/cyclesData'
+import UnlockAllButton from '../payment/UnlockAllButton'
 import CycleContent from './CycleContent'
 
 interface MockTestCyclesProps {
@@ -9,7 +11,6 @@ interface MockTestCyclesProps {
   isLoading: boolean
   unlockedCycles: number[]
   onMockTestClick: (test: MockTest) => void
-  onUnlockCycleClick: (cycleNumber: number) => void
 }
 
 const MockTestCycles: React.FC<MockTestCyclesProps> = ({
@@ -17,15 +18,24 @@ const MockTestCycles: React.FC<MockTestCyclesProps> = ({
   isLoading,
   unlockedCycles,
   onMockTestClick,
-  onUnlockCycleClick,
 }) => {
   const cycles = getCyclesData()
+  const { hasPaid } = useGlobalPayment()
 
   return (
     <div className="mt-16">
-      <h2 className="text-2xl font-display font-bold text-center mb-8">
-        Mock Test Cycles
-      </h2>
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-2xl font-display font-bold text-learnzy-dark">
+          Mock Test Cycles
+        </h2>
+        {!hasPaid && (
+          <UnlockAllButton
+            variant="prominent"
+            size="md"
+            className="shadow-lg transform hover:scale-105 transition-transform duration-200"
+          />
+        )}
+      </div>
 
       <Tabs defaultValue="cycle-1" className="w-full">
         <TabsList className="grid grid-cols-4 mb-6 w-full md:w-3/4 mx-auto">
@@ -48,11 +58,10 @@ const MockTestCycles: React.FC<MockTestCyclesProps> = ({
           <CycleContent
             key={cycle.number}
             cycle={cycle}
-            isUnlocked={unlockedCycles.includes(cycle.number)}
+            isUnlocked={unlockedCycles.includes(cycle.number) || hasPaid}
             mockTests={mockTests}
             isLoading={isLoading}
             onMockTestClick={onMockTestClick}
-            onUnlockCycleClick={onUnlockCycleClick}
           />
         ))}
       </Tabs>

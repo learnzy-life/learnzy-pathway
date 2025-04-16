@@ -1,55 +1,166 @@
+import { useEffect, useState } from 'react'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import ProtectedRoute from './components/ProtectedRoute'
+import { ThemeProvider } from './components/theme-provider'
+import { Toaster } from './components/ui/sonner'
+import { TooltipProvider } from './components/ui/tooltip'
+import { useAuth } from './context/AuthContext'
+import { GlobalPaymentProvider } from './context/GlobalPaymentContext'
+import Auth from './pages/Auth'
+import Dashboard from './pages/Dashboard'
+import Index from './pages/Index'
+import LearnMore from './pages/LearnMore'
+import MockTest from './pages/MockTest'
+import NotFound from './pages/NotFound'
+import PaymentSuccess from './pages/PaymentSuccess'
+import PreAnalysis from './pages/PreAnalysis'
+import PreDynamicTest from './pages/PreDynamicTest'
+import PreMockTest from './pages/PreMockTest'
+import PreTest from './pages/PreTest'
+import Profile from './pages/Profile'
+import Results from './pages/Results'
+import SubjectSelection from './pages/SubjectSelection'
+import Test from './pages/Test'
+import TestReview from './pages/TestReview'
+import { loadRazorpayScript } from './utils/loadScript'
 
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
-import { ThemeProvider } from "./components/theme-provider";
-import { Toaster } from "./components/ui/toaster";
-import { TooltipProvider } from "./components/ui/tooltip";
-import Index from './pages/Index';
-import Auth from './pages/Auth';
-import LearnMore from './pages/LearnMore';
-import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
-import SubjectSelection from './pages/SubjectSelection';
-import PreTest from './pages/PreTest';
-import Test from './pages/Test';
-import PreAnalysis from './pages/PreAnalysis';
-import Results from './pages/Results';
-import TestReview from './pages/TestReview';
-import NotFound from './pages/NotFound';
-import PreDynamicTest from './pages/PreDynamicTest';
-import ProtectedRoute from './components/ProtectedRoute';
-import PreMockTest from './pages/PreMockTest';
-import MockTest from './pages/MockTest';
-import { useAuth } from './context/AuthContext';
-import { loadRazorpayScript } from './utils/loadScript';
-
-function App() {
-  const { isDevelopmentBypass } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [isAuthPage, setIsAuthPage] = useState(location.pathname === '/auth');
+function AppContent() {
+  const { isDevelopmentBypass } = useAuth()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [isAuthPage, setIsAuthPage] = useState(location.pathname === '/auth')
 
   useEffect(() => {
-    setIsAuthPage(location.pathname === '/auth');
-  }, [location]);
+    setIsAuthPage(location.pathname === '/auth')
+  }, [location])
 
   // Conditionally bypass authentication in development
   useEffect(() => {
     if (process.env.NODE_ENV === 'development' && isDevelopmentBypass) {
-      console.log('Authentication bypass enabled in development.');
+      console.log('Authentication bypass enabled in development.')
       if (location.pathname === '/auth') {
-        navigate('/subjects', { replace: true });
+        navigate('/subjects', { replace: true })
       }
     }
-  }, [isDevelopmentBypass, location, navigate]);
+  }, [isDevelopmentBypass, location, navigate])
 
   // Preload Razorpay script on app initialization
   useEffect(() => {
-    loadRazorpayScript().catch(err => {
-      console.error("Failed to load Razorpay script:", err);
-    });
-  }, []);
+    loadRazorpayScript().catch((err) => {
+      console.error('Failed to load Razorpay script:', err)
+    })
+  }, [])
 
+  return (
+    <>
+      <Toaster />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/learn-more" element={<LearnMore />} />
+        <Route
+          path="/payment-success"
+          element={
+            <ProtectedRoute>
+              <PaymentSuccess />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/subjects"
+          element={
+            <ProtectedRoute>
+              <SubjectSelection />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pre-test/:subject"
+          element={
+            <ProtectedRoute>
+              <PreTest />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pre-mock-test/:cycle/:testNumber"
+          element={
+            <ProtectedRoute>
+              <PreMockTest />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/test/:subject"
+          element={
+            <ProtectedRoute>
+              <Test />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mock-test/:cycle/:testNumber"
+          element={
+            <ProtectedRoute>
+              <MockTest />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analysis/:subject"
+          element={
+            <ProtectedRoute>
+              <PreAnalysis />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/results/:subject"
+          element={
+            <ProtectedRoute>
+              <Results />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/review/:subject"
+          element={
+            <ProtectedRoute>
+              <TestReview />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pre-dynamic-test/:cycle"
+          element={
+            <ProtectedRoute>
+              <PreDynamicTest />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
+  )
+}
+
+function App() {
   return (
     <div className="App">
       <ThemeProvider
@@ -59,28 +170,13 @@ function App() {
         disableTransitionOnChange
       >
         <TooltipProvider>
-          <Toaster />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/learn-more" element={<LearnMore />} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-            <Route path="/subjects" element={<SubjectSelection />} />
-            <Route path="/pre-test/:subject" element={<PreTest />} />
-            <Route path="/pre-mock-test/:cycle/:testNumber" element={<PreMockTest />} />
-            <Route path="/test/:subject" element={<Test />} />
-            <Route path="/mock-test/:cycle/:testNumber" element={<MockTest />} />
-            <Route path="/analysis/:subject" element={<PreAnalysis />} />
-            <Route path="/results/:subject" element={<Results />} />
-            <Route path="/review/:subject" element={<TestReview />} />
-            <Route path="/pre-dynamic-test/:cycle" element={<PreDynamicTest />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <GlobalPaymentProvider>
+            <AppContent />
+          </GlobalPaymentProvider>
         </TooltipProvider>
       </ThemeProvider>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

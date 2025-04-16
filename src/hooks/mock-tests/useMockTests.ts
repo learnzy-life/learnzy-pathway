@@ -20,14 +20,7 @@ export const useMockTests = (
   const { completedTests, isLoading: isLoadingCompleted } =
     useCompletedTests(userId)
 
-  const {
-    showPaymentDialog,
-    setShowPaymentDialog,
-    selectedTest,
-    handleShowPayment,
-    handleUnlockCycleClick,
-    handlePaymentComplete,
-  } = usePayment(
+  const { handleShowPayment } = usePayment(
     userId,
     unlockedCycles,
     updateUnlockedCycles,
@@ -55,12 +48,7 @@ export const useMockTests = (
   return {
     mockTests,
     isLoading: isLoadingCompleted,
-    showPaymentDialog,
-    setShowPaymentDialog,
-    selectedTest,
     unlockedCycles,
     handleMockTestClick,
-    handlePaymentComplete,
-    handleUnlockCycleClick,
   }
 }

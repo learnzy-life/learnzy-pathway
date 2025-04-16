@@ -19,3 +19,4 @@ lib/ or utils/ → stateless helpers
 5. Treat any // FIXME: as a mandatory correction point.
 6. Always be sure about the written code, by writing and running tests if required.
 7. Write small code chunks, Label properly and write less but impactful code.
+8. Pass in project ID. Project ID : duvqdpyxrkdmoyizepqv for supabase access

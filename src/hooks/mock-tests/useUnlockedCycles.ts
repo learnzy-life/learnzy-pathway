@@ -1,6 +1,5 @@
-
-import { useState, useEffect } from 'react';
-import { loadUnlockedCycles, storeUnlockedCycles } from './utils';
+import { useEffect, useState } from 'react'
+import { loadUnlockedCycles, storeUnlockedCycles } from './utils'
 
 /**
  * Hook to manage unlocked cycles
@@ -8,26 +7,26 @@ import { loadUnlockedCycles, storeUnlockedCycles } from './utils';
  * @returns Array of unlocked cycles and a function to update them
  */
 export const useUnlockedCycles = (userId: string | undefined) => {
-  const [unlockedCycles, setUnlockedCycles] = useState<number[]>([1]);
+  const [unlockedCycles, setUnlockedCycles] = useState<number[]>([1])
 
   // Load unlocked cycles from localStorage on mount
   useEffect(() => {
     if (userId) {
-      const cycles = loadUnlockedCycles(userId);
-      setUnlockedCycles(cycles);
+      const cycles = loadUnlockedCycles(userId)
+      setUnlockedCycles(cycles)
     }
-  }, [userId]);
+  }, [userId])
 
   /**
    * Updates the unlocked cycles
    * @param newUnlockedCycles New array of unlocked cycles
    */
   const updateUnlockedCycles = (newUnlockedCycles: number[]) => {
-    if (!userId) return;
-    
-    setUnlockedCycles(newUnlockedCycles);
-    storeUnlockedCycles(userId, newUnlockedCycles);
-  };
+    if (!userId) return
 
-  return { unlockedCycles, updateUnlockedCycles };
-};
+    setUnlockedCycles(newUnlockedCycles)
+    storeUnlockedCycles(userId, newUnlockedCycles)
+  }
+
+  return { unlockedCycles, updateUnlockedCycles }
+}

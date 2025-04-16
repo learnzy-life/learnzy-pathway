@@ -1,7 +1,6 @@
 import React from 'react'
 import Header from '../components/Header'
 import MockTestCycles from '../components/mock-tests/MockTestCycles'
-import PaymentDialog from '../components/mock-tests/PaymentDialog'
 import SubjectsSection from '../components/subjects/SubjectsSection'
 import { useAuth } from '../context/AuthContext'
 import { useMockTests } from '../hooks/mock-tests/useMockTests'
@@ -11,13 +10,9 @@ const SubjectSelection: React.FC = () => {
   const {
     mockTests,
     isLoading,
-    showPaymentDialog,
-    setShowPaymentDialog,
     selectedTest,
     unlockedCycles,
     handleMockTestClick,
-    handlePaymentComplete,
-    handleUnlockCycleClick,
   } = useMockTests(user?.id)
 
   const subjects = [
@@ -65,16 +60,8 @@ const SubjectSelection: React.FC = () => {
           isLoading={isLoading}
           unlockedCycles={unlockedCycles}
           onMockTestClick={handleMockTestClick}
-          onUnlockCycleClick={handleUnlockCycleClick}
         />
       </main>
-
-      <PaymentDialog
-        open={showPaymentDialog}
-        onOpenChange={setShowPaymentDialog}
-        selectedTest={selectedTest}
-        onPaymentComplete={handlePaymentComplete}
-      />
     </div>
   )
 }

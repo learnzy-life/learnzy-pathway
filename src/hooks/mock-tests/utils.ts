@@ -192,7 +192,9 @@ export const updateMockTestStatus = (
       return {
         ...test,
         isCompleted: dynamicTestCompleted,
-        isLocked: !canStart && !test.requiresPayment, // Only lock based on completion status if it's not a premium test
+        // Lock dynamic test *only* if prerequisites (canStart) are not met.
+        // Payment lock is handled separately by hasPaid in the component.
+        isLocked: !canStart,
       }
     }
 
