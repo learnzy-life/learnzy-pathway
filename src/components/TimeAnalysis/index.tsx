@@ -1,10 +1,9 @@
-
 import React from 'react'
+import TimeBreakdownCards from './TimeBreakdownCards'
+import TimeChartSection from './TimeChartSection'
+import TimeFeedback from './TimeFeedback'
 import TimeMetricsCards from './TimeMetricsCards'
 import TimeSummary from './TimeSummary'
-import TimeChartSection from './TimeChartSection'
-import TimeBreakdownCards from './TimeBreakdownCards'
-import TimeFeedback from './TimeFeedback'
 import { TimeData } from './types'
 
 interface TimeAnalysisProps {
@@ -18,12 +17,16 @@ interface TimeAnalysisProps {
     feedback: string
     timeData?: TimeData[]
   }
+  questionTexts?: Record<number, string>;
 }
 
-const TimeAnalysis: React.FC<TimeAnalysisProps> = ({ timeAnalysis }) => {
+const TimeAnalysis: React.FC<TimeAnalysisProps> = ({
+  timeAnalysis,
+  questionTexts = {}
+}) => {
   return (
     <div className="card-glass p-6">
-      <TimeMetricsCards 
+      <TimeMetricsCards
         timeSpent={timeAnalysis.timeSpent}
         allowedTime={timeAnalysis.allowedTime}
         idealTime={timeAnalysis.idealTime}
@@ -31,9 +34,12 @@ const TimeAnalysis: React.FC<TimeAnalysisProps> = ({ timeAnalysis }) => {
 
       <TimeSummary summary={timeAnalysis.timeSummary} />
 
-      <TimeChartSection timeData={timeAnalysis.timeData || []} />
+      <TimeChartSection
+        timeData={timeAnalysis.timeData || []}
+        questionTexts={questionTexts}
+      />
 
-      <TimeBreakdownCards 
+      <TimeBreakdownCards
         slowQuestions={timeAnalysis.slowQuestions}
         quickQuestions={timeAnalysis.quickQuestions}
       />

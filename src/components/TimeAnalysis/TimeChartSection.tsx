@@ -13,26 +13,62 @@ import {
 } from 'recharts'
 import { TimeData } from './types'
 
-const CustomTooltip = ({ active, payload }: any) => {
+// Update the type to include question text/context
+interface EnhancedTimeData extends TimeData {
+  questionText?: string;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: any[];
+  questions?: Record<number, string>;
+}
+
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, questions = {} }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload
     const timeDiff = data.actualTime - data.idealTime
     const isSlower = timeDiff > 0
 
+    console.log("data", data)
+
+    // Get question text from the data or questions lookup
+    const questionText = data.questionText || questions[data.questionId] || 'Question content not available'
+
+    // Truncate question text if too long (for tooltip readability)
+    const truncatedText = questionText.length > 100
+      ? `${questionText.substring(0, 100)}...`
+      : questionText
+
     return (
-      <div className="bg-white p-3 border border-gray-200 shadow-md rounded-md">
-        <p className="font-medium">Question {data.questionId}</p>
-        <p className="text-sm text-gray-600">
-          Your time: {formatTime(data.actualTime)}
-        </p>
-        <p className="text-sm text-gray-600">
-          Ideal time: {formatTime(data.idealTime)}
-        </p>
-        <p
-          className={`text-sm mt-1 font-medium ${
-            isSlower ? 'text-red-600' : 'text-green-600'
-          }`}
-        >
+      <div className="bg-white p-3 border border-gray-200 shadow-md rounded-md max-w-xs">
+        <div className="flex items-center justify-between mb-2">
+          <p className="font-medium text-learnzy-purple">Question {data.questionId}</p>
+          <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+            isSlower ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+          }`}>
+            {isSlower ? 'Slower' : 'Faster'}
+          </span>
+        </div>
+
+        <div className="border-b border-gray-100 pb-2 mb-2">
+          <p className="text-sm text-gray-700 break-words">{truncatedText}</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <p className="text-xs text-gray-500">Your time</p>
+            <p className="text-sm font-medium">{formatTime(data.actualTime)}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">Ideal time</p>
+            <p className="text-sm font-medium">{formatTime(data.idealTime)}</p>
+          </div>
+        </div>
+
+        <p className={`text-xs mt-2 font-medium ${
+          isSlower ? 'text-red-600' : 'text-green-600'
+        }`}>
           {isSlower
             ? `${formatTime(Math.abs(timeDiff))} slower than ideal`
             : `${formatTime(Math.abs(timeDiff))} faster than ideal`}
@@ -56,10 +92,14 @@ const formatTime = (seconds: number) => {
 }
 
 interface TimeChartSectionProps {
-  timeData: TimeData[]
+  timeData: TimeData[];
+  questionTexts?: Record<number, string>; // Map of question IDs to their text content
 }
 
-const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
+const TimeChartSection: React.FC<TimeChartSectionProps> = ({
+  timeData,
+  questionTexts = {}
+}) => {
   const { subject } = useParams()
   const [searchParams] = useSearchParams()
   const sessionId = searchParams.get('sessionId')
@@ -119,7 +159,7 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
             {zoom ? 'Zoom Out' : 'Zoom In'}
           </button>
           <Link
-            to={`/test-review/${subject}${
+            to={`/review/${subject}${
               sessionId ? `?sessionId=${sessionId}` : ''
             }`}
             className="button-secondary flex items-center text-xs py-1 px-2 sm:text-sm sm:py-2 sm:px-3"
@@ -138,7 +178,7 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
         {hasTimeData ? (
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart
-              margin={{ top: 20, right: 20, bottom: 40, left: 30 }}
+              margin={{ top: 20, right: 20, bottom: 60, left: 30 }}
               data={timeData}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -166,8 +206,12 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
                 }}
                 tick={{ fontSize: 10 }}
               />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
+              <Tooltip content={<CustomTooltip questions={questionTexts} />} />
+              <Legend
+                verticalAlign="bottom"
+                align="center"
+                wrapperStyle={{ paddingTop: '30px', paddingLeft: '80px' }}
+              />
               <Bar
                 dataKey="actualTime"
                 name="Your Time"
@@ -237,11 +281,18 @@ const TimeChartSection: React.FC<TimeChartSectionProps> = ({ timeData }) => {
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-sm">
-                    Question {q.questionId}
-                  </span>
+                  <div className="flex-1">
+                    <span className="font-medium text-sm block mb-1">
+                      Question {q.questionId}
+                    </span>
+                    {questionTexts[q.questionId] && (
+                      <span className="text-xs text-gray-600 line-clamp-1">
+                        {questionTexts[q.questionId]}
+                      </span>
+                    )}
+                  </div>
                   <span
-                    className={`text-xs sm:text-sm ${
+                    className={`text-xs sm:text-sm whitespace-nowrap ml-2 ${
                       q.timeDiff > 0 ? 'text-red-600' : 'text-green-600'
                     }`}
                   >

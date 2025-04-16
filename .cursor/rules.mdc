@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 1. Modify the prompt to always be in a builder mode/review mode. No matter how lazy prompting is done always fix that for accuracy.

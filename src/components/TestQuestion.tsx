@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
 import { Clock } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface Option {
   id: string;
@@ -28,7 +28,7 @@ const TestQuestion: React.FC<QuestionProps> = ({
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-    
+
     if (isCurrentQuestion) {
       // Reset timer when switching to a new question
       setTimeSpent(0);
@@ -36,7 +36,7 @@ const TestQuestion: React.FC<QuestionProps> = ({
         setTimeSpent(prev => prev + 1);
       }, 1000);
     }
-    
+
     return () => {
       if (interval) {
         clearInterval(interval);
@@ -64,7 +64,7 @@ const TestQuestion: React.FC<QuestionProps> = ({
           Question {id}
         </span>
         <div className="flex items-center text-sm text-muted-foreground">
-          <Clock className="w-4 h-4 mr-1" /> 
+          <Clock className="w-4 h-4 mr-1" />
           <span>{formatTime(timeSpent)}</span>
         </div>
       </div>
@@ -80,8 +80,8 @@ const TestQuestion: React.FC<QuestionProps> = ({
             onClick={() => handleAnswerClick(option.id)}
             className={`
               w-full p-4 rounded-xl text-left transition-all duration-200
-              ${selectedAnswer === option.id 
-                ? 'bg-learnzy-purple text-white shadow-md' 
+              ${selectedAnswer === option.id
+                ? 'bg-learnzy-purple text-white shadow-md'
                 : 'bg-white border border-gray-100 hover:border-learnzy-purple/30 hover:shadow-sm'
               }
             `}

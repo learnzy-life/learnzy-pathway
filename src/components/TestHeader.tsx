@@ -1,6 +1,6 @@
 
-import React from 'react';
 import { Clock } from 'lucide-react';
+import React from 'react';
 
 interface TestHeaderProps {
   subject: string;
@@ -28,7 +28,7 @@ const TestHeader: React.FC<TestHeaderProps> = ({
             <span>{answeredCount}/{totalQuestions} answered</span>
           </div>
         </div>
-        
+
         <div className="flex items-center">
           <div className="flex items-center bg-red-50 text-red-600 px-3 py-1 rounded-full">
             <Clock className="w-4 h-4 mr-1" />

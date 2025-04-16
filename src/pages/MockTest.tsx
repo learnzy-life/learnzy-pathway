@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import QuestionNavigation from '../components/QuestionNavigation'
@@ -9,6 +9,9 @@ import TestQuestion from '../components/TestQuestion'
 import { useAuth } from '../context/AuthContext'
 import { useMockTestState } from '../hooks/test/useMockTestState'
 
+// Define subject types for filtering
+type Subject = 'all' | 'physics' | 'chemistry' | 'biology'
+
 const MockTest: React.FC = () => {
   const { cycle, testNumber } = useParams<{
     cycle: string
@@ -16,6 +19,7 @@ const MockTest: React.FC = () => {
   }>()
   const navigate = useNavigate()
   const { user, isLoading: isAuthLoading } = useAuth()
+  const [selectedSubject, setSelectedSubject] = useState<Subject>('all')
 
   // Determine if this is the dynamic 5th test
   const isDynamicTest = testNumber === '5'
@@ -54,13 +58,38 @@ const MockTest: React.FC = () => {
   // Sort questions by their ID to ensure numerical ascending order
   const sortedQuestions = [...questions].sort((a, b) => a.id - b.id)
 
-  const currentQuestion = sortedQuestions[currentQuestionIndex]
+  // Get available subjects from questions
+  const availableSubjects = sortedQuestions.length
+    ? [...new Set(sortedQuestions.map(q =>
+        (q.subject?.toLowerCase() || '') as string
+      ))].filter(Boolean)
+    : []
+
+  // Filter questions by selected subject if not showing all
+  const filteredQuestions = selectedSubject === 'all'
+    ? sortedQuestions
+    : sortedQuestions.filter(q => {
+        const qSubject = q.subject?.toLowerCase() || '';
+        return qSubject === selectedSubject;
+      })
+
+  // Adjust currentQuestionIndex if filtered questions are fewer than the current index
+  const adjustedIndex = Math.min(currentQuestionIndex, filteredQuestions.length - 1);
+
+  // Count answered questions
   const answeredCount = sortedQuestions.filter((q) => q.answer).length
 
   // Get the appropriate test title
   const testTitle = isDynamicTest
     ? 'Personalized Mock Test'
     : `Mock Test ${testNumber}`
+
+  // Subject filter handler
+  const handleSubjectChange = (subject: Subject) => {
+    setSelectedSubject(subject)
+    // Reset to first question whenever filter changes
+    handleJumpToQuestion(0)
+  }
 
   // Show loading state while checking authentication
   if (isAuthLoading) {
@@ -136,16 +165,82 @@ const MockTest: React.FC = () => {
         formatTime={formatTime}
       />
 
+      {/* Subject Filter Controls */}
+      {availableSubjects.length > 0 && (
+        <div className="bg-white border-b border-gray-100 py-3 shadow-subtle">
+          <div className="container mx-auto flex items-center justify-center px-6">
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => handleSubjectChange('all')}
+                  className={`
+                    px-3 py-1 text-sm font-medium rounded-full transition-all
+                    ${selectedSubject === 'all'
+                      ? 'bg-learnzy-purple text-white'
+                      : 'bg-learnzy-purple/10 text-learnzy-purple hover:bg-learnzy-purple/20'
+                    }
+                  `}
+                >
+                  All
+                </button>
+                {availableSubjects.includes('physics') && (
+                  <button
+                    onClick={() => handleSubjectChange('physics')}
+                    className={`
+                      px-3 py-1 text-sm font-medium rounded-full transition-all
+                      ${selectedSubject === 'physics'
+                        ? 'bg-learnzy-purple text-white'
+                        : 'bg-learnzy-purple/10 text-learnzy-purple hover:bg-learnzy-purple/20'
+                      }
+                    `}
+                  >
+                    Physics
+                  </button>
+                )}
+                {availableSubjects.includes('chemistry') && (
+                  <button
+                    onClick={() => handleSubjectChange('chemistry')}
+                    className={`
+                      px-3 py-1 text-sm font-medium rounded-full transition-all
+                      ${selectedSubject === 'chemistry'
+                        ? 'bg-learnzy-purple text-white'
+                        : 'bg-learnzy-purple/10 text-learnzy-purple hover:bg-learnzy-purple/20'
+                      }
+                    `}
+                  >
+                    Chemistry
+                  </button>
+                )}
+                {availableSubjects.includes('biology') && (
+                  <button
+                    onClick={() => handleSubjectChange('biology')}
+                    className={`
+                      px-3 py-1 text-sm font-medium rounded-full transition-all
+                      ${selectedSubject === 'biology'
+                        ? 'bg-learnzy-purple text-white'
+                        : 'bg-learnzy-purple/10 text-learnzy-purple hover:bg-learnzy-purple/20'
+                      }
+                    `}
+                  >
+                    Biology
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-1 overflow-hidden">
         <QuestionNavigation
-          questions={sortedQuestions}
-          currentQuestionIndex={currentQuestionIndex}
+          questions={filteredQuestions}
+          currentQuestionIndex={adjustedIndex}
           onJumpToQuestion={handleJumpToQuestion}
         />
 
         <div className="flex-1 overflow-y-auto pb-32">
           <div className="container mx-auto px-6 py-8 max-w-3xl">
-            {sortedQuestions.map((question, index) => (
+            {filteredQuestions.map((question, index) => (
               <TestQuestion
                 key={question.id}
                 id={question.id}
@@ -153,7 +248,7 @@ const MockTest: React.FC = () => {
                 options={question.options}
                 onAnswerSelected={handleAnswerSelected}
                 selectedAnswer={question.answer}
-                isCurrentQuestion={index === currentQuestionIndex}
+                isCurrentQuestion={index === adjustedIndex}
               />
             ))}
           </div>
@@ -161,8 +256,8 @@ const MockTest: React.FC = () => {
       </div>
 
       <TestFooter
-        currentQuestionIndex={currentQuestionIndex}
-        questionsLength={sortedQuestions.length}
+        currentQuestionIndex={adjustedIndex}
+        questionsLength={filteredQuestions.length}
         onPrevQuestion={handlePrevQuestion}
         onNextQuestion={handleNextQuestion}
         onSubmitClick={handleSubmitClick}

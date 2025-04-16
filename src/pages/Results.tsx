@@ -14,7 +14,7 @@ import TimeAnalysis from '../components/TimeAnalysis'
 import TopicBreakdown from '../components/TopicBreakdown'
 import { getSubjectTitle } from '../data/mockResultsData'
 import { useResultsData } from '../hooks/useResultsData'
-import { Subject } from '../services/question'
+import { Question, Subject } from '../services/question'
 
 const Results: React.FC = () => {
   const { subject } = useParams<{ subject: Subject }>()
@@ -59,6 +59,17 @@ const Results: React.FC = () => {
   }
 
   const subjectTitle = getSubjectTitle(subject as Subject)
+
+  // Extract questions from resultsData
+  const questions: Question[] = resultsData.questions || []
+
+  // Create the questionTexts map
+  const questionTextsMap: Record<number, string> = questions.reduce((acc, q) => {
+    if (q.id !== undefined && q.text !== undefined) {
+      acc[q.id] = q.text;
+    }
+    return acc;
+  }, {} as Record<number, string>);
 
   const improvementResources = resultsData.topics.map((topic) => {
     // Find matching resource from bioResources if available
@@ -138,7 +149,10 @@ const Results: React.FC = () => {
 
       <div className="mb-12">
         <SectionHeader icon={Clock} title="Time Management" />
-        <TimeAnalysis timeAnalysis={resultsData.timeAnalysis} />
+        <TimeAnalysis
+          timeAnalysis={resultsData.timeAnalysis}
+          questionTexts={questionTextsMap}
+        />
       </div>
 
       <div className="mb-12">
