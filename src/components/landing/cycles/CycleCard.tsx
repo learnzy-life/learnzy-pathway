@@ -34,14 +34,6 @@ const CycleCard: React.FC<CycleCardProps> = ({
         isCycleLocked && 'bg-gray-50'
       )}
     >
-      {/* {isCycleLocked && (
-        <div className="absolute inset-0 bg-gray-200/50 backdrop-blur-[1px] flex items-center justify-center z-10 rounded-lg">
-          <div className="bg-white p-3 rounded-full shadow-md">
-            <Lock className="w-6 h-6 text-learnzy-amber" />
-          </div>
-        </div>
-      )} */}
-
       <div className="relative p-4 sm:p-5 h-full">
         <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-learnzy-amber flex items-center justify-center text-white font-semibold text-sm">
           {number}
@@ -52,7 +44,12 @@ const CycleCard: React.FC<CycleCardProps> = ({
           </div>
           <h3 className="font-semibold text-lg text-[#003366]">{title}</h3>
         </div>
-        <p className="text-[#003366] font-medium mb-2">{focus}</p>
+        
+        {/* Make focus stand out with a highlight background */}
+        <div className="bg-learnzy-amber/10 p-2 rounded-md border-l-4 border-learnzy-amber mb-3">
+          <p className="text-[#003366] font-medium">{focus}</p>
+        </div>
+        
         <div className="flex items-start mb-2">
           <p className="text-sm text-[#003366]/80">{testDescription}</p>
           <div className="ml-1 bg-learnzy-amber/20 px-1 rounded text-xs flex items-center">

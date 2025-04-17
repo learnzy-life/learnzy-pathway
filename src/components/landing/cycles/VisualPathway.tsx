@@ -2,6 +2,7 @@
 import React from 'react';
 import CycleInfo from './CycleInfo';
 import { CycleData } from './cyclesData';
+import { Brain } from 'lucide-react';
 
 interface VisualPathwayProps {
   cycles: CycleData[];
@@ -14,13 +15,26 @@ export const DesktopVisualPathway: React.FC<VisualPathwayProps> = ({ cycles }) =
       
       <div className="flex justify-between relative">
         {cycles.map((cycle, index) => (
-          <CycleInfo 
-            key={index}
-            number={cycle.number}
-            title={`Cycle ${cycle.number}: ${cycle.title}`}
-            description={cycle.info}
-            goal={cycle.goal}
-          />
+          <div key={index} className="flex flex-col items-center">
+            <CycleInfo 
+              number={cycle.number}
+              title={`Cycle ${cycle.number}: ${cycle.title}`}
+              description={cycle.info}
+              goal={cycle.goal}
+            />
+
+            {/* Personalized 5th test indicator */}
+            {index < cycles.length - 1 && (
+              <div className="relative">
+                <div className="absolute -right-4 top-[-15px]">
+                  <div className="w-8 h-8 rounded-full bg-learnzy-amber-light border-2 border-learnzy-amber flex items-center justify-center">
+                    <Brain className="w-4 h-4 text-learnzy-amber-dark" />
+                  </div>
+                </div>
+                <div className="w-24 h-0.5 bg-learnzy-amber-light"></div>
+              </div>
+            )}
+          </div>
         ))}
       </div>
     </div>
@@ -34,14 +48,25 @@ export const MobileVisualPathway: React.FC<VisualPathwayProps> = ({ cycles }) =>
       
       <div className="flex flex-col space-y-8 relative">
         {cycles.map((cycle, index) => (
-          <div key={index} className="flex items-center relative z-10">
-            <CycleInfo 
-              number={cycle.number}
-              title={`Cycle ${cycle.number}: ${cycle.title}`}
-              description={cycle.info}
-              goal={cycle.goal}
-            />
-            <span className="text-sm font-medium text-[#003366] ml-2">Cycle {cycle.number}</span>
+          <div key={index} className="flex items-start relative z-10">
+            <div className="mr-3">
+              <CycleInfo 
+                number={cycle.number}
+                title={`Cycle ${cycle.number}: ${cycle.title}`}
+                description={cycle.info}
+                goal={cycle.goal}
+              />
+            </div>
+            
+            <div className="flex flex-col items-start">
+              <span className="text-sm font-medium text-[#003366] mb-1">Cycle {cycle.number}</span>
+              
+              {/* Personalized 5th test indicator */}
+              <div className="flex items-center mt-2 bg-amber-50 rounded-full px-2 py-1 border border-learnzy-amber/30">
+                <Brain className="w-3 h-3 text-learnzy-amber mr-1" />
+                <span className="text-xs text-learnzy-amber-dark font-medium">Personalized 5th Test</span>
+              </div>
+            </div>
           </div>
         ))}
       </div>

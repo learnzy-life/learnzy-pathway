@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Book, Brain } from 'lucide-react';
+import { Book, Brain, Target } from 'lucide-react';
 import SectionHeader from '../SectionHeader';
 import CycleCard from './cycles/CycleCard';
 import { DesktopVisualPathway, MobileVisualPathway } from './cycles/VisualPathway';
@@ -46,17 +46,30 @@ const MockTestCyclesSection: React.FC = () => {
         <DesktopVisualPathway cycles={cycles} />
         <MobileVisualPathway cycles={cycles} />
 
-        {/* Extra Clarity */}
+        {/* Enhanced USP Section */}
         <div className="max-w-3xl mx-auto">
-          <div className="bg-white p-4 rounded-lg border border-learnzy-amber/20 shadow-sm mb-6">
+          <div className="bg-amber-50 p-5 rounded-lg border border-learnzy-amber shadow-sm mb-6">
             <div className="flex items-start">
-              <div className="mr-3 mt-1">
-                <Brain className="w-5 h-5 text-learnzy-amber" />
+              <div className="mr-4 mt-1 bg-learnzy-amber/20 p-2 rounded-full">
+                <Target className="w-5 h-5 text-learnzy-amber" />
               </div>
               <div>
-                <p className="text-[#333333] font-medium">
+                <h4 className="text-lg font-semibold text-learnzy-dark mb-2">Our Key Advantage</h4>
+                <p className="text-[#333333] font-medium mb-2">
                   Every cycle ends with a test tailored to your weak areas—so you improve fast.
                 </p>
+                <div className="bg-white p-3 rounded-md border border-learnzy-amber/20 mt-3">
+                  <div className="flex">
+                    <div className="flex-shrink-0 mr-3">
+                      <Brain className="w-5 h-5 text-learnzy-amber" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-learnzy-dark">
+                        <span className="font-semibold">How it works:</span> Our AI analyzes your performance on the first 4 tests in each cycle and creates a personalized 5th test that focuses precisely on the topics where you need the most help.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
