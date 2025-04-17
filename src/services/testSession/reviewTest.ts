@@ -79,7 +79,7 @@ export const generateReviewTest = async (
     mockSessions?.forEach((session) => {
       const questions = session.questions_data || []
 
-      questions.forEach((q: QuestionResult) => {
+      questions.forEach((q) => {
         // Skip correctly answered questions
         if (q.isCorrect === true) {
           return
@@ -145,7 +145,7 @@ export const generateReviewTest = async (
       text: q.text,
       options: q.options || [],
       correctAnswer: q.correctAnswer,
-      Subject: q.Subject || q.subject || '', // Handle both uppercase and lowercase properties
+      Subject: q.Subject || q.subject, // Handle both uppercase and lowercase properties
       Chapter_name: q.Chapter_name,
       Topic: q.Topic,
       Subtopic: q.Subtopic,

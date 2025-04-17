@@ -1,4 +1,3 @@
-
 import { supabase } from '../../lib/supabase'
 import { loadRazorpayScript } from '../../utils/loadScript'
 
@@ -25,7 +24,7 @@ export const createGlobalRazorpayOrder = async (): Promise<{
       'create-razorpay-order',
       {
         method: 'POST',
-        // Removing the invalid 'mode' property
+        mode: 'no-cors',
       }
     )
 

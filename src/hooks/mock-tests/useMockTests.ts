@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react'
 import { MockTest } from '../../types/mock-test'
 import { UseMockTestsReturn } from './types'
@@ -17,7 +16,6 @@ export const useMockTests = (
   userId: string | undefined
 ): UseMockTestsReturn => {
   const [mockTests, setMockTests] = useState<MockTest[]>([])
-  const [selectedTest, setSelectedTest] = useState<MockTest | null>(null)
   const { unlockedCycles, updateUnlockedCycles } = useUnlockedCycles(userId)
   const { completedTests, isLoading: isLoadingCompleted } =
     useCompletedTests(userId)
@@ -50,7 +48,6 @@ export const useMockTests = (
   return {
     mockTests,
     isLoading: isLoadingCompleted,
-    selectedTest,
     unlockedCycles,
     handleMockTestClick,
   }
