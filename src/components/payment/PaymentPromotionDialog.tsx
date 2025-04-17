@@ -105,17 +105,17 @@ const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-white">
-        <div className="bg-gradient-to-r from-amber-500 to-amber-400 p-6 text-white">
+      <DialogContent className="sm:max-w-[600px] max-w-[90vw] w-full p-0 overflow-hidden bg-white rounded-lg">
+        <div className="bg-gradient-to-r from-amber-500 to-amber-400 p-4 sm:p-6 text-white">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold font-display flex items-center">
-              <Sparkles className="mr-2 h-6 w-6" />
+            <DialogTitle className="text-xl sm:text-2xl font-bold font-display flex items-center">
+              <Sparkles className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
               Unlock All Cycles
             </DialogTitle>
           </DialogHeader>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-h-[80vh] overflow-y-auto">
           {/* Main Benefits */}
           <div className="space-y-4">
             <div className="flex items-start gap-3">
@@ -123,8 +123,8 @@ const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
                 <Zap className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-800">Complete Test Access</h3>
-                <p className="text-sm text-gray-600">Unlock 20 mock tests with 5 AI-powered personalized tests</p>
+                <h3 className="font-semibold text-gray-800 text-base sm:text-lg">Complete Test Access</h3>
+                <p className="text-xs sm:text-sm text-gray-600">Unlock 20 mock tests with 5 AI-powered personalized tests</p>
               </div>
             </div>
 
@@ -133,28 +133,28 @@ const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
                 <BookOpen className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-800">Premium Study Materials</h3>
+                <h3 className="font-semibold text-gray-800 text-base sm:text-lg">Premium Study Materials</h3>
                 <p className="text-sm text-gray-600">Get access to all premium resources:</p>
-                <ul className="mt-2 text-sm text-gray-600 space-y-1.5">
+                <ul className="mt-2 text-xs sm:text-sm text-gray-600 space-y-1 sm:space-y-1.5">
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
-                    Toppers' Highlighted NCERT (Class 11 & 12 annotated)
+                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full flex-shrink-0"></span>
+                    <span>Toppers' Highlighted NCERT (Class 11 & 12 annotated)</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
-                    Physics Derived PYQs (10 similar NEET 2024 questions)
+                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full flex-shrink-0"></span>
+                    <span>Physics Derived PYQs (10 similar NEET 2024 questions)</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
-                    Physics Formula Book (Complete formula guide)
+                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full flex-shrink-0"></span>
+                    <span>Physics Formula Book (Complete formula guide)</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
-                    Chemistry One-Page Notes (Quick revision guide)
+                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full flex-shrink-0"></span>
+                    <span>Chemistry One-Page Notes (Quick revision guide)</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
-                    Top 50 Important Topics (For Botany, Zoology, Physics & Chemistry)
+                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full flex-shrink-0"></span>
+                    <span>Top 50 Important Topics (For Botany, Zoology, Physics & Chemistry)</span>
                   </li>
                 </ul>
               </div>
@@ -162,20 +162,20 @@ const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
           </div>
 
           {/* Price Display */}
-          <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
-            <div className="flex items-center justify-between">
+          <div className="bg-amber-50 p-3 sm:p-4 rounded-xl border border-amber-100">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Limited Time Offer</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900">Limited Time Offer</h3>
                 <div className="flex items-center gap-2 mt-1">
                   <Clock className="h-4 w-4 text-amber-600" />
-                  <p className="text-sm text-amber-700">
+                  <p className="text-xs sm:text-sm text-amber-700">
                     Offer expires in: <span className="font-semibold">{formatTime(timeRemaining.hours)}:{formatTime(timeRemaining.minutes)}:{formatTime(timeRemaining.seconds)}</span>
                   </p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-500 line-through">₹5000</p>
-                <p className="text-2xl font-bold text-amber-600">₹1234</p>
+              <div className="text-left sm:text-right w-full sm:w-auto mt-2 sm:mt-0">
+                <p className="text-xs sm:text-sm text-gray-500 line-through">₹5000</p>
+                <p className="text-xl sm:text-2xl font-bold text-amber-600">₹1234</p>
               </div>
             </div>
           </div>
@@ -185,7 +185,7 @@ const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
             <Button
               onClick={handlePaymentClick}
               disabled={isLoading}
-              className="w-full py-6 text-lg font-medium bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-600 hover:to-amber-500 text-white shadow-md"
+              className="w-full py-3 sm:py-6 text-base sm:text-lg font-medium bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-600 hover:to-amber-500 text-white shadow-md"
             >
               {isLoading ? (
                 <>
@@ -198,7 +198,7 @@ const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
                 </>
               )}
             </Button>
-            <p className="text-xs text-center text-gray-500 mt-3">
+            <p className="text-xs text-center text-gray-500 mt-2 sm:mt-3">
               One-time payment. No subscriptions. Lifetime access.
             </p>
           </div>
