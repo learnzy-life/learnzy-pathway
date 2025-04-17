@@ -1,16 +1,23 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, Brain } from 'lucide-react';
+import { ArrowDown, ArrowRight, ArrowUp, BookOpen, Brain } from 'lucide-react';
 import { trackButtonClick } from '../../utils/analytics/googleAnalytics';
 
 const HeroSection: React.FC = () => {
+  const [showResources, setShowResources] = useState(false);
+  
   const handleStartTestClick = () => {
     trackButtonClick('start_free_test', 'hero_section');
   };
 
   const handleLearnMoreClick = () => {
     trackButtonClick('not_sure_of_score', 'hero_section');
+  };
+
+  const toggleResourcesView = () => {
+    setShowResources(prev => !prev);
+    trackButtonClick('free_resources', 'hero_section');
   };
 
   return (
@@ -53,69 +60,83 @@ const HeroSection: React.FC = () => {
         </Link>
       </div>
       
-      {/* Free Resources Section */}
-      <div className="mt-8 sm:mt-12 w-full max-w-2xl bg-gradient-to-r from-amber-50 to-white p-4 sm:p-6 rounded-lg border border-amber-100 shadow-sm">
-        <div className="text-center mb-4">
-          <h3 className="text-lg sm:text-xl font-semibold text-amber-800">Free Resources Worth ₹5000</h3>
-          <p className="text-sm text-amber-700">Click to unlock premium study materials</p>
-        </div>
+      {/* Free Resources Section - Collapsible */}
+      <div className="mt-8 sm:mt-12 w-full max-w-2xl">
+        <button 
+          onClick={toggleResourcesView}
+          className="flex items-center justify-center gap-2 text-amber-800 font-medium hover:text-amber-600 transition-colors mx-auto"
+        >
+          <span className="text-lg">Free Resources Worth ₹5000</span>
+          {showResources ? 
+            <ArrowUp className="w-4 h-4" /> : 
+            <ArrowDown className="w-4 h-4" />
+          }
+        </button>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          <Link 
-            to="/learn-more" 
-            className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm"
-          >
-            <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
-            <div className="text-left">
-              <h4 className="font-medium text-learnzy-dark text-sm">Toppers' Highlighted NCERT</h4>
-              <p className="text-muted-foreground text-xs">Class 11 & 12 annotated</p>
+        {showResources && (
+          <div className="mt-4 bg-gradient-to-r from-amber-50 to-white p-4 sm:p-6 rounded-lg border border-amber-100 shadow-sm animate-in fade-in-0 zoom-in-95 duration-300">
+            <div className="text-center mb-4">
+              <p className="text-sm text-amber-700">Click to unlock premium study materials</p>
             </div>
-          </Link>
-          
-          <Link 
-            to="/learn-more" 
-            className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm"
-          >
-            <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
-            <div className="text-left">
-              <h4 className="font-medium text-learnzy-dark text-sm">Physics Derived PYQs</h4>
-              <p className="text-muted-foreground text-xs">10 similar NEET 2024 questions</p>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <Link 
+                to="/learn-more" 
+                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm"
+              >
+                <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
+                <div className="text-left">
+                  <h4 className="font-medium text-learnzy-dark text-sm">Toppers' Highlighted NCERT</h4>
+                  <p className="text-muted-foreground text-xs">Class 11 & 12 annotated</p>
+                </div>
+              </Link>
+              
+              <Link 
+                to="/learn-more" 
+                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm"
+              >
+                <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
+                <div className="text-left">
+                  <h4 className="font-medium text-learnzy-dark text-sm">Physics Derived PYQs</h4>
+                  <p className="text-muted-foreground text-xs">10 similar NEET 2024 questions</p>
+                </div>
+              </Link>
+              
+              <Link 
+                to="/learn-more" 
+                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm"
+              >
+                <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
+                <div className="text-left">
+                  <h4 className="font-medium text-learnzy-dark text-sm">Physics Formula Book</h4>
+                  <p className="text-muted-foreground text-xs">Complete formula guide</p>
+                </div>
+              </Link>
+              
+              <Link 
+                to="/learn-more" 
+                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm"
+              >
+                <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
+                <div className="text-left">
+                  <h4 className="font-medium text-learnzy-dark text-sm">Chemistry One-Page Notes</h4>
+                  <p className="text-muted-foreground text-xs">Quick revision guide</p>
+                </div>
+              </Link>
+              
+              <Link 
+                to="/learn-more" 
+                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm col-span-1 sm:col-span-2"
+              >
+                <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
+                <div className="text-left">
+                  <h4 className="font-medium text-learnzy-dark text-sm">Top 50 Important Topics</h4>
+                  <p className="text-muted-foreground text-xs">For Botany, Zoology, Physics & Chemistry</p>
+                </div>
+              </Link>
             </div>
-          </Link>
-          
-          <Link 
-            to="/learn-more" 
-            className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm"
-          >
-            <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
-            <div className="text-left">
-              <h4 className="font-medium text-learnzy-dark text-sm">Physics Formula Book</h4>
-              <p className="text-muted-foreground text-xs">Complete formula guide</p>
-            </div>
-          </Link>
-          
-          <Link 
-            to="/learn-more" 
-            className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm"
-          >
-            <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
-            <div className="text-left">
-              <h4 className="font-medium text-learnzy-dark text-sm">Chemistry One-Page Notes</h4>
-              <p className="text-muted-foreground text-xs">Quick revision guide</p>
-            </div>
-          </Link>
-          
-          <Link 
-            to="/learn-more" 
-            className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm col-span-1 sm:col-span-2"
-          >
-            <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
-            <div className="text-left">
-              <h4 className="font-medium text-learnzy-dark text-sm">Top 50 Important Topics</h4>
-              <p className="text-muted-foreground text-xs">For Botany, Zoology, Physics & Chemistry</p>
-            </div>
-          </Link>
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );
