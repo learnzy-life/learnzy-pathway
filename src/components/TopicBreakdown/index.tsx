@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ChaptersTable from './ChaptersTable';
 import DifficultyPerformanceCards from './DifficultyPerformanceCards';

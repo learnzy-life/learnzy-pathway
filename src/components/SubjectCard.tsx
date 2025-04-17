@@ -2,7 +2,9 @@ import { ArrowRight, Lock } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useGlobalPayment } from '../context/GlobalPaymentContext'
 import { supabase } from '../lib/supabase'
+import { Button } from './ui/button'
 
 interface SubjectCardProps {
   subject: 'biology' | 'physics' | 'chemistry'
@@ -27,6 +29,7 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
   const navigate = useNavigate()
   const [isCompleted, setIsCompleted] = useState(attempted)
   const [sessionId, setSessionId] = useState<string | null>(null)
+  const { hasPaid, isLoading, initiateSinglePayment } = useGlobalPayment()
 
   // Check for completed diagnostic test
   useEffect(() => {
@@ -82,6 +85,29 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
     }
   }
 
+  // New handler for the Start Test button
+  const handleStartTestClick = () => {
+    if (locked || isLoading) return
+
+    if (user) {
+      // User is logged in
+      if (hasPaid) {
+        // User has paid, navigate to pre-test
+        navigate(`/pre-test/${subject}`)
+      } else {
+        // User has not paid, initiate payment
+        initiateSinglePayment()
+      }
+    } else if (isDevelopmentBypass) {
+      // Dev bypass is active, navigate directly
+      navigate(`/pre-test/${subject}`)
+    }
+    else {
+      // User is not logged in and no bypass, navigate to auth
+      navigate('/auth', { state: { from: `/pre-test/${subject}` } })
+    }
+  }
+
   return (
     <div
       className={`bg-white border border-gray-100 rounded-lg p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:border-amber-100 h-full ${
@@ -128,13 +154,22 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
             </Link>
           </div>
         ) : (
-          <Link
-            to={user || isDevelopmentBypass ? `/pre-test/${subject}` : '#'}
-            onClick={handleSubjectClick}
-            className="bg-amber-500 text-white hover:bg-amber-600 rounded-md py-2 px-4 flex items-center justify-center w-full mt-auto font-medium transition-colors"
+          <Button
+            onClick={handleStartTestClick}
+            disabled={isLoading || locked}
+            className="bg-amber-500 text-white hover:bg-amber-600 rounded-md py-2 px-4 flex items-center justify-center w-full mt-auto font-medium transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Start Test <ArrowRight className="ml-2 w-4 h-4" />
-          </Link>
+            {isLoading ? (
+               <>
+                 <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2"></span>
+                 Processing...
+               </>
+            ) : (
+               <>
+                 Start Test <ArrowRight className="ml-2 w-4 h-4" />
+               </>
+            )}
+          </Button>
         )}
       </div>
     </div>

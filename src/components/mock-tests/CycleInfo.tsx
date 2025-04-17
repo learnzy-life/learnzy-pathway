@@ -1,8 +1,6 @@
 
-import React from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { LockKeyhole } from 'lucide-react'
-import UnlockAllButton from '../payment/UnlockAllButton'
+import React from 'react'
 import { CycleData } from '../landing/cycles/cyclesData'
 
 interface CycleInfoProps {
@@ -20,17 +18,17 @@ const CycleInfo: React.FC<CycleInfoProps> = ({ cycle, isUnlocked, onUnlockClick 
             <div className="w-10 h-10 bg-amber-200 rounded-full flex items-center justify-center mr-2 mt-1">
               {cycle.icon}
             </div>
-            
+
             <div>
               <h3 className="font-semibold text-lg text-learnzy-dark">
                 Cycle {cycle.number}: {cycle.title}
               </h3>
-              
+
               {/* Make focus stand out with a highlight background */}
               <div className="bg-white/80 p-2 rounded-md border-l-3 border-learnzy-amber mt-2 mb-2">
                 <p className="text-sm text-learnzy-dark/90 font-medium">{cycle.focus}</p>
               </div>
-              
+
               {cycle.goal && (
                 <p className="text-xs font-medium text-learnzy-amber-dark mt-1 flex items-center">
                   <span className="mr-1">🎯</span> {cycle.goal}
@@ -38,8 +36,8 @@ const CycleInfo: React.FC<CycleInfoProps> = ({ cycle, isUnlocked, onUnlockClick 
               )}
             </div>
           </div>
-          
-          {!isUnlocked && (
+
+          {/* {!isUnlocked && (
             <div className="flex items-center">
               <div className="bg-amber-200 rounded-full p-2 mr-3">
                 <LockKeyhole className="h-4 w-4 text-amber-700" />
@@ -51,7 +49,7 @@ const CycleInfo: React.FC<CycleInfoProps> = ({ cycle, isUnlocked, onUnlockClick 
                 onClick={onUnlockClick}
               />
             </div>
-          )}
+          )} */}
         </div>
       </CardContent>
     </Card>

@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import PaymentPromotionDialog from '../components/payment/PaymentPromotionDialog'
 import { supabase } from '../lib/supabase'
-import { initiateGlobalPayment } from '../services/payment/globalPayment' // Import the payment initiation function
-import { useAuth } from './AuthContext' // Assuming AuthContext is in the same directory
+import { useAuth } from './AuthContext'; // Assuming AuthContext is in the same directory
 
 type GlobalPaymentContextType = {
   hasPaid: boolean
@@ -24,6 +24,7 @@ export function GlobalPaymentProvider({
   const { user } = useAuth()
   const [hasPaid, setHasPaid] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false)
   const navigate = useNavigate()
 
   // Load payment status
@@ -64,30 +65,8 @@ export function GlobalPaymentProvider({
       return
     }
 
-    try {
-      setIsLoading(true)
-      const result = await initiateGlobalPayment()
-
-      if (result.success) {
-        // Update local state
-        setHasPaid(true)
-
-        // Set a session storage flag to indicate successful payment
-        sessionStorage.setItem('payment_success', 'true')
-
-        // Redirect to success page
-        navigate('/payment-success')
-
-        toast.success('Payment successful! You now have access to all cycles')
-      } else {
-        toast.error(result.error || 'Payment failed. Please try again.')
-      }
-    } catch (error) {
-      console.error('Payment error:', error)
-      toast.error('An error occurred during payment processing')
-    } finally {
-      setIsLoading(false)
-    }
+    // Show our custom payment dialog instead of directly calling Razorpay
+    setShowPaymentDialog(true)
   }
 
   return (
@@ -100,6 +79,12 @@ export function GlobalPaymentProvider({
       }}
     >
       {children}
+
+      {/* Render the payment dialog */}
+      <PaymentPromotionDialog
+        isOpen={showPaymentDialog}
+        onClose={() => setShowPaymentDialog(false)}
+      />
     </GlobalPaymentContext.Provider>
   )
 }

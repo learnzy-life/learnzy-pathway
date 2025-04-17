@@ -86,7 +86,7 @@ serve(async (req) => {
     // Use Deno's standard TextEncoder and base64 encoding
     const encodedAuth = btoa(auth)
 
-    const amount = 200000 // ₹2000 in paise - Keep consistent amount
+    const amount = 123400 // ₹1234 in paise - Keep consistent amount
     const receipt = `receipt_${Date.now()}_${user.id.substring(0, 8)}`
     const notes = { user_id: user.id }
 

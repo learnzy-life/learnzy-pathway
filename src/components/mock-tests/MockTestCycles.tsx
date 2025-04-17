@@ -1,10 +1,8 @@
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { LockKeyhole } from 'lucide-react'
 import React from 'react'
 import { useGlobalPayment } from '../../context/GlobalPaymentContext'
 import { MockTest } from '../../types/mock-test'
 import { getCyclesData } from '../landing/cycles/cyclesData'
-import UnlockAllButton from '../payment/UnlockAllButton'
 import CycleContent from './CycleContent'
 
 interface MockTestCyclesProps {
@@ -23,6 +21,16 @@ const MockTestCycles: React.FC<MockTestCyclesProps> = ({
   const cycles = getCyclesData()
   const { hasPaid } = useGlobalPayment()
 
+  // --- Start Calculation for Cycle Completion ---
+  const cycleCompletionStatus = cycles.reduce((acc, cycle) => {
+    const testsInCycle = mockTests.filter(
+      (test) => test.cycle === cycle.number && !test.isDynamic
+    );
+    acc[cycle.number] = testsInCycle.length > 0 && testsInCycle.every((test) => test.isCompleted);
+    return acc;
+  }, {} as Record<number, boolean>);
+  // --- End Calculation ---
+
   return (
     <div className="">
       <div className="mb-8">
@@ -34,7 +42,7 @@ const MockTestCycles: React.FC<MockTestCyclesProps> = ({
         </p>
       </div>
 
-      {!hasPaid && (
+      {/* {!hasPaid && (
         <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl p-4 mb-8 border border-amber-200 shadow-sm">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-start space-x-3 mb-4 md:mb-0">
@@ -58,7 +66,7 @@ const MockTestCycles: React.FC<MockTestCyclesProps> = ({
             />
           </div>
         </div>
-      )}
+      )} */}
 
       <Tabs defaultValue="cycle-1" className="w-full">
         <TabsList className="grid grid-cols-4 mb-6 w-full md:w-3/4 mx-auto">
@@ -77,16 +85,27 @@ const MockTestCycles: React.FC<MockTestCyclesProps> = ({
           ))}
         </TabsList>
 
-        {cycles.map((cycle) => (
-          <CycleContent
-            key={cycle.number}
-            cycle={cycle}
-            isUnlocked={unlockedCycles.includes(cycle.number) || hasPaid}
-            mockTests={mockTests}
-            isLoading={isLoading}
-            onMockTestClick={onMockTestClick}
-          />
-        ))}
+        {cycles.map((cycle) => {
+          // Determine if the *previous* cycle is completed (Cycle 1 doesn't have a previous)
+          const isPreviousCycleCompleted = cycle.number === 1 ? true : cycleCompletionStatus[cycle.number - 1] ?? false;
+
+          // Base unlock status: included in unlockedCycles array or user has paid globally
+          let baseUnlocked = unlockedCycles.includes(cycle.number) || hasPaid;
+
+          // Final unlock status: base unlock AND previous cycle completed
+          const isCycleEffectivelyUnlocked = baseUnlocked && isPreviousCycleCompleted;
+
+          return (
+            <CycleContent
+              key={cycle.number}
+              cycle={cycle}
+              isUnlocked={isCycleEffectivelyUnlocked} // Use calculated unlock status
+              mockTests={mockTests}
+              isLoading={isLoading}
+              onMockTestClick={onMockTestClick}
+            />
+          );
+        })}
       </Tabs>
     </div>
   )

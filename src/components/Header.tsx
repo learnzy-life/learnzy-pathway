@@ -1,7 +1,7 @@
 
+import { Menu, User, X } from 'lucide-react'
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const Header: React.FC = () => {
@@ -38,7 +38,7 @@ const Header: React.FC = () => {
           </Link>
 
           {/* Desktop navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          {/* <nav className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
               <Link
                 key={item.name}
@@ -52,13 +52,13 @@ const Header: React.FC = () => {
                 {item.name}
               </Link>
             ))}
-          </nav>
+          </nav> */}
 
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <div className="flex items-center space-x-4">
-                <Link 
-                  to="/profile" 
+                <Link
+                  to="/profile"
                   className="flex items-center text-learnzy-dark hover:text-learnzy-purple transition-colors"
                 >
                   <User className="w-5 h-5 mr-1" />
