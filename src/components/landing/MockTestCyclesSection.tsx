@@ -20,10 +20,10 @@ const MockTestCyclesSection: React.FC = () => {
         <div className="text-center mb-8">
           <SectionHeader 
             icon={Book} 
-            title="Your Path to NEET Success: 4 Strategic Mock Test Cycles" 
+            title="Your Path to NEET Success: 4 Mock Test Cycles" 
           />
           <p className="text-[#333333] max-w-3xl mx-auto mt-3 px-2 sm:px-0 font-medium">
-            Comprehensive preparation through 4 carefully designed mock test cycles, each targeting a specific aspect of NEET 2025 readiness.
+            Get NEET 2025-ready with 20 mock tests split into 4 cycles. Each builds your skills, step by step.
           </p>
         </div>
 
@@ -35,7 +35,6 @@ const MockTestCyclesSection: React.FC = () => {
               number={cycle.number}
               title={`Cycle ${cycle.number}: ${cycle.title}`}
               focus={cycle.focus}
-              goal={cycle.goal}
               testDescription={cycle.testDescription}
               icon={cycle.icon}
             />
@@ -55,7 +54,7 @@ const MockTestCyclesSection: React.FC = () => {
               </div>
               <div>
                 <p className="text-[#333333] font-medium">
-                  Each cycle is designed to progressively build your skills, confidence, and exam readiness.
+                  Every cycle ends with a test tailored to your weak areas—so you improve fast.
                 </p>
               </div>
             </div>
@@ -64,7 +63,7 @@ const MockTestCyclesSection: React.FC = () => {
           {/* Closing line */}
           <div className="text-center">
             <p className="text-[#333333] font-semibold text-lg">
-              A Strategic Approach to Mastering NEET 2025!
+              This simple plan gets you ready for NEET 2025!
             </p>
           </div>
         </div>
@@ -74,4 +73,3 @@ const MockTestCyclesSection: React.FC = () => {
 };
 
 export default MockTestCyclesSection;
-

@@ -1,4 +1,3 @@
-
 import { Card } from '@/components/ui/card'
 import { Brain } from 'lucide-react'
 import React from 'react'
@@ -9,7 +8,6 @@ export interface CycleCardProps {
   number: number
   title: string
   focus: string
-  goal: string
   testDescription: string
   icon: React.ReactNode
 }
@@ -18,7 +16,6 @@ const CycleCard: React.FC<CycleCardProps> = ({
   number,
   title,
   focus,
-  goal,
   testDescription,
   icon,
 }) => {
@@ -34,6 +31,14 @@ const CycleCard: React.FC<CycleCardProps> = ({
         isCycleLocked && 'bg-gray-50'
       )}
     >
+      {/* {isCycleLocked && (
+        <div className="absolute inset-0 bg-gray-200/50 backdrop-blur-[1px] flex items-center justify-center z-10 rounded-lg">
+          <div className="bg-white p-3 rounded-full shadow-md">
+            <Lock className="w-6 h-6 text-learnzy-amber" />
+          </div>
+        </div>
+      )} */}
+
       <div className="relative p-4 sm:p-5 h-full">
         <div className="absolute -top-3 -left-3 w-7 h-7 rounded-full bg-learnzy-amber flex items-center justify-center text-white font-semibold text-sm">
           {number}
@@ -45,15 +50,12 @@ const CycleCard: React.FC<CycleCardProps> = ({
           <h3 className="font-semibold text-lg text-[#003366]">{title}</h3>
         </div>
         <p className="text-[#003366] font-medium mb-2">{focus}</p>
-        <div className="flex items-start gap-2">
+        <div className="flex items-start">
           <p className="text-sm text-[#003366]/80">{testDescription}</p>
           <div className="ml-1 bg-learnzy-amber/20 px-1 rounded text-xs flex items-center">
             <Brain className="w-3 h-3 text-learnzy-amber-dark mr-1" />
             <span className="text-learnzy-amber-dark font-medium">AI</span>
           </div>
-        </div>
-        <div className="mt-3 text-xs text-[#003366]/70 italic">
-          Goal: {goal}
         </div>
       </div>
     </Card>
@@ -61,4 +63,3 @@ const CycleCard: React.FC<CycleCardProps> = ({
 }
 
 export default CycleCard
-
