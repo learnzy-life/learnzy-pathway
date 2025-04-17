@@ -1,4 +1,4 @@
-import { ArrowRight, Calendar, CheckCircle2, Unlock } from 'lucide-react'
+import { ArrowRight, Calendar, CheckCircle2, Download, Unlock } from 'lucide-react'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/button'
@@ -7,15 +7,21 @@ import { useGlobalPayment } from '../context/GlobalPaymentContext'
 const PaymentSuccess = () => {
   const navigate = useNavigate()
   const { hasPaid, isLoading } = useGlobalPayment()
+  const resourcesLink = "https://drive.google.com/drive/folders/11uaUaBP8rV-ad25Zx1-eStzYvbghAiW2?usp=share_link"
 
   // Redirect to homepage if not coming from a payment
   useEffect(() => {
-    if (!hasPaid && !sessionStorage.getItem('payment_success')) {
+    const paymentFlag = sessionStorage.getItem('payment_success')
+
+    if (!hasPaid && !paymentFlag) {
+      // Neither context nor session flag indicates successful payment, redirect away
       navigate('/', { replace: true })
-    } else {
-      // Clean up the session storage flag
+    } else if (paymentFlag) {
+      // If the flag exists, remove it now that we've acknowledged it.
+      // This ensures it only grants entry once right after navigation.
       sessionStorage.removeItem('payment_success')
     }
+    // If hasPaid is true, we don't need to do anything regarding redirection or the flag.
   }, [hasPaid, navigate])
 
   if (isLoading) {
@@ -65,7 +71,7 @@ const PaymentSuccess = () => {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
           <Button
             onClick={() => navigate('/subjects')}
             className="bg-learnzy-amber hover:bg-learnzy-amber-dark text-white"
@@ -79,6 +85,15 @@ const PaymentSuccess = () => {
             className="border-learnzy-amber text-learnzy-amber hover:bg-learnzy-amber/10"
           >
             Start Learning <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+
+        <div className="mt-4">
+          <Button
+            onClick={() => window.open(resourcesLink, '_blank')}
+            className="bg-green-600 hover:bg-green-700 text-white w-full"
+          >
+            <Download className="mr-2 h-4 w-4" /> Get Your Free Resources
           </Button>
         </div>
       </div>
