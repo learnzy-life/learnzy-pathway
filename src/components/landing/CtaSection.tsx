@@ -30,14 +30,14 @@ const CtaSection = () => {
             to="/subjects"
             className="button-primary inline-flex items-center"
           >
-            Start Your Diagnostic Test <ArrowRight className="ml-2 w-5 h-5" />
+            Let's Make a Comeback <ArrowRight className="ml-2 w-5 h-5" />
           </Link>
           
           <Link
             to="/learn-more"
             className="button-secondary inline-flex items-center"
           >
-            Explore Features <ArrowRight className="ml-2 w-5 h-5" />
+            Know More <ArrowRight className="ml-2 w-5 h-5" />
           </Link>
         </div>
         

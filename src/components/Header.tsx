@@ -22,9 +22,9 @@ const Header: React.FC = () => {
     closeMenu()
   }
 
+  // Modified navItems array to only include Home
   const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'Subjects', path: '/subjects' }
+    { name: 'Home', path: '/' }
   ]
 
   return (
