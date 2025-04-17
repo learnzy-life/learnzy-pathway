@@ -68,12 +68,12 @@ serve(async (req) => {
     )
 
     // LIVE KEYS
-    // const keyId = Deno.env.get('RAZORPAY_KEY_ID') ?? ''
-    // const keySecret = Deno.env.get('RAZORPAY_KEY_SECRET') ?? ''
+    const keyId = Deno.env.get('RAZORPAY_KEY_ID') ?? ''
+    const keySecret = Deno.env.get('RAZORPAY_KEY_SECRET') ?? ''
 
     // TEST KEYS
-    const keyId = Deno.env.get('TEST_RAZORPAY_KEY_ID') ?? ''
-    const keySecret = Deno.env.get('TEST_RAZORPAY_KEY_SECRET') ?? ''
+    // const keyId = Deno.env.get('TEST_RAZORPAY_KEY_ID') ?? ''
+    // const keySecret = Deno.env.get('TEST_RAZORPAY_KEY_SECRET') ?? ''
 
     if (!keyId || !keySecret) {
       console.error(
