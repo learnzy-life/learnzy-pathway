@@ -1,34 +1,54 @@
-import { LogIn } from 'lucide-react'
+
+import { Eye, EyeOff, LogIn } from 'lucide-react'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useAuth } from '../../context/AuthContext'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 interface AuthFormProps {
   isLogin: boolean
   setIsLogin: (isLogin: boolean) => void
 }
 
+// Create schema for form validation
+const loginSchema = z.object({
+  email: z.string().email('Please enter a valid email'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+})
+
 const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const { signIn, signUp, signInWithGoogle, resetPassword } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
+  const handleSubmit = async (values: z.infer<typeof loginSchema>) => {
     setLoading(true)
 
     try {
       if (isLogin) {
-        await signIn(email, password)
+        await signIn(values.email, values.password)
         // Navigate only if sign-in was successful
         navigate('/')
       } else {
-        await signUp(email, password)
+        await signUp(values.email, values.password)
         // Show success message but don't navigate - let user check email or sign in
         toast.success('Account created successfully! You can now sign in.')
         // Switch to login view after successful registration
@@ -53,7 +73,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
-
+    
+    const email = form.getValues('email')
     if (!email) {
       toast.error('Please enter your email address')
       return
@@ -82,46 +103,42 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
           </p>
         </div>
 
-        <form onSubmit={handleResetPassword}>
-          <div className="mb-4">
-            <label
-              htmlFor="reset-email"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Email
-            </label>
-            <input
+        <form onSubmit={handleResetPassword} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="reset-email">Email</Label>
+            <Input
               id="reset-email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={form.getValues('email')}
+              onChange={(e) => form.setValue('email', e.target.value)}
               placeholder="you@example.com"
               required
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-learnzy-purple"
+              className="w-full"
             />
           </div>
 
-          <button
+          <Button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 bg-learnzy-purple text-white rounded-md hover:bg-learnzy-dark transition-colors flex items-center justify-center"
+            className="w-full"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
             ) : null}
             Send Reset Link
-          </button>
+          </Button>
+        
+          <div className="text-center pt-2">
+            <Button
+              type="button"
+              variant="link"
+              onClick={() => setShowForgotPassword(false)}
+              className="text-learnzy-purple"
+            >
+              Back to sign in
+            </Button>
+          </div>
         </form>
-
-        <div className="mt-4 text-center">
-          <button
-            type="button"
-            onClick={() => setShowForgotPassword(false)}
-            className="text-learnzy-purple hover:underline"
-          >
-            Back to sign in
-          </button>
-        </div>
       </div>
     )
   }
@@ -130,64 +147,83 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
     <div className="card-glass p-8 animate-fade-in">
       <AuthToggle isLogin={isLogin} setIsLogin={setIsLogin} />
 
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            required
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-learnzy-purple"
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="you@example.com" 
+                    {...field} 
+                    type="email"
+                    autoComplete="email"
+                    className="bg-background"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
           />
-        </div>
-        <div className="mb-6">
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            required
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-learnzy-purple"
+          
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input 
+                      placeholder="••••••••" 
+                      {...field} 
+                      type={showPassword ? "text" : "password"}
+                      autoComplete={isLogin ? "current-password" : "new-password"}
+                      className="bg-background pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-500"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                </FormControl>
+                {isLogin && (
+                  <div className="text-right mt-1">
+                    <Button
+                      type="button"
+                      variant="link"
+                      onClick={() => setShowForgotPassword(true)}
+                      className="p-0 h-auto text-sm text-learnzy-purple"
+                    >
+                      Forgot password?
+                    </Button>
+                  </div>
+                )}
+              </FormItem>
+            )}
           />
-          {isLogin && (
-            <div className="mt-1 text-right">
-              <button
-                type="button"
-                onClick={() => setShowForgotPassword(true)}
-                className="text-sm text-learnzy-purple hover:underline"
-              >
-                Forgot password?
-              </button>
-            </div>
-          )}
-        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-2 px-4 bg-learnzy-purple text-white rounded-md hover:bg-learnzy-dark transition-colors flex items-center justify-center"
-        >
-          {loading ? (
-            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
-          ) : null}
-          {isLogin ? 'Sign In' : 'Create Account'}
-        </button>
-      </form>
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full mt-6"
+          >
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+            ) : null}
+            {isLogin ? 'Sign In' : 'Create Account'}
+          </Button>
+        </form>
+      </Form>
 
       <div className="mt-6">
         <div className="relative flex items-center justify-center">
@@ -199,42 +235,41 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
       </div>
 
       <div className="mt-6">
-        <button
+        <Button
           type="button"
           onClick={handleGoogleSignIn}
-          className="w-full py-2 px-4 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center"
+          variant="outline"
+          className="w-full"
         >
           <LogIn className="w-5 h-5 mr-2 text-red-500" />
           Continue with Google
-        </button>
+        </Button>
       </div>
 
       <div className="mt-6 text-center text-sm text-muted-foreground">
         {isLogin ? (
           <p>
             Don't have an account?{' '}
-            <button
+            <Button
               type="button"
-              onClick={() => {
-                setIsLogin(false)
-              }}
-              className="text-learnzy-purple hover:underline"
+              variant="link"
+              onClick={() => setIsLogin(false)}
+              className="p-0 h-auto text-learnzy-purple"
             >
               Sign up
-            </button>
+            </Button>
           </p>
         ) : (
           <p>
             Already have an account?{' '}
-            <button
+            <Button
               type="button"
-              onClick={() => {
-                setIsLogin(true)
-              }}
-              className="text-learnzy-purple hover:underline"
+              variant="link"
+              onClick={() => setIsLogin(true)}
+              className="p-0 h-auto text-learnzy-purple"
             >
               Sign in
-            </button>
+            </Button>
           </p>
         )}
       </div>
@@ -250,6 +285,7 @@ const AuthToggle: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
     <div className="flex justify-center mb-6">
       <div className="flex rounded-lg overflow-hidden border border-gray-100">
         <button
+          type="button"
           className={`px-4 py-2 ${
             isLogin
               ? 'bg-learnzy-purple text-white'
@@ -262,6 +298,7 @@ const AuthToggle: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
           Login
         </button>
         <button
+          type="button"
           className={`px-4 py-2 ${
             !isLogin
               ? 'bg-learnzy-purple text-white'

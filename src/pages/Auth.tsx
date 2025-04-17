@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
@@ -35,12 +36,16 @@ const Auth: React.FC = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="container mx-auto px-6 pt-24 pb-16">
-        <section className="py-12 max-w-md mx-auto">
-          <AuthHeader isLogin={isLogin} />
-          <AuthForm isLogin={isLogin} setIsLogin={setIsLogin} />
+      <main className="container mx-auto px-6 pt-16 pb-16">
+        <div className="max-w-md mx-auto">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6 md:p-8">
+              <AuthHeader isLogin={isLogin} />
+              <AuthForm isLogin={isLogin} setIsLogin={setIsLogin} />
+            </div>
+          </div>
 
-          {/* Development bypass button */}
+          {/* Development bypass button - commented out for production */}
           {/* <div className="mt-8 text-center">
             <button
               onClick={bypassAuth}
@@ -49,7 +54,7 @@ const Auth: React.FC = () => {
               [DEV] Bypass Authentication
             </button>
           </div> */}
-        </section>
+        </div>
       </main>
     </div>
   )
