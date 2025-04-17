@@ -1,69 +1,54 @@
 
-import { Question } from '../question'
-
-export interface QuestionResult {
-  id: number;
-  text: string;
-  options: { id: string; text: string }[];
-  userAnswer: string | null;
-  correctAnswer: string;
-  isCorrect: boolean;
-  timeTaken?: number;
-  tags?: string[];
-  // Metadata fields
-  Chapter_name?: string;
-  Topic?: string;
-  Subtopic?: string;
-  Difficulty_Level?: string;
-  Question_Structure?: string;
-  Bloom_Taxonomy?: string;
-  Priority_Level?: string;
-  Time_to_Solve?: number;
-  Key_Concept_Tested?: string;
-  Common_Pitfalls?: string;
-  // For biology (lowercase with underscores)
-  chapter_name?: string;
-  topic?: string;
-  subtopic?: string;
-  difficulty_level?: string;
-  question_structure?: string;
-  bloom_taxonomy?: string;
-  priority_level?: string;
-  time_to_solve?: number;
-  key_concept_tested?: string;
-  common_pitfalls?: string;
-  // Legacy options format
-  Option_A?: string;
-  Option_B?: string;
-  Option_C?: string;
-  Option_D?: string;
-}
+import { Question } from "../question";
 
 export interface TestSessionData {
   id: string;
   user_id: string;
   subject: string;
   start_time: string;
-  end_time: string;
-  score: number;
-  total_questions: number;
-  correct_answers: number;
-  incorrect_answers: number;
-  unattempted: number;
-  questions?: Question[];
-  answers?: QuestionResult[];
+  end_time?: string;
+  score?: number;
+  max_score?: number;
+  questions_data?: QuestionResult[];
+  answers?: Record<string, string>;
+  tags_data?: Record<string, string[]>;
+  time_data?: {
+    [questionId: string]: number; // Time in seconds spent on each question
+  };
+  question_order?: string[]; // Array of question IDs in the order they were presented
+  analysis_data?: any; // For storing any additional analysis data
 }
 
-export interface TestSession {
+export interface QuestionResult extends Question {
   id: string;
-  subject: string;
-  questions: QuestionResult[];
-  score: number;
-  total_questions: number;
-  correct_answers: number;
-  incorrect_answers: number;
-  unattempted: number;
-  start_time: string;
-  end_time: string;
-  user_id: string;
+  text: string;
+  options?: string[];
+  correctAnswer: string;
+  selectedAnswer?: string;
+  isCorrect?: boolean;
+  timeSpent?: number; // Time spent on this question in seconds
+  Subject?: string; // Adding this property
+  subject?: string; // Adding this property
+  // Additional properties for analysis
+  tags?: string[];
+}
+
+export interface TestTagsProgress {
+  [tagKey: string]: {
+    total: number;
+    correct: number;
+  }
+}
+
+export interface TestSessionProgress {
+  currentQuestionIndex: number;
+  totalQuestions: number;
+  answeredQuestions: number;
+  isComplete: boolean;
+  timeRemaining?: number;
+}
+
+// Interface for tracking time spent on questions
+export interface QuestionTimes {
+  [questionId: string]: number; // Time in seconds
 }

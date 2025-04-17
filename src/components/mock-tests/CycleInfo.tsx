@@ -1,3 +1,4 @@
+
 import { LockKeyhole } from 'lucide-react'
 import React from 'react'
 import { useGlobalPayment } from '../../context/GlobalPaymentContext'
@@ -7,9 +8,10 @@ import UnlockAllButton from '../payment/UnlockAllButton'
 interface CycleInfoProps {
   cycle: CycleData
   isUnlocked: boolean
+  onUnlockClick?: () => void  // Making this prop optional with a default value
 }
 
-const CycleInfo: React.FC<CycleInfoProps> = ({ cycle, isUnlocked }) => {
+const CycleInfo: React.FC<CycleInfoProps> = ({ cycle, isUnlocked, onUnlockClick = () => {} }) => {
   const { hasPaid } = useGlobalPayment()
 
   return (
