@@ -20,6 +20,12 @@ const HeroSection: React.FC = () => {
     trackButtonClick('free_resources', 'hero_section');
   };
 
+  const handleResourceItemClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    trackButtonClick('resource_item', 'hero_section');
+    // We'll just prevent default behavior but not navigate anywhere
+  };
+
   return (
     <section className="py-10 md:py-24 flex flex-col items-center text-center relative">
       {/* Background Element */}
@@ -80,60 +86,60 @@ const HeroSection: React.FC = () => {
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <Link 
-                to="/learn-more" 
-                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm"
+              <button 
+                onClick={handleResourceItemClick}
+                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm text-left"
               >
                 <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
-                <div className="text-left">
+                <div>
                   <h4 className="font-medium text-learnzy-dark text-sm">Toppers' Highlighted NCERT</h4>
                   <p className="text-muted-foreground text-xs">Class 11 & 12 annotated</p>
                 </div>
-              </Link>
+              </button>
               
-              <Link 
-                to="/learn-more" 
-                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm"
+              <button 
+                onClick={handleResourceItemClick}
+                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm text-left"
               >
                 <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
-                <div className="text-left">
+                <div>
                   <h4 className="font-medium text-learnzy-dark text-sm">Physics Derived PYQs</h4>
                   <p className="text-muted-foreground text-xs">10 similar NEET 2024 questions</p>
                 </div>
-              </Link>
+              </button>
               
-              <Link 
-                to="/learn-more" 
-                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm"
+              <button 
+                onClick={handleResourceItemClick}
+                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm text-left"
               >
                 <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
-                <div className="text-left">
+                <div>
                   <h4 className="font-medium text-learnzy-dark text-sm">Physics Formula Book</h4>
                   <p className="text-muted-foreground text-xs">Complete formula guide</p>
                 </div>
-              </Link>
+              </button>
               
-              <Link 
-                to="/learn-more" 
-                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm"
+              <button 
+                onClick={handleResourceItemClick}
+                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm text-left"
               >
                 <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
-                <div className="text-left">
+                <div>
                   <h4 className="font-medium text-learnzy-dark text-sm">Chemistry One-Page Notes</h4>
                   <p className="text-muted-foreground text-xs">Quick revision guide</p>
                 </div>
-              </Link>
+              </button>
               
-              <Link 
-                to="/learn-more" 
-                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm col-span-1 sm:col-span-2"
+              <button 
+                onClick={handleResourceItemClick}
+                className="flex items-start p-3 bg-white rounded-md border border-amber-100 hover:border-amber-300 transition-all hover:shadow-sm col-span-1 sm:col-span-2 text-left"
               >
                 <BookOpen className="w-5 h-5 text-amber-600 mt-1 mr-2 flex-shrink-0" />
-                <div className="text-left">
+                <div>
                   <h4 className="font-medium text-learnzy-dark text-sm">Top 50 Important Topics</h4>
                   <p className="text-muted-foreground text-xs">For Botany, Zoology, Physics & Chemistry</p>
                 </div>
-              </Link>
+              </button>
             </div>
           </div>
         )}
