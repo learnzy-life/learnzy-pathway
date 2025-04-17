@@ -97,7 +97,7 @@ export const initiateGlobalPayment = async (): Promise<PaymentResult> => {
         key: orderData.keyId,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: 'Learnzy Pathway',
+        name: 'Learnzy',
         description: 'Unlock All Learning Cycles',
         order_id: orderData.orderId,
         handler: function (response: any) {
