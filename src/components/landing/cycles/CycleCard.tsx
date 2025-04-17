@@ -1,3 +1,4 @@
+
 import { Card } from '@/components/ui/card'
 import { Brain } from 'lucide-react'
 import React from 'react'
@@ -10,6 +11,7 @@ export interface CycleCardProps {
   focus: string
   testDescription: string
   icon: React.ReactNode
+  goal?: string
 }
 
 const CycleCard: React.FC<CycleCardProps> = ({
@@ -18,6 +20,7 @@ const CycleCard: React.FC<CycleCardProps> = ({
   focus,
   testDescription,
   icon,
+  goal,
 }) => {
   const { hasPaid } = useGlobalPayment()
 
@@ -50,13 +53,20 @@ const CycleCard: React.FC<CycleCardProps> = ({
           <h3 className="font-semibold text-lg text-[#003366]">{title}</h3>
         </div>
         <p className="text-[#003366] font-medium mb-2">{focus}</p>
-        <div className="flex items-start">
+        <div className="flex items-start mb-2">
           <p className="text-sm text-[#003366]/80">{testDescription}</p>
           <div className="ml-1 bg-learnzy-amber/20 px-1 rounded text-xs flex items-center">
             <Brain className="w-3 h-3 text-learnzy-amber-dark mr-1" />
             <span className="text-learnzy-amber-dark font-medium">AI</span>
           </div>
         </div>
+        {goal && (
+          <div className="mt-auto pt-2 border-t border-learnzy-amber/20">
+            <p className="text-xs font-medium text-learnzy-amber-dark flex items-center">
+              <span className="mr-1">🎯</span> Goal: {goal}
+            </p>
+          </div>
+        )}
       </div>
     </Card>
   )

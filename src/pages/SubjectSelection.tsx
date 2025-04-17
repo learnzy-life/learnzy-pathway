@@ -1,3 +1,4 @@
+
 import React from 'react'
 import Header from '../components/Header'
 import MockTestCycles from '../components/mock-tests/MockTestCycles'
@@ -10,7 +11,6 @@ const SubjectSelection: React.FC = () => {
   const {
     mockTests,
     isLoading,
-    selectedTest,
     unlockedCycles,
     handleMockTestClick,
   } = useMockTests(user?.id)

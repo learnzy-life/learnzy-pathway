@@ -19,6 +19,7 @@ export const DesktopVisualPathway: React.FC<VisualPathwayProps> = ({ cycles }) =
             number={cycle.number}
             title={`Cycle ${cycle.number}: ${cycle.title}`}
             description={cycle.info}
+            goal={cycle.goal}
           />
         ))}
       </div>
@@ -38,6 +39,7 @@ export const MobileVisualPathway: React.FC<VisualPathwayProps> = ({ cycles }) =>
               number={cycle.number}
               title={`Cycle ${cycle.number}: ${cycle.title}`}
               description={cycle.info}
+              goal={cycle.goal}
             />
             <span className="text-sm font-medium text-[#003366] ml-2">Cycle {cycle.number}</span>
           </div>

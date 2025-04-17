@@ -11,9 +11,10 @@ export interface CycleInfoProps {
   number: number;
   title: string;
   description: string;
+  goal?: string;
 }
 
-const CycleInfo: React.FC<CycleInfoProps> = ({ number, title, description }) => {
+const CycleInfo: React.FC<CycleInfoProps> = ({ number, title, description, goal }) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -26,7 +27,14 @@ const CycleInfo: React.FC<CycleInfoProps> = ({ number, title, description }) => 
       </TooltipTrigger>
       <TooltipContent side="right" className="bg-white text-[#003366] border border-learnzy-amber/20 p-3 max-w-xs shadow-md">
         <div className="font-semibold mb-1">{title}</div>
-        <p className="text-sm">{description}</p>
+        <p className="text-sm mb-2">{description}</p>
+        {goal && (
+          <div className="mt-2 pt-2 border-t border-learnzy-amber/20">
+            <p className="text-xs font-medium text-learnzy-amber-dark">
+              🎯 Goal: {goal}
+            </p>
+          </div>
+        )}
       </TooltipContent>
     </Tooltip>
   );

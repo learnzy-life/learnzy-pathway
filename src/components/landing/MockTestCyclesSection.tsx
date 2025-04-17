@@ -37,6 +37,7 @@ const MockTestCyclesSection: React.FC = () => {
               focus={cycle.focus}
               testDescription={cycle.testDescription}
               icon={cycle.icon}
+              goal={cycle.goal}
             />
           ))}
         </div>
