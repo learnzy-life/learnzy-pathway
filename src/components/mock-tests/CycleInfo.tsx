@@ -48,7 +48,7 @@ const CycleInfo: React.FC<CycleInfoProps> = ({ cycle, isUnlocked, onUnlockClick 
                 variant="prominent"
                 size="sm"
                 className="whitespace-nowrap"
-                onClick={onUnlockClick}
+                onUnlockClick={onUnlockClick}
               />
             </div>
           )}
