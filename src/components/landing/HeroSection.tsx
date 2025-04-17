@@ -27,60 +27,52 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <section className="py-8 md:py-24 flex flex-col items-center text-center relative">
+    <section className="py-10 md:py-24 flex flex-col items-center text-center relative">
       {/* Background Element */}
       <div className="absolute top-20 right-0 md:right-10 opacity-5 w-48 md:w-64 h-48 md:h-64 rotate-12" aria-hidden="true">
         <Brain className="w-full h-full text-learnzy-purple" />
       </div>
       
-      <div className="w-14 md:w-16 h-14 md:h-16 bg-learnzy-purple/10 rounded-2xl flex items-center justify-center mb-4 md:mb-6 animate-float">
+      <div className="w-14 md:w-16 h-14 md:h-16 bg-learnzy-purple/10 rounded-2xl flex items-center justify-center mb-5 md:mb-6 animate-float">
         <BookOpen className="w-7 md:w-8 h-7 md:h-8 text-learnzy-purple" />
       </div>
       
-      {/* Hero Title - Improved for mobile */}
-      <div className="px-3 md:px-0 max-w-3xl mx-auto">
-        <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-2 sm:mb-3 leading-tight z-10 text-[#003366]">
-          <span className="block sm:inline">Crack </span>
-          <span className="text-gradient">NEET 2025</span>
-          <span className="block sm:inline"> in </span>
-          <span className="text-amber-500">20 Days</span>
-          <span className="block sm:inline"> with Learnzy*</span>
-        </h1>
-      </div>
+      <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-2 sm:mb-3 max-w-3xl leading-tight z-10 px-3 sm:px-0 text-[#003366]">
+        Crack <span className="text-gradient">NEET 2025</span> in <span className="text-amber-500">20 Days</span> with Learnzy*
+      </h1>
       
-      <p className="text-xs sm:text-sm text-[#666666] max-w-2xl mb-2 sm:mb-4 z-10 px-4 sm:px-0 italic">
+      <p className="text-xs sm:text-sm text-[#666666] max-w-2xl mb-3 sm:mb-5 z-10 px-4 sm:px-0 italic">
         *For students scoring 450+ who follow our structured program.
       </p>
       
-      <p className="text-base sm:text-lg md:text-xl text-learnzy-amber-dark max-w-xl mb-6 sm:mb-8 z-10 px-4 sm:px-0 font-medium">
+      <p className="text-base sm:text-lg md:text-xl text-learnzy-amber-dark max-w-2xl mb-6 sm:mb-10 z-10 px-4 sm:px-0 font-medium">
         Smart Prep + Calm Mind = Medical Seat
       </p>
       
-      {/* Mobile-optimized buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full max-w-[280px] sm:max-w-none sm:w-auto px-4 sm:px-0">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full max-w-xs sm:max-w-none sm:w-auto px-4 sm:px-0">
         <Link 
           to="/subjects" 
-          className="button-primary w-full sm:w-auto py-3.5 rounded-xl text-base font-medium" 
+          className="button-primary w-full sm:w-auto" 
           onClick={handleStartTestClick}
         >
           Let's Make a Comeback <ArrowRight className="ml-2 w-5 h-5" />
         </Link>
         <Link 
           to="/learn-more" 
-          className="button-secondary w-full sm:w-auto py-3.5 rounded-xl text-base"
+          className="button-secondary w-full sm:w-auto text-sm"
           onClick={handleLearnMoreClick}
         >
           Know More
         </Link>
       </div>
       
-      {/* Free Resources Section - Mobile optimized */}
-      <div className="mt-8 sm:mt-12 w-full max-w-md sm:max-w-2xl">
+      {/* Free Resources Section - Collapsible */}
+      <div className="mt-8 sm:mt-12 w-full max-w-2xl">
         <button 
           onClick={toggleResourcesView}
-          className="flex items-center justify-center gap-2 text-amber-800 font-medium hover:text-amber-600 transition-colors mx-auto bg-amber-50/50 py-2 px-4 rounded-full"
+          className="flex items-center justify-center gap-2 text-amber-800 font-medium hover:text-amber-600 transition-colors mx-auto"
         >
-          <span className="text-base sm:text-lg">Free Resources Worth ₹5000</span>
+          <span className="text-lg">Free Resources Worth ₹5000</span>
           {showResources ? 
             <ArrowUp className="w-4 h-4" /> : 
             <ArrowDown className="w-4 h-4" />
