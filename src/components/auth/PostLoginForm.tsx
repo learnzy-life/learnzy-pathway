@@ -27,7 +27,18 @@ const formSchema = z.object({
   mobileNumber: z.string().regex(/^[6-9]\d{9}$/, 'Please enter a valid 10-digit mobile number'),
   isFirstAttempt: z.enum(['yes', 'no']),
   previousAttempts: z.string().optional(),
-})
+}).refine(
+  (data) => {
+    if (data.isFirstAttempt === 'no') {
+      return !!data.previousAttempts;
+    }
+    return true;
+  },
+  {
+    message: 'Please enter the number of previous attempts',
+    path: ['previousAttempts'],
+  }
+);
 
 type PostLoginFormProps = {
   onSubmit: (data: z.infer<typeof formSchema>) => void
@@ -47,12 +58,13 @@ export function PostLoginForm({ onSubmit, isOpen }: PostLoginFormProps) {
   const isFirstAttempt = form.watch('isFirstAttempt') === 'yes'
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log('Form values on submit:', values)
     onSubmit(values)
   }
 
   return (
-    <Dialog open={isOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={isOpen} onOpenChange={() => {}}>
+      <DialogContent className="sm:max-w-[425px]" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold">
             Complete Your Profile

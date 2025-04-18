@@ -23,7 +23,7 @@ const Auth: React.FC = () => {
     if (user && !isLoading) {
       setShowForm(true)
     }
-  }, [user, isLoading])
+  }, [user, isLoading, setShowForm])
 
   // Only redirect after form is submitted or if in development bypass
   useEffect(() => {
@@ -57,6 +57,7 @@ const Auth: React.FC = () => {
         </div>
       </main>
 
+      {/* Always render the form component but control visibility with the open prop */}
       <PostLoginForm isOpen={showForm} onSubmit={handleSubmit} />
     </div>
   )

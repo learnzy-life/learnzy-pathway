@@ -15,20 +15,34 @@ export function usePostLoginForm() {
 
   const handleSubmit = async (data: UserDetails) => {
     try {
+      console.log('Submitting form data:', data)
+      const user = await supabase.auth.getUser()
+      
+      if (!user.data.user) {
+        throw new Error('User not authenticated')
+      }
+      
+      const userId = user.data.user.id
+      console.log('Current user ID:', userId)
+      
       const { error } = await supabase
         .from('user_details')
         .upsert([
           {
-            user_id: (await supabase.auth.getUser()).data.user?.id,
+            user_id: userId,
             full_name: data.fullName,
             mobile_number: data.mobileNumber,
             is_first_attempt: data.isFirstAttempt === 'yes',
-            previous_attempts: data.isFirstAttempt === 'no' ? parseInt(data.previousAttempts || '0') : 0,
+            previous_attempts: data.isFirstAttempt === 'no' ? parseInt(data.previousAttempts || '0') : null,
           },
         ])
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        throw error
+      }
 
+      console.log('Profile updated successfully')
       setShowForm(false)
       toast.success('Profile updated successfully')
     } catch (error) {
