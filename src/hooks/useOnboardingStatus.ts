@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
 export const useOnboardingStatus = () => {
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(true)
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false) // Start with false instead of true
   const [isLoading, setIsLoading] = useState(true)
   const { user } = useAuth()
 
@@ -22,9 +22,19 @@ export const useOnboardingStatus = () => {
           .eq('user_id', user.id)
           .single()
 
-        if (error) throw error
-
-        setHasCompletedOnboarding(!!data)
+        if (error) {
+          // If error is 'not found', it means user hasn't completed onboarding
+          if (error.code === 'PGRST116') {
+            console.log('User has not completed onboarding yet.')
+            setHasCompletedOnboarding(false)
+          } else {
+            throw error
+          }
+        } else {
+          // Data exists, onboarding was completed
+          console.log('User has completed onboarding:', data)
+          setHasCompletedOnboarding(true)
+        }
       } catch (error) {
         console.error('Error checking onboarding status:', error)
         setHasCompletedOnboarding(false)

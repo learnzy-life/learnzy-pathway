@@ -1,3 +1,4 @@
+
 import React from 'react'
 import Header from '../components/Header'
 import AnalyticsSection from '../components/landing/AnalyticsSection'
@@ -16,6 +17,8 @@ const Index = () => {
   const { user } = useAuth()
   const { hasCompletedOnboarding, isLoading } = useOnboardingStatus()
 
+  console.log('User auth state:', { user, hasCompletedOnboarding, isLoading })
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-white">
       {/* Countdown Timer at the top */}
@@ -26,7 +29,9 @@ const Index = () => {
       <main className="container mx-auto px-2 sm:px-6 pt-16 sm:pt-20 pb-10 sm:pb-16 overflow-hidden">
         {/* Show nudge only for logged in users who haven't completed onboarding */}
         {user && !isLoading && !hasCompletedOnboarding && (
-          <OnboardingNudge />
+          <div className="mb-8">
+            <OnboardingNudge />
+          </div>
         )}
 
         {/* Hero Section */}
