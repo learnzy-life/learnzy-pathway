@@ -5,22 +5,32 @@ import Header from '../components/Header'
 import AuthForm from '../components/auth/AuthForm'
 import AuthHeader from '../components/auth/AuthHeader'
 import { useAuth } from '../context/AuthContext'
+import { PostLoginForm } from '../components/auth/PostLoginForm'
+import { usePostLoginForm } from '../hooks/usePostLoginForm'
 
 const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true)
-  const { user, isLoading, bypassAuth, isDevelopmentBypass } = useAuth()
+  const { user, isLoading, isDevelopmentBypass } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const { showForm, setShowForm, handleSubmit } = usePostLoginForm()
 
   // Check if coming from a specific page that requires auth
   const from = location.state?.from || '/'
 
-  // If the user is already logged in, redirect to home page or the page they came from
+  // Show the form when user logs in
   useEffect(() => {
-    if ((user || isDevelopmentBypass) && !isLoading) {
+    if (user && !isLoading) {
+      setShowForm(true)
+    }
+  }, [user, isLoading])
+
+  // Only redirect after form is submitted or if in development bypass
+  useEffect(() => {
+    if (isDevelopmentBypass || (user && !showForm && !isLoading)) {
       navigate(from, { replace: true })
     }
-  }, [user, isLoading, navigate, from, isDevelopmentBypass])
+  }, [user, isLoading, navigate, from, isDevelopmentBypass, showForm])
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -44,18 +54,10 @@ const Auth: React.FC = () => {
               <AuthForm isLogin={isLogin} setIsLogin={setIsLogin} />
             </div>
           </div>
-
-          {/* Development bypass button - commented out for production */}
-          {/* <div className="mt-8 text-center">
-            <button
-              onClick={bypassAuth}
-              className="text-sm text-gray-500 hover:text-learnzy-purple"
-            >
-              [DEV] Bypass Authentication
-            </button>
-          </div> */}
         </div>
       </main>
+
+      <PostLoginForm isOpen={showForm} onSubmit={handleSubmit} />
     </div>
   )
 }
