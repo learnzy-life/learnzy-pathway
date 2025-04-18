@@ -20,7 +20,7 @@ const SubjectSelection: React.FC = () => {
       id: 'biology',
       title: 'Biology',
       description:
-        'Test your knowledge in cell biology, genetics, human physiology, ecology, and evolution.',
+        'Identify mark-losing areas in cell biology, genetics, human physiology, ecology, and evolution.',
       icon: '🧬',
       color: 'bg-learnzy-amber',
       attempted: false,
@@ -30,7 +30,7 @@ const SubjectSelection: React.FC = () => {
       id: 'physics',
       title: 'Physics',
       description:
-        'Assess your understanding of mechanics, thermodynamics, electromagnetism, and modern physics.',
+        'Pinpoint weakness in mechanics, thermodynamics, electromagnetism, and modern physics.',
       icon: '⚛️',
       color: 'bg-learnzy-amber/80',
       attempted: false,
@@ -40,7 +40,7 @@ const SubjectSelection: React.FC = () => {
       id: 'chemistry',
       title: 'Chemistry',
       description:
-        'Evaluate your mastery in organic chemistry, inorganic chemistry, physical chemistry, and biochemistry.',
+        'Discover mark-losing topics in organic chemistry, inorganic chemistry, physical chemistry, and biochemistry.',
       icon: '⚗️',
       color: 'bg-learnzy-amber/90',
       attempted: false,

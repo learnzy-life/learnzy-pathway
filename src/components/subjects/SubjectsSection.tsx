@@ -1,3 +1,4 @@
+
 import { Beaker } from 'lucide-react'
 import React from 'react'
 import SectionHeader from '../SectionHeader'
@@ -20,15 +21,15 @@ const SubjectsSection: React.FC<SubjectsSectionProps> = ({ subjects }) => {
     <section className="py-12 md:py-16">
       <div className="text-center mb-12">
         <h1 className="text-3xl md:text-4xl font-display font-bold mb-4">
-          Select a Subject for Your Diagnostic Test
+          Know Where You'll Lose Marks in NEET 2025
         </h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Choose a subject to begin your diagnostic journey. Each test contains
+          Take targeted diagnostic tests to identify your weak areas. Each test contains
           180 questions and takes approximately 180 minutes to complete.
         </p>
       </div>
 
-      <SectionHeader icon={Beaker} title="Diagnostic Subject Tests" />
+      <SectionHeader icon={Beaker} title="Know Where You'll Lose Marks in NEET 2025" />
 
       <SubjectsList subjects={subjects} />
     </section>
