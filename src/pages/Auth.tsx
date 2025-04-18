@@ -13,17 +13,24 @@ const Auth: React.FC = () => {
   const { user, isLoading, isDevelopmentBypass } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const { showForm, setShowForm, handleSubmit } = usePostLoginForm()
+  const { showForm, setShowForm, handleSubmit, hasUserDetails } = usePostLoginForm()
 
-  // Check if coming from a specific page that requires auth
   const from = location.state?.from || '/'
 
-  // Show the form when user logs in
+  // Show the form when new user logs in
   useEffect(() => {
     if (user && !isLoading) {
-      setShowForm(true)
+      hasUserDetails().then(hasDetails => {
+        // For new users, show form and require completion
+        if (!hasDetails) {
+          setShowForm(true)
+        } else {
+          // For existing users, navigate directly
+          navigate(from, { replace: true })
+        }
+      })
     }
-  }, [user, isLoading, setShowForm])
+  }, [user, isLoading, setShowForm, hasUserDetails, navigate, from])
 
   // Only redirect after form is submitted or if in development bypass
   useEffect(() => {
@@ -32,7 +39,6 @@ const Auth: React.FC = () => {
     }
   }, [user, isLoading, navigate, from, isDevelopmentBypass, showForm])
 
-  // Show loading state while checking authentication
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -57,7 +63,6 @@ const Auth: React.FC = () => {
         </div>
       </main>
 
-      {/* Always render the form component but control visibility with the open prop */}
       <PostLoginForm isOpen={showForm} onSubmit={handleSubmit} />
     </div>
   )

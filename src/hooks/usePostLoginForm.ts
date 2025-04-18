@@ -13,6 +13,24 @@ export type UserDetails = {
 export function usePostLoginForm() {
   const [showForm, setShowForm] = useState(false)
 
+  const hasUserDetails = async () => {
+    try {
+      const user = await supabase.auth.getUser()
+      if (!user.data.user) return false
+
+      const { data, error } = await supabase
+        .from('user_details')
+        .select('*')
+        .eq('user_id', user.data.user.id)
+        .single()
+
+      if (error || !data) return false
+      return true
+    } catch {
+      return false
+    }
+  }
+
   const handleSubmit = async (data: UserDetails) => {
     try {
       console.log('Submitting form data:', data)
@@ -55,5 +73,6 @@ export function usePostLoginForm() {
     showForm,
     setShowForm,
     handleSubmit,
+    hasUserDetails
   }
 }

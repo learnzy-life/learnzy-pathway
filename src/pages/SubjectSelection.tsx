@@ -1,10 +1,12 @@
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import Header from '../components/Header'
 import MockTestCycles from '../components/mock-tests/MockTestCycles'
 import SubjectsSection from '../components/subjects/SubjectsSection'
 import { useAuth } from '../context/AuthContext'
 import { useMockTests } from '../hooks/mock-tests/useMockTests'
+import { usePostLoginForm } from '../hooks/usePostLoginForm'
+import { toast } from 'sonner'
 
 const SubjectSelection: React.FC = () => {
   const { user } = useAuth()
@@ -14,6 +16,27 @@ const SubjectSelection: React.FC = () => {
     unlockedCycles,
     handleMockTestClick,
   } = useMockTests(user?.id)
+
+  const { hasUserDetails, setShowForm } = usePostLoginForm()
+
+  useEffect(() => {
+    const checkUserDetails = async () => {
+      const hasDetails = await hasUserDetails()
+      if (!hasDetails) {
+        toast("Complete your profile to enhance your learning experience", {
+          action: {
+            label: "Complete Profile",
+            onClick: () => setShowForm(true)
+          },
+          duration: 10000, // Show for 10 seconds
+        })
+      }
+    }
+    
+    if (user) {
+      checkUserDetails()
+    }
+  }, [user])
 
   const subjects = [
     {

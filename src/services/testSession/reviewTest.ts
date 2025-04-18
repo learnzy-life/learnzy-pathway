@@ -1,4 +1,5 @@
-import { QuestionResultType } from '@/types/testTypes'
+
+import { QuestionResultType } from '../../types/testTypes'
 import { supabase } from '../../lib/supabase'
 
 export const reviewTest = async (
