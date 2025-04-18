@@ -22,6 +22,7 @@ import Results from './pages/Results'
 import SubjectSelection from './pages/SubjectSelection'
 import Test from './pages/Test'
 import TestReview from './pages/TestReview'
+import Onboarding from './pages/Onboarding'
 import { loadRazorpayScript } from './utils/loadScript'
 
 function AppContent() {
@@ -34,7 +35,6 @@ function AppContent() {
     setIsAuthPage(location.pathname === '/auth')
   }, [location])
 
-  // Conditionally bypass authentication in development
   useEffect(() => {
     if (process.env.NODE_ENV === 'development' && isDevelopmentBypass) {
       console.log('Authentication bypass enabled in development.')
@@ -44,7 +44,6 @@ function AppContent() {
     }
   }, [isDevelopmentBypass, location, navigate])
 
-  // Preload Razorpay script on app initialization
   useEffect(() => {
     loadRazorpayScript().catch((err) => {
       console.error('Failed to load Razorpay script:', err)
@@ -151,6 +150,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <PreDynamicTest />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <Onboarding />
             </ProtectedRoute>
           }
         />

@@ -13,7 +13,7 @@ const Auth: React.FC = () => {
   const location = useLocation()
 
   // Check if coming from a specific page that requires auth
-  const from = location.state?.from || '/'
+  const from = location.state?.from || '/onboarding' // Changed from '/' to '/onboarding'
 
   // If the user is already logged in, redirect to home page or the page they came from
   useEffect(() => {

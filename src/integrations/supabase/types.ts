@@ -618,6 +618,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_details: {
+        Row: {
+          created_at: string | null
+          full_name: string
+          id: string
+          is_first_attempt: boolean
+          mobile_number: string
+          previous_attempts: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          full_name: string
+          id?: string
+          is_first_attempt: boolean
+          mobile_number: string
+          previous_attempts?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string
+          id?: string
+          is_first_attempt?: boolean
+          mobile_number?: string
+          previous_attempts?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
