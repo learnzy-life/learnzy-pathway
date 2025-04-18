@@ -11,6 +11,8 @@ export interface QuestionResult {
   timeTaken?: number;
   tags?: string[];
   // Metadata fields
+  Subject?: string; // Added Subject property
+  subject?: string; // Added subject property
   Chapter_name?: string;
   Topic?: string;
   Subtopic?: string;
