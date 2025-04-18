@@ -1,4 +1,3 @@
-
 import React from 'react'
 import Header from '../components/Header'
 import AnalyticsSection from '../components/landing/AnalyticsSection'
@@ -9,8 +8,14 @@ import WellnessSection from '../components/landing/WellnessSection'
 import CountdownTimer from '../components/landing/CountdownTimer'
 import YoutubeVideo from '../components/landing/YoutubeVideo'
 import MockTestCyclesSection from '../components/landing/MockTestCyclesSection'
+import { useAuth } from '../context/AuthContext'
+import { useOnboardingStatus } from '../hooks/useOnboardingStatus'
+import OnboardingNudge from '../components/OnboardingNudge'
 
 const Index = () => {
+  const { user } = useAuth()
+  const { hasCompletedOnboarding, isLoading } = useOnboardingStatus()
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-white">
       {/* Countdown Timer at the top */}
@@ -19,6 +24,11 @@ const Index = () => {
       <Header />
 
       <main className="container mx-auto px-2 sm:px-6 pt-16 sm:pt-20 pb-10 sm:pb-16 overflow-hidden">
+        {/* Show nudge only for logged in users who haven't completed onboarding */}
+        {user && !isLoading && !hasCompletedOnboarding && (
+          <OnboardingNudge />
+        )}
+
         {/* Hero Section */}
         <HeroSection />
 
