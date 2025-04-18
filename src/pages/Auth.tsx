@@ -5,40 +5,24 @@ import Header from '../components/Header'
 import AuthForm from '../components/auth/AuthForm'
 import AuthHeader from '../components/auth/AuthHeader'
 import { useAuth } from '../context/AuthContext'
-import { PostLoginForm } from '../components/auth/PostLoginForm'
-import { usePostLoginForm } from '../hooks/usePostLoginForm'
 
 const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true)
-  const { user, isLoading, isDevelopmentBypass } = useAuth()
+  const { user, isLoading, bypassAuth, isDevelopmentBypass } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const { showForm, setShowForm, handleSubmit, hasUserDetails } = usePostLoginForm()
 
+  // Check if coming from a specific page that requires auth
   const from = location.state?.from || '/'
 
-  // Show the form when new user logs in
+  // If the user is already logged in, redirect to home page or the page they came from
   useEffect(() => {
-    if (user && !isLoading) {
-      hasUserDetails().then(hasDetails => {
-        // For new users, show form and require completion
-        if (!hasDetails) {
-          setShowForm(true)
-        } else {
-          // For existing users, navigate directly
-          navigate(from, { replace: true })
-        }
-      })
-    }
-  }, [user, isLoading, setShowForm, hasUserDetails, navigate, from])
-
-  // Only redirect after form is submitted or if in development bypass
-  useEffect(() => {
-    if (isDevelopmentBypass || (user && !showForm && !isLoading)) {
+    if ((user || isDevelopmentBypass) && !isLoading) {
       navigate(from, { replace: true })
     }
-  }, [user, isLoading, navigate, from, isDevelopmentBypass, showForm])
+  }, [user, isLoading, navigate, from, isDevelopmentBypass])
 
+  // Show loading state while checking authentication
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -60,10 +44,18 @@ const Auth: React.FC = () => {
               <AuthForm isLogin={isLogin} setIsLogin={setIsLogin} />
             </div>
           </div>
+
+          {/* Development bypass button - commented out for production */}
+          {/* <div className="mt-8 text-center">
+            <button
+              onClick={bypassAuth}
+              className="text-sm text-gray-500 hover:text-learnzy-purple"
+            >
+              [DEV] Bypass Authentication
+            </button>
+          </div> */}
         </div>
       </main>
-
-      <PostLoginForm isOpen={showForm} onSubmit={handleSubmit} />
     </div>
   )
 }
