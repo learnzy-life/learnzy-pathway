@@ -66,7 +66,7 @@ const Onboarding: React.FC = () => {
       if (emailResponse.error) throw emailResponse.error
 
       toast.success('Profile completed! Check your email for the Physics Formula Book.')
-      navigate('/')
+      navigate('/subjects')  // Changed from '/' to '/subjects'
     } catch (error) {
       console.error('Error saving user details:', error)
       toast.error('Failed to save details. Please try again.')
