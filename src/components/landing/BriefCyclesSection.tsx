@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 const BriefCyclesSection: React.FC = () => {
   return (
-    <section className="py-8 md:py-12 mb-12 bg-[#FFF9E6] rounded-xl">
+    <section className="py-6 md:py-8 mb-8 bg-[#FFF9E6] rounded-xl">
       <div className="container mx-auto px-4">
         <div className="text-center mb-6">
           <h2 className="text-2xl md:text-3xl font-bold mb-1">Your Path to NEET Success</h2>

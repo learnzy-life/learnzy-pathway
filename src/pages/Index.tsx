@@ -1,4 +1,3 @@
-
 import React from 'react'
 import Header from '../components/Header'
 import SuccessStoriesSection from '../components/landing/SuccessStoriesSection'
@@ -24,39 +23,21 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-white">
       <Header />
 
-      <main className="container mx-auto px-2 sm:px-6 pt-16 sm:pt-20 pb-10 sm:pb-16 overflow-hidden">
-        {/* Show nudge only for logged in users who haven't completed onboarding */}
+      <main className="container mx-auto px-2 sm:px-6 pt-8 sm:pt-12 pb-6 sm:pb-10 overflow-hidden">
         {user && !isLoading && !hasCompletedOnboarding && (
-          <div className="mb-8">
+          <div className="mb-6">
             <OnboardingNudge />
           </div>
         )}
 
-        {/* Hero Section */}
         <HeroSection />
-
-        {/* Success Stories Section */}
         <SuccessStoriesSection />
-        
-        {/* Free Resources Section */}
         <FreeResourcesSection />
-
-        {/* Brief Cycles Section - New addition */}
         <BriefCyclesSection />
-
-        {/* Why Learnzy Section */}
         <WhyLearnzySection />
-
-        {/* Student Feedback Section */}
         <StudentFeedbackSection />
-        
-        {/* YouTube Video Tutorial Section */}
         <YoutubeVideo />
-
-        {/* Analytics Section */}
         <AnalyticsSection />
-
-        {/* Footer Section */}
         <FooterSection />
       </main>
     </div>

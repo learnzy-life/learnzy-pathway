@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { BarChart, BrainCircuit, Sparkles, CheckCircle, LineChart, PieChart } from 'lucide-react';
 import SectionHeader from '../SectionHeader';
 
 const AnalyticsSection: React.FC = () => {
   return (
-    <section className="py-10 md:py-16 relative px-3 sm:px-0">
+    <section className="py-6 md:py-8 relative px-3 sm:px-0 mb-8">
       {/* Background Element */}
       <div className="absolute top-40 right-0 opacity-5 w-48 md:w-72 h-48 md:h-72" aria-hidden="true">
         <BarChart className="w-full h-full text-blue-400" />

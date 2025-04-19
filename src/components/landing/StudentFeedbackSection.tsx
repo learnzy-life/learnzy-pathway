@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 
 const testimonials = [
   {
@@ -25,18 +27,29 @@ const testimonials = [
 
 const StudentFeedbackSection: React.FC = () => {
   return (
-    <section className="py-12 md:py-16 mb-16">
+    <section className="py-6 md:py-8 mb-8">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h2 className="text-2xl md:text-3xl font-bold mb-2">Student Feedback</h2>
           <p className="text-muted-foreground">Hear from students who achieved their goals with Learnzy</p>
         </div>
         
-        <Carousel className="max-w-5xl mx-auto">
+        <Carousel 
+          className="max-w-5xl mx-auto"
+          opts={{
+            align: "center",
+            loop: true,
+          }}
+          plugins={[
+            Autoplay({
+              delay: 4000,
+            }),
+          ]}
+        >
           <CarouselContent>
             {testimonials.map((testimonial) => (
               <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/2 px-2">
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100 h-full flex flex-col">
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100 h-full flex flex-col transform transition-transform duration-300 hover:scale-[1.02]">
                   <div className="mb-4">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <span key={star} className="text-amber-400 text-lg">★</span>
