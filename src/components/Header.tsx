@@ -1,4 +1,3 @@
-
 import { Menu, User, X } from 'lucide-react'
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
@@ -22,13 +21,12 @@ const Header: React.FC = () => {
     closeMenu()
   }
 
-  // Modified navItems array to only include Home
   const navItems = [
     { name: 'Home', path: '/' }
   ]
 
   return (
-    <header className="fixed w-full bg-white border-b border-gray-100 z-50">
+    <header className="fixed w-full bg-white border-b border-gray-100 z-50 top-4 sm:top-6">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center">
@@ -36,23 +34,6 @@ const Header: React.FC = () => {
               Learnzy
             </span>
           </Link>
-
-          {/* Desktop navigation */}
-          {/* <nav className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`nav-link ${
-                  location.pathname === item.path
-                    ? 'text-learnzy-purple font-medium'
-                    : 'text-muted-foreground hover:text-learnzy-dark'
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav> */}
 
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
@@ -78,7 +59,6 @@ const Header: React.FC = () => {
             )}
           </div>
 
-          {/* Mobile menu button */}
           <button
             onClick={toggleMenu}
             className="md:hidden flex items-center p-2"
@@ -93,7 +73,6 @@ const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile navigation */}
       {isOpen && (
         <div className="md:hidden bg-white border-t border-gray-100">
           <div className="container mx-auto px-4 py-3">
