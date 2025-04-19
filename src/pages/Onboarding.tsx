@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -44,6 +45,7 @@ const Onboarding: React.FC = () => {
     setIsLoading(true)
 
     try {
+      // Save user details
       const { error } = await supabase
         .from('user_details')
         .insert({
@@ -56,7 +58,14 @@ const Onboarding: React.FC = () => {
 
       if (error) throw error
 
-      toast.success('Details saved successfully!')
+      // Send formula book email
+      const emailResponse = await supabase.functions.invoke('send-formula-book', {
+        body: { email: user.email, name: fullName }
+      })
+
+      if (emailResponse.error) throw emailResponse.error
+
+      toast.success('Profile completed! Check your email for the Physics Formula Book.')
       navigate('/')
     } catch (error) {
       console.error('Error saving user details:', error)
@@ -149,7 +158,7 @@ const Onboarding: React.FC = () => {
 
           <Button
             type="submit"
-            className="w-full py-3 mt-2 text-base font-medium bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-600 hover:to-amber-500 text-white shadow-md rounded-lg transition-all duration-200"
+            className="w-full py-3 mt-2 text-sm sm:text-base font-medium bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-600 hover:to-amber-500 text-white shadow-md rounded-lg transition-all duration-200"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -158,7 +167,7 @@ const Onboarding: React.FC = () => {
                 Saving...
               </div>
             ) : (
-              'Continue'
+              'Submit & Get Physics Formula Book'
             )}
           </Button>
         </form>
