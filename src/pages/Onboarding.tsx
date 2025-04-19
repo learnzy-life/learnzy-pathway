@@ -57,7 +57,7 @@ const Onboarding: React.FC = () => {
       if (error) throw error
 
       toast.success('Details saved successfully!')
-      navigate('/')
+      navigate('/subjects')
     } catch (error) {
       console.error('Error saving user details:', error)
       toast.error('Failed to save details. Please try again.')

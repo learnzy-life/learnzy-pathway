@@ -1,0 +1,25 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Project Structure Overview
+
+This is a React application using TypeScript, Vite, and Supabase. The project follows these organizational principles:
+
+- [src/](mdc:src) - Main application code
+  - [src/components/](mdc:src/components) - UI components only, no business logic
+  - [src/services/](mdc:src/services) - Business logic and async handlers
+  - [src/hooks/](mdc:src/hooks) - React hooks for stateful logic
+  - [src/utils/](mdc:src/utils) - Utility functions (stateless helpers)
+  - [src/lib/](mdc:src/lib) - Library code and stateless helpers
+  - [src/context/](mdc:src/context) - React context providers
+  - [src/pages/](mdc:src/pages) - Page components and routes
+  - [src/types/](mdc:src/types) - TypeScript type definitions
+
+- [supabase/](mdc:supabase) - Supabase configuration and functions
+  - Project ID: duvqdpyxrkdmoyizepqv
+
+Entry points:
+- [src/main.tsx](mdc:src/main.tsx) - Application entry point
+- [src/App.tsx](mdc:src/App.tsx) - Main application component

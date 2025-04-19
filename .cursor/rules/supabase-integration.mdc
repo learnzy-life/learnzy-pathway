@@ -1,0 +1,43 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Supabase Integration Guidelines
+
+This application uses Supabase for backend services. Follow these guidelines:
+
+1. **Project Information**
+   - Project ID: duvqdpyxrkdmoyizepqv
+   - Always use this project ID for Supabase access
+
+2. **Database Access**
+   - All database operations should be in service files
+   - Keep database logic separate from UI components
+   - Use typed responses from Supabase queries
+   - Handle errors appropriately
+
+3. **Authentication**
+   - Use Supabase Auth for user authentication
+   - Protect sensitive routes with [src/components/ProtectedRoute.tsx](mdc:src/components/ProtectedRoute.tsx)
+   - Handle auth state changes properly
+
+4. **Storage**
+   - Use Supabase Storage for file uploads
+   - Follow bucket naming conventions
+   - Set proper security rules for buckets
+
+5. **Edge Functions**
+   - Serverless functions should be in [supabase/functions/](mdc:supabase/functions)
+   - Keep functions small and focused
+
+6. **Migrations**
+   - Database schema changes should be tracked properly
+   - Use migration files when applicable
+
+7. **Security**
+   - Never expose sensitive credentials in client-side code
+   - Use Row Level Security (RLS) for data protection
+   - Follow least privilege principle
+
+When working with Supabase, follow these patterns to ensure consistent and secure data access.

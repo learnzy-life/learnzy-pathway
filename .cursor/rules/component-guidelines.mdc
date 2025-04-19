@@ -1,0 +1,21 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Component Guidelines
+
+Components should follow these guidelines:
+
+1. Components should be UI-only. They should not contain business logic.
+2. Business logic should be extracted to hooks or services.
+3. Use TypeScript for type safety. Define proper prop types for each component.
+4. Components should be organized by feature or domain.
+5. Use the UI components from [src/components/ui/](mdc:src/components/ui) for consistent styling.
+6. For layouts and complex UI, reference existing components like [src/components/Header.tsx](mdc:src/components/Header.tsx).
+7. Follow the established naming conventions (PascalCase for components).
+8. Components should be composition-friendly and reusable when possible.
+9. For responsive design, use the `use-mobile` hook: [src/hooks/use-mobile.tsx](mdc:src/hooks/use-mobile.tsx).
+10. Use the Shadcn UI component system as configured in [components.json](mdc:components.json).
+
+When creating new components, keep them focused, maintainable, and consistent with the existing codebase.

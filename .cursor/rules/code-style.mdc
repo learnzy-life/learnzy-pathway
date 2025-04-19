@@ -1,0 +1,42 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Code Style Guidelines
+
+This project follows these code style guidelines:
+
+1. **TypeScript**
+   - Use TypeScript for all new code
+   - Define proper interfaces and types in [src/types/](mdc:src/types/)
+   - Use proper type annotations instead of `any`
+   - Prefer explicit return types for functions
+
+2. **File Organization**
+   - One component per file
+   - Use named exports (not default exports)
+   - Group related functionality in directories
+   - Follow the established directory structure
+
+3. **Naming Conventions**
+   - PascalCase for components and types
+   - camelCase for variables, functions, and instances
+   - Use descriptive, semantic names
+   - Prefix hooks with "use" (e.g., useProfileData)
+
+4. **Code Quality**
+   - Treat `// FIXME:` comments as mandatory correction points
+   - Write small, focused units of code
+   - Label and comment complex logic appropriately
+   - Follow ESLint configuration in [eslint.config.js](mdc:eslint.config.js)
+
+5. **Testing**
+   - Ensure code works as expected
+   - Write and run tests for critical functionality
+
+6. **CSS/Styling**
+   - Use Tailwind CSS as configured in [tailwind.config.ts](mdc:tailwind.config.ts)
+   - For complex components, reference existing styles
+
+Always maintain high code quality and consistency with the existing codebase.
