@@ -1,6 +1,13 @@
-
 import { supabase } from '../../lib/supabase'
 import { loadRazorpayScript } from '../../utils/loadScript'
+
+// Define API base URL from environment variables with fallback
+// FIXME: move to env variables
+const API_BASE_URL = 'https://api.learnzy.co.in'
+// const API_BASE_URL = 'http://localhost:3000'
+
+// Add logging to understand what endpoints we're using
+console.log(`Payment Service: Using API endpoints at ${API_BASE_URL}`)
 
 interface PaymentResult {
   success: boolean
@@ -9,7 +16,7 @@ interface PaymentResult {
 }
 
 /**
- * Create a Razorpay order using Supabase Edge Function
+ * Create a Razorpay order using API endpoint
  */
 export const createGlobalRazorpayOrder = async (): Promise<{
   success: boolean
@@ -20,16 +27,29 @@ export const createGlobalRazorpayOrder = async (): Promise<{
   error?: string
 }> => {
   try {
-    // Call the Supabase Edge Function
-    const { data, error } = await supabase.functions.invoke(
-      'create-razorpay-order',
-      {
-        method: 'POST',
-        // Removed 'mode' property as it's not in the FunctionInvokeOptions type
-      }
-    )
+    // Get the current session for the auth token
+    const { data: sessionData } = await supabase.auth.getSession()
+    const accessToken = sessionData?.session?.access_token
 
-    if (error) throw error
+    if (!accessToken) {
+      throw new Error('User not authenticated')
+    }
+
+    // Call the API endpoint
+    const response = await fetch(`${API_BASE_URL}/api/create-razorpay-order`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      }
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to create order')
+    }
+
     return data
   } catch (error) {
     console.error('Error in createGlobalRazorpayOrder:', error)
@@ -41,7 +61,7 @@ export const createGlobalRazorpayOrder = async (): Promise<{
 }
 
 /**
- * Verify a Razorpay payment using Supabase Edge Function
+ * Verify a Razorpay payment using API endpoint
  */
 export const verifyGlobalRazorpayPayment = async (
   orderId: string,
@@ -49,20 +69,34 @@ export const verifyGlobalRazorpayPayment = async (
   signature: string
 ): Promise<boolean> => {
   try {
-    // Call the Supabase Edge Function
-    const { data, error } = await supabase.functions.invoke(
-      'verify-razorpay-payment',
-      {
-        method: 'POST',
-        body: {
-          razorpay_order_id: orderId,
-          razorpay_payment_id: paymentId,
-          razorpay_signature: signature,
-        },
-      }
-    )
+    // Get the current session for the auth token
+    const { data: sessionData } = await supabase.auth.getSession()
+    const accessToken = sessionData?.session?.access_token
 
-    if (error) throw error
+    if (!accessToken) {
+      throw new Error('User not authenticated')
+    }
+
+    // Call the API endpoint
+    const response = await fetch(`${API_BASE_URL}/api/verify-razorpay-payment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({
+        razorpay_order_id: orderId,
+        razorpay_payment_id: paymentId,
+        razorpay_signature: signature,
+      })
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Payment verification failed')
+    }
+
     return data.success
   } catch (error) {
     console.error('Error in verifyGlobalRazorpayPayment:', error)
@@ -82,7 +116,7 @@ export const initiateGlobalPayment = async (): Promise<PaymentResult> => {
       throw new Error('Failed to load Razorpay script')
     }
 
-    // Create order via Edge Function
+    // Create order via API endpoint
     const orderData = await createGlobalRazorpayOrder()
     if (!orderData.success || !orderData.orderId) {
       throw new Error(orderData.error || 'Failed to create order')
@@ -91,7 +125,6 @@ export const initiateGlobalPayment = async (): Promise<PaymentResult> => {
     console.log('orderData', orderData)
     console.log('routing to payment page')
 
-    // FIXME: This never happenes?
     // Return a promise that resolves when payment completes
     return new Promise((resolve) => {
       const rzp = new window.Razorpay({
@@ -102,7 +135,7 @@ export const initiateGlobalPayment = async (): Promise<PaymentResult> => {
         description: 'Unlock All Learning Cycles',
         order_id: orderData.orderId,
         handler: function (response: any) {
-          // Verify payment with our Edge Function
+          // Verify payment
           verifyGlobalRazorpayPayment(
             response.razorpay_order_id,
             response.razorpay_payment_id,

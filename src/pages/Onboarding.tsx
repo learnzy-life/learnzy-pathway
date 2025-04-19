@@ -71,7 +71,7 @@ const Onboarding: React.FC = () => {
       <DialogContent className="sm:max-w-[450px] max-w-[95vw] p-0 overflow-hidden bg-white rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border-0">
         <div className="bg-gradient-to-r from-amber-500 to-amber-400 p-5 text-white">
           <DialogHeader className="space-y-2">
-            <DialogTitle className="text-2xl font-bold text-center">Complete Your Profile</DialogTitle>
+            <DialogTitle className="text-2xl font-semibold text-center">Complete Your Profile</DialogTitle>
           </DialogHeader>
         </div>
 
