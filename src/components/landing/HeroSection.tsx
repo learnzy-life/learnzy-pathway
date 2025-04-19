@@ -1,3 +1,4 @@
+
 import { ArrowRight } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -17,7 +18,7 @@ const HeroSection: React.FC = () => {
         </span>{' '}
         in{' '}
         <span className="text-amber-500 text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
-          20 Days
+          20 Days*
         </span>{' '}
         with Learnzy
       </h1>
