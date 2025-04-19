@@ -10,13 +10,15 @@ interface CycleInfoProps {
 }
 
 const CycleInfo: React.FC<CycleInfoProps> = ({ cycle, isUnlocked, onUnlockClick }) => {
+  const IconComponent = cycle.icon;
+  
   return (
     <Card className="bg-gradient-to-r from-amber-50 to-amber-100 border-amber-200 mb-6">
       <CardContent className="p-4 sm:p-5">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-start space-x-3">
             <div className="w-10 h-10 bg-amber-200 rounded-full flex items-center justify-center mr-2 mt-1">
-              {cycle.icon}
+              <IconComponent size={20} />
             </div>
 
             <div>

@@ -9,6 +9,7 @@ export interface CycleData {
   testDescription: string;
   icon: LucideIcon;
   goal: string;
+  info?: string; // Added this optional property to fix errors
 }
 
 export const getCyclesData = (): CycleData[] => {
@@ -19,7 +20,8 @@ export const getCyclesData = (): CycleData[] => {
       focus: "Core knowledge and concepts",
       testDescription: "4 topic-based tests + 1 personalized test",
       icon: Book,
-      goal: "Master fundamentals"
+      goal: "Master fundamentals",
+      info: "Build your foundational knowledge with core concepts and essential topics"
     },
     {
       number: 2,
@@ -27,7 +29,8 @@ export const getCyclesData = (): CycleData[] => {
       focus: "Strengthen weak areas identified in Cycle 1",
       testDescription: "4 topic-based tests + 1 personalized test",
       icon: Brain,
-      goal: "Build confidence"
+      goal: "Build confidence",
+      info: "Targeting improvement in areas where you need the most help"
     },
     {
       number: 3,
@@ -35,7 +38,8 @@ export const getCyclesData = (): CycleData[] => {
       focus: "Higher-level application and NCERT extra",
       testDescription: "4 topic-based tests + 1 personalized test",
       icon: CheckCircle,
-      goal: "Deepen understanding"
+      goal: "Deepen understanding",
+      info: "Challenge yourself with advanced concepts and applications"
     },
     {
       number: 4,
@@ -43,7 +47,8 @@ export const getCyclesData = (): CycleData[] => {
       focus: "Full-length tests with previous years' questions",
       testDescription: "4 topic-based tests + 1 personalized test",
       icon: Target,
-      goal: "Achieve exam readiness"
+      goal: "Achieve exam readiness",
+      info: "Final preparation with comprehensive tests similar to the actual exam"
     }
   ];
 };

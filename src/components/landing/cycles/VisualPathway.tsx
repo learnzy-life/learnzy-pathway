@@ -19,7 +19,7 @@ export const DesktopVisualPathway: React.FC<VisualPathwayProps> = ({ cycles }) =
             <CycleInfo 
               number={cycle.number}
               title={`Cycle ${cycle.number}: ${cycle.title}`}
-              description={cycle.info}
+              description={cycle.info || cycle.focus}
               goal={cycle.goal}
             />
 
@@ -53,7 +53,7 @@ export const MobileVisualPathway: React.FC<VisualPathwayProps> = ({ cycles }) =>
               <CycleInfo 
                 number={cycle.number}
                 title={`Cycle ${cycle.number}: ${cycle.title}`}
-                description={cycle.info}
+                description={cycle.info || cycle.focus}
                 goal={cycle.goal}
               />
             </div>

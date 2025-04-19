@@ -1,3 +1,4 @@
+
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import React from 'react'
 import { useGlobalPayment } from '../../context/GlobalPaymentContext'
@@ -70,19 +71,22 @@ const MockTestCycles: React.FC<MockTestCyclesProps> = ({
 
       <Tabs defaultValue="cycle-1" className="w-full">
         <TabsList className="grid grid-cols-4 mb-6 w-full md:w-3/4 mx-auto">
-          {cycles.map((cycle) => (
-            <TabsTrigger
-              key={cycle.number}
-              value={`cycle-${cycle.number}`}
-              className="flex items-center"
-            >
-              <span className="w-6 h-6 flex items-center justify-center rounded-full bg-learnzy-amber/20 mr-2">
-                {cycle.icon}
-              </span>
-              <span className="hidden md:inline">Cycle {cycle.number}</span>
-              <span className="md:hidden">C{cycle.number}</span>
-            </TabsTrigger>
-          ))}
+          {cycles.map((cycle) => {
+            const CycleIcon = cycle.icon;
+            return (
+              <TabsTrigger
+                key={cycle.number}
+                value={`cycle-${cycle.number}`}
+                className="flex items-center"
+              >
+                <span className="w-6 h-6 flex items-center justify-center rounded-full bg-learnzy-amber/20 mr-2">
+                  <CycleIcon size={14} />
+                </span>
+                <span className="hidden md:inline">Cycle {cycle.number}</span>
+                <span className="md:hidden">C{cycle.number}</span>
+              </TabsTrigger>
+            );
+          })}
         </TabsList>
 
         {cycles.map((cycle) => {
