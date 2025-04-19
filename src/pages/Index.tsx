@@ -4,7 +4,6 @@ import Header from '../components/Header'
 import SuccessStoriesSection from '../components/landing/SuccessStoriesSection'
 import WhyLearnzySection from '../components/landing/WhyLearnzySection'
 import HeroSection from '../components/landing/HeroSection'
-import WellnessSection from '../components/landing/WellnessSection'
 import YoutubeVideo from '../components/landing/YoutubeVideo'
 import FreeResourcesSection from '../components/landing/FreeResourcesSection'
 import StudentFeedbackSection from '../components/landing/StudentFeedbackSection'
@@ -49,9 +48,6 @@ const Index = () => {
         
         {/* YouTube Video Tutorial Section */}
         <YoutubeVideo />
-
-        {/* Wellness Section */}
-        <WellnessSection />
 
         {/* Analytics Section */}
         <AnalyticsSection />
