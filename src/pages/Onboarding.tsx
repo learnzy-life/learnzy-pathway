@@ -1,18 +1,17 @@
-
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { supabase } from '../lib/supabase'
-import { useAuth } from '../context/AuthContext'
 import { Button } from '../components/ui/button'
-import { Input } from '../components/ui/input'
-import { Label } from '../components/ui/label'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '../components/ui/dialog'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
+import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabase'
 
 const Onboarding: React.FC = () => {
   const [fullName, setFullName] = useState('')
@@ -20,13 +19,13 @@ const Onboarding: React.FC = () => {
   const [isFirstAttempt, setIsFirstAttempt] = useState<boolean | null>(null)
   const [previousAttempts, setPreviousAttempts] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  
+
   const { user } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!user) {
       toast.error('User not authenticated')
       return
@@ -69,40 +68,51 @@ const Onboarding: React.FC = () => {
 
   return (
     <Dialog open={true}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center mb-4">Complete Your Profile</DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[450px] max-w-[95vw] p-0 overflow-hidden bg-white rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border-0">
+        <div className="bg-gradient-to-r from-amber-500 to-amber-400 p-5 text-white">
+          <DialogHeader className="space-y-2">
+            <DialogTitle className="text-2xl font-bold text-center">Complete Your Profile</DialogTitle>
+          </DialogHeader>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name</Label>
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          <div className="space-y-3">
+            <Label htmlFor="fullName" className="text-gray-700 font-medium">Full Name</Label>
             <Input
               id="fullName"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
+              placeholder="Enter your full name"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-400 focus:border-amber-400"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="mobileNumber">Mobile Number</Label>
+          <div className="space-y-3">
+            <Label htmlFor="mobileNumber" className="text-gray-700 font-medium">Mobile Number</Label>
             <Input
               id="mobileNumber"
               value={mobileNumber}
               onChange={(e) => setMobileNumber(e.target.value)}
               type="tel"
               required
+              placeholder="Enter your mobile number"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-400 focus:border-amber-400"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label>Is this your first NEET attempt?</Label>
-            <div className="flex gap-4">
+          <div className="space-y-3">
+            <Label className="text-gray-700 font-medium">Is this your first NEET attempt?</Label>
+            <div className="flex gap-3">
               <Button
                 type="button"
                 variant={isFirstAttempt === true ? "default" : "outline"}
                 onClick={() => setIsFirstAttempt(true)}
+                className={`flex-1 py-2 ${
+                  isFirstAttempt === true
+                    ? "bg-amber-500 hover:bg-amber-600 text-white"
+                    : "border-gray-200 text-gray-700 hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200"
+                }`}
               >
                 Yes
               </Button>
@@ -110,6 +120,11 @@ const Onboarding: React.FC = () => {
                 type="button"
                 variant={isFirstAttempt === false ? "default" : "outline"}
                 onClick={() => setIsFirstAttempt(false)}
+                className={`flex-1 py-2 ${
+                  isFirstAttempt === false
+                    ? "bg-amber-500 hover:bg-amber-600 text-white"
+                    : "border-gray-200 text-gray-700 hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200"
+                }`}
               >
                 No
               </Button>
@@ -117,8 +132,8 @@ const Onboarding: React.FC = () => {
           </div>
 
           {isFirstAttempt === false && (
-            <div className="space-y-2">
-              <Label htmlFor="previousAttempts">Number of Previous Attempts</Label>
+            <div className="space-y-3">
+              <Label htmlFor="previousAttempts" className="text-gray-700 font-medium">Number of Previous Attempts</Label>
               <Input
                 id="previousAttempts"
                 type="number"
@@ -126,13 +141,19 @@ const Onboarding: React.FC = () => {
                 value={previousAttempts}
                 onChange={(e) => setPreviousAttempts(e.target.value)}
                 required
+                placeholder="Enter number of attempts"
+                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-400 focus:border-amber-400"
               />
             </div>
           )}
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button
+            type="submit"
+            className="w-full py-3 mt-2 text-base font-medium bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-600 hover:to-amber-500 text-white shadow-md rounded-lg transition-all duration-200"
+            disabled={isLoading}
+          >
             {isLoading ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2">
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 Saving...
               </div>
