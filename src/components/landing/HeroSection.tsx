@@ -31,13 +31,13 @@ const HeroSection: React.FC = () => {
         Smart Prep + Calm Mind = Medical Seat
       </p>
 
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full max-w-xs sm:max-w-none sm:w-auto px-4 sm:px-0 mb-8">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full max-w-xs sm:max-w-none sm:w-auto px-4 sm:px-0">
         <Link
           to="/subjects"
-          className="button-primary w-full sm:w-auto"
+          className="button-primary w-full sm:w-auto flex items-center justify-center gap-2 bg-[#F4841B] hover:bg-[#E67816]"
           onClick={handleStartTestClick}
         >
-          Let's Make a Comeback <ArrowRight className="ml-2 w-5 h-5" />
+          Let's Make a Comeback <ArrowRight className="w-5 h-5" />
         </Link>
         <Link
           to="/learn-more"
@@ -48,7 +48,8 @@ const HeroSection: React.FC = () => {
         </Link>
       </div>
     </section>
-  )
+  );
 };
 
 export default HeroSection;
+
