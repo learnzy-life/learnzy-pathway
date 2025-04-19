@@ -27,10 +27,10 @@ const HeroSection: React.FC = () => {
         Smart Prep + Calm Mind = Medical Seat
       </p>
 
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full max-w-xs sm:max-w-none sm:w-auto px-4 sm:px-0">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full sm:w-auto px-4 sm:px-0">
         <Link
           to="/subjects"
-          className="button-primary w-full sm:w-auto flex items-center justify-center gap-2 bg-[#F4841B] hover:bg-[#E67816]"
+          className="button-primary w-full sm:w-auto flex items-center justify-center gap-2 bg-[#F4841B] hover:bg-[#E67816] text-center py-3 px-5 rounded-xl font-medium"
           onClick={handleStartTestClick}
         >
           Free Toppers Highlighted NCERT <ArrowRight className="w-5 h-5" />

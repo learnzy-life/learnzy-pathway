@@ -9,6 +9,7 @@ import FreeResourcesSection from '../components/landing/FreeResourcesSection'
 import StudentFeedbackSection from '../components/landing/StudentFeedbackSection'
 import AnalyticsSection from '../components/landing/AnalyticsSection'
 import FooterSection from '../components/landing/FooterSection'
+import BriefCyclesSection from '../components/landing/BriefCyclesSection'
 import { useAuth } from '../context/AuthContext'
 import { useOnboardingStatus } from '../hooks/useOnboardingStatus'
 import OnboardingNudge from '../components/OnboardingNudge'
@@ -34,11 +35,14 @@ const Index = () => {
         {/* Hero Section */}
         <HeroSection />
 
-        {/* Success Stories Section - Moved up */}
+        {/* Success Stories Section */}
         <SuccessStoriesSection />
-
+        
         {/* Free Resources Section */}
         <FreeResourcesSection />
+
+        {/* Brief Cycles Section - New addition */}
+        <BriefCyclesSection />
 
         {/* Why Learnzy Section */}
         <WhyLearnzySection />
