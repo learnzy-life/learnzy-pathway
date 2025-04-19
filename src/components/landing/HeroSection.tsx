@@ -1,4 +1,3 @@
-
 import { ArrowRight } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -30,10 +29,10 @@ const HeroSection: React.FC = () => {
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center w-full sm:w-auto px-4 sm:px-0">
         <Link
           to="/subjects"
-          className="button-primary w-full sm:w-auto flex items-center justify-center gap-2 bg-[#F4841B] hover:bg-[#E67816] text-center py-3 px-5 rounded-xl font-medium"
+          className="button-primary w-full sm:w-auto flex items-center justify-center gap-2 bg-[#F4841B] hover:bg-[#E67816] text-center py-3 px-4 sm:px-5 rounded-xl font-medium text-sm sm:text-base whitespace-nowrap"
           onClick={handleStartTestClick}
         >
-          Physics Formula BOOK <ArrowRight className="w-5 h-5" />
+          Free Physics Formula Book <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
         </Link>
       </div>
     </section>
