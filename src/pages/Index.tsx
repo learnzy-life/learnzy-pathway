@@ -35,28 +35,28 @@ const Index = () => {
         {/* Hero Section */}
         <HeroSection />
 
-        {/* Free Resources Section - Display directly without needing to click */}
-        <FreeResourcesSection />
-
-        {/* Success Stories Section - New section */}
+        {/* Success Stories Section - Moved up */}
         <SuccessStoriesSection />
 
-        {/* Why Learnzy Section - New section */}
+        {/* Free Resources Section */}
+        <FreeResourcesSection />
+
+        {/* Why Learnzy Section */}
         <WhyLearnzySection />
 
-        {/* Student Feedback Section - New section */}
+        {/* Student Feedback Section */}
         <StudentFeedbackSection />
         
         {/* YouTube Video Tutorial Section */}
         <YoutubeVideo />
 
-        {/* Wellness + Learning Integration Section */}
+        {/* Wellness Section */}
         <WellnessSection />
 
         {/* Analytics Section */}
         <AnalyticsSection />
 
-        {/* Footer Section with disclaimer */}
+        {/* Footer Section */}
         <FooterSection />
       </main>
     </div>

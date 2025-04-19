@@ -9,7 +9,7 @@ const SuccessStoriesSection: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-3xl font-bold mb-2">Success Stories</h2>
-          <p className="text-muted-foreground">What NEET and JEE 2023 Toppers Have to Say</p>
+          <p className="text-muted-foreground font-semibold text-amber-600">What NEET and JEE 2023 Toppers Have to Say</p>
         </div>
         
         <div className="max-w-4xl mx-auto mb-10">
@@ -56,4 +56,3 @@ const SuccessStoriesSection: React.FC = () => {
 };
 
 export default SuccessStoriesSection;
-

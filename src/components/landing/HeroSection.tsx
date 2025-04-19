@@ -9,10 +9,6 @@ const HeroSection: React.FC = () => {
     trackButtonClick('start_free_test', 'hero_section');
   };
 
-  const handleLearnMoreClick = () => {
-    trackButtonClick('not_sure_of_score', 'hero_section');
-  };
-
   return (
     <section className="py-10 md:py-24 flex flex-col items-center text-center relative">
       <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-4 sm:mb-6 max-w-3xl leading-tight z-10 px-3 sm:px-0 text-[#003366]">
@@ -37,14 +33,7 @@ const HeroSection: React.FC = () => {
           className="button-primary w-full sm:w-auto flex items-center justify-center gap-2 bg-[#F4841B] hover:bg-[#E67816]"
           onClick={handleStartTestClick}
         >
-          Let's Make a Comeback <ArrowRight className="w-5 h-5" />
-        </Link>
-        <Link
-          to="/learn-more"
-          className="button-secondary w-full sm:w-auto text-sm"
-          onClick={handleLearnMoreClick}
-        >
-          Know More
+          Free Toppers Highlighted NCERT <ArrowRight className="w-5 h-5" />
         </Link>
       </div>
     </section>
@@ -52,4 +41,3 @@ const HeroSection: React.FC = () => {
 };
 
 export default HeroSection;
-
