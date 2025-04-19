@@ -33,7 +33,7 @@ const HeroSection: React.FC = () => {
           className="button-primary w-full sm:w-auto flex items-center justify-center gap-2 bg-[#F4841B] hover:bg-[#E67816] text-center py-3 px-5 rounded-xl font-medium"
           onClick={handleStartTestClick}
         >
-          Free Toppers Highlighted NCERT <ArrowRight className="w-5 h-5" />
+          Physics Formula BOOK <ArrowRight className="w-5 h-5" />
         </Link>
       </div>
     </section>
