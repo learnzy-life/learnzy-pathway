@@ -10,7 +10,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <section className="py-10 md:py-24 flex flex-col items-center text-center relative">
+    <section className="py-6 md:py-12 flex flex-col items-center text-center relative">
       <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-4 sm:mb-6 max-w-3xl leading-tight z-10 px-3 sm:px-0 text-[#003366]">
         Crack{' '}
         <span className="text-gradient text-2xl sm:text-3xl md:text-4xl lg:text-5xl">

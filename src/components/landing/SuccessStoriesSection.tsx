@@ -5,14 +5,14 @@ import { Link } from 'react-router-dom';
 
 const SuccessStoriesSection: React.FC = () => {
   return (
-    <section className="py-8 md:py-12 bg-gradient-to-r from-white to-amber-50 rounded-xl mb-8">
+    <section className="py-6 md:py-8 bg-gradient-to-r from-white to-amber-50 rounded-xl mb-6">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           <h2 className="text-2xl md:text-3xl font-bold mb-2 text-learnzy-dark">Success Stories</h2>
           <p className="text-muted-foreground font-semibold text-amber-600">What NEET and JEE 2023 Toppers Have to Say</p>
         </div>
         
-        <div className="max-w-4xl mx-auto mb-12">
+        <div className="max-w-4xl mx-auto mb-8">
           <div className="aspect-video bg-white shadow-lg rounded-xl overflow-hidden border border-amber-100">
             <iframe 
               className="w-full h-full"
@@ -25,7 +25,7 @@ const SuccessStoriesSection: React.FC = () => {
           </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
           <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-100 text-center transform hover:scale-105 transition-transform duration-300">
             <h3 className="text-4xl font-bold text-amber-500 mb-3">104+</h3>
             <p className="text-learnzy-dark font-medium">students scored 150+ in Physics</p>

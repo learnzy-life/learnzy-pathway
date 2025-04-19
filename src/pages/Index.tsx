@@ -1,3 +1,4 @@
+
 import React from 'react'
 import Header from '../components/Header'
 import SuccessStoriesSection from '../components/landing/SuccessStoriesSection'
@@ -23,7 +24,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-white">
       <Header />
 
-      <main className="container mx-auto px-2 sm:px-6 pt-8 sm:pt-12 pb-6 sm:pb-10 overflow-hidden">
+      <main className="container mx-auto px-2 sm:px-6 pt-16 pb-6 sm:pb-10 overflow-hidden">
         {user && !isLoading && !hasCompletedOnboarding && (
           <div className="mb-6">
             <OnboardingNudge />
