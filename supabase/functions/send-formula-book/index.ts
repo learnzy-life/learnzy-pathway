@@ -30,6 +30,7 @@ serve(async (req) => {
       `,
     })
 
+    console.log("Email sent successfully to:", email)
     return new Response(JSON.stringify(emailResponse), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
