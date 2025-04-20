@@ -94,13 +94,13 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
       if (hasPaid) {
         // User has paid, navigate to pre-test
         navigate(`/pre-test/${subject}`)
+      } else if (subject=="biology") {
+        // User has not paid, initiate payment
+        navigate(`/pre-test/${subject}`)
       } else {
         // User has not paid, initiate payment
         initiateSinglePayment()
       }
-    } else if (isDevelopmentBypass) {
-      // Dev bypass is active, navigate directly
-      navigate(`/pre-test/${subject}`)
     }
     else {
       // User is not logged in and no bypass, navigate to auth
