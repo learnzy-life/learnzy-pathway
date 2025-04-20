@@ -1,4 +1,4 @@
-import { BookOpen, Clock, Sparkles, Zap } from 'lucide-react'
+import { BookOpen, Check, Clock, Sparkles, X, Zap } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -11,11 +11,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog'
+import { Input } from '../ui/input'
 
 interface PaymentPromotionDialogProps {
   isOpen: boolean
   onClose: () => void
 }
+
+// Coupon configuration
+const VALID_COUPONS = ['NEET2025', 'AIIMS2025'];
+const ORIGINAL_PRICE = 5000;
+const DISCOUNTED_PRICE = 345;
 
 const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
   isOpen,
@@ -25,12 +31,33 @@ const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
 
+  // Coupon state
+  const [couponInput, setCouponInput] = useState('')
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null)
+  const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error' | null, message: string | null }>({
+    type: null,
+    message: null
+  })
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false)
+
+  // Current price based on coupon status
+  const currentPrice = appliedCoupon ? DISCOUNTED_PRICE : ORIGINAL_PRICE
+
   // Countdown timer state
   const [timeRemaining, setTimeRemaining] = useState({
     hours: 24,
     minutes: 0,
     seconds: 0
   })
+
+  // Reset coupon state when dialog opens/closes
+  useEffect(() => {
+    if (!isOpen) {
+      setCouponInput('')
+      setAppliedCoupon(null)
+      setCouponMessage({ type: null, message: null })
+    }
+  }, [isOpen])
 
   // Set up countdown timer
   useEffect(() => {
@@ -73,6 +100,47 @@ const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
     return time.toString().padStart(2, '0');
   };
 
+  // Handle coupon application
+  const handleApplyCoupon = () => {
+    // Trim and normalize coupon code
+    const normalizedCoupon = couponInput.trim().toUpperCase();
+
+    setIsApplyingCoupon(true);
+
+    // Simulate network delay for better UX (optional)
+    setTimeout(() => {
+      if (!normalizedCoupon) {
+        setCouponMessage({
+          type: 'error',
+          message: 'Please enter a coupon code.'
+        });
+      } else if (VALID_COUPONS.includes(normalizedCoupon)) {
+        setAppliedCoupon(normalizedCoupon);
+        setCouponMessage({
+          type: 'success',
+          message: 'Coupon applied successfully!'
+        });
+        toast.success(`Coupon ${normalizedCoupon} applied!`);
+      } else {
+        setAppliedCoupon(null);
+        setCouponMessage({
+          type: 'error',
+          message: 'Invalid coupon code. Try NEET2025 or AIIMS2025.'
+        });
+      }
+      setIsApplyingCoupon(false);
+    }, 600);
+  };
+
+  // Handle coupon input changes
+  const handleCouponInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCouponInput(e.target.value);
+    // Reset message when user starts typing again
+    if (couponMessage.message) {
+      setCouponMessage({ type: null, message: null });
+    }
+  };
+
   const handlePaymentClick = async () => {
     if (!user) {
       toast.error('You need to be logged in to make a payment')
@@ -81,11 +149,22 @@ const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
 
     try {
       setIsLoading(true)
-      const result = await initiateGlobalPayment()
+
+      // Convert the current price to paise for Razorpay
+      const amountInPaise = currentPrice * 100
+
+      console.log(`Initiating payment with amount: ${currentPrice} (${amountInPaise} paise)`)
+
+      const result = await initiateGlobalPayment(amountInPaise)
 
       if (result.success) {
         // Set a session storage flag to indicate successful payment
         sessionStorage.setItem('payment_success', 'true')
+
+        // Save the applied coupon if any (optional, for analytics)
+        if (appliedCoupon) {
+          sessionStorage.setItem('applied_coupon', appliedCoupon)
+        }
 
         // Redirect to success page
         navigate('/payment-success')
@@ -167,6 +246,53 @@ const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
             </div>
           </div>
 
+          {/* Coupon Code Section */}
+          <div className="bg-gray-50 p-3 sm:p-4 rounded-xl border border-gray-100">
+            <h3 className="text-sm sm:text-base font-medium mb-2 text-gray-700">Have a coupon?</h3>
+            <div className="flex gap-2 sm:gap-3">
+              <div className="flex-grow">
+                <Input
+                  placeholder="Enter coupon code"
+                  value={couponInput}
+                  onChange={handleCouponInputChange}
+                  className="h-10"
+                  disabled={isApplyingCoupon || !!appliedCoupon}
+                />
+              </div>
+              <Button
+                variant={appliedCoupon ? "outline" : "default"}
+                size="sm"
+                className={`px-3 whitespace-nowrap ${appliedCoupon ? 'border-red-500 text-red-500 hover:bg-red-50' : 'bg-amber-500 hover:bg-amber-600 text-white'}`}
+                onClick={appliedCoupon ? () => {
+                  setAppliedCoupon(null);
+                  setCouponInput('');
+                  setCouponMessage({ type: null, message: null });
+                } : handleApplyCoupon}
+                disabled={isApplyingCoupon}
+              >
+                {isApplyingCoupon ? (
+                  <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
+                ) : appliedCoupon ? (
+                  <>Remove</>
+                ) : (
+                  <>Apply</>
+                )}
+              </Button>
+            </div>
+
+            {/* Coupon message */}
+            {couponMessage.message && (
+              <div className={`flex items-center mt-2 text-xs ${couponMessage.type === 'success' ? 'text-green-600' : 'text-red-500'}`}>
+                {couponMessage.type === 'success' ? (
+                  <Check className="h-3.5 w-3.5 mr-1" />
+                ) : (
+                  <X className="h-3.5 w-3.5 mr-1" />
+                )}
+                {couponMessage.message}
+              </div>
+            )}
+          </div>
+
           {/* Price Display */}
           <div className="bg-gradient-to-br from-amber-50 to-amber-100/70 p-3 sm:p-4 rounded-xl border border-amber-100 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -180,8 +306,15 @@ const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-xs sm:text-sm text-gray-500 line-through">₹5000</p>
-                <p className="text-xl sm:text-2xl font-bold text-amber-600">₹1234</p>
+                {appliedCoupon ? (
+                  <>
+                    <p className="text-xs sm:text-sm text-gray-500 line-through">₹{ORIGINAL_PRICE}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-amber-600">₹{DISCOUNTED_PRICE}</p>
+                    <p className="text-xs text-green-600">Coupon {appliedCoupon} applied</p>
+                  </>
+                ) : (
+                  <p className="text-xl sm:text-2xl font-bold text-amber-600">₹{ORIGINAL_PRICE}</p>
+                )}
               </div>
             </div>
           </div>
@@ -200,7 +333,7 @@ const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
                 </>
               ) : (
                 <>
-                  Unlock All Access Now
+                  Pay ₹{currentPrice} Now
                 </>
               )}
             </Button>

@@ -10,6 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import { useAuth } from '../../context/AuthContext'
+import { sendSignupEmail } from '../../services/emailService'
 
 interface AuthFormProps {
   isLogin: boolean
@@ -50,9 +51,15 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
         navigate(from, { replace: true })
       } else {
         await signUp(values.email, values.password)
+        // Send signup email after successful signup
+        try {
+          await sendSignupEmail(values.email, "Tanush");
+        } catch (emailError) {
+          console.error('Failed to send signup email:', emailError);
+        }
+
         // Navigate after successful sign-up
-        const from = location.state?.from || '/onboarding'
-        navigate(from, { replace: true })
+        navigate('/onboarding', { replace: true })
         toast.success('Account created successfully!')
       }
     } catch (error) {

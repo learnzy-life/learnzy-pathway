@@ -26,5 +26,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "supabase/functions/templates", "supabase/functions/send-email/TopperHighlightedNcertBioEmail.tsx", "supabase/functions/send-email/SignupPhysicsEmail.tsx"]
 }

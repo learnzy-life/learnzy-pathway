@@ -110,10 +110,15 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
 
   return (
     <div
-      className={`bg-white border border-gray-100 rounded-lg p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:border-amber-100 h-full ${
+      className={`relative bg-white border border-gray-100 rounded-lg p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:border-amber-100 h-full ${
         isCompleted ? 'opacity-70' : ''
       } ${locked ? 'opacity-70' : ''}`}
     >
+      {title === 'Biology' && !locked && !isCompleted && (
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-amber-400 to-yellow-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md whitespace-nowrap">
+          Get topper highlighted NCERT
+        </div>
+      )}
       <div className="flex flex-col h-full">
         <div
           className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 ${colorClass}`}
@@ -166,7 +171,8 @@ const SubjectCard: React.FC<SubjectCardProps> = ({
                </>
             ) : (
                <>
-                 Start Test <ArrowRight className="ml-2 w-4 h-4" />
+                 {(title === 'Physics' || title === 'Chemistry') && user && !hasPaid ? 'Get Access' : 'Start Test'}
+                 <ArrowRight className="ml-2 w-4 h-4" />
                </>
             )}
           </Button>
