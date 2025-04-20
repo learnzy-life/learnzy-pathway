@@ -1,7 +1,7 @@
 // Define API base URL from environment variables with fallback
 // FIXME: move to env variables
-// const API_BASE_URL = 'https://api.learnzy.co.in'
-const API_BASE_URL = 'http://localhost:3000'
+const API_BASE_URL = 'https://api.learnzy.co.in'
+// const API_BASE_URL = 'http://localhost:3000'
 
 // Add logging to confirm the endpoint
 console.log(`Email Service: Using API endpoint at ${API_BASE_URL}`);
