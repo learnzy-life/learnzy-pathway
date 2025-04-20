@@ -19,7 +19,7 @@ const SuccessStoriesSection: React.FC = () => {
           <div className="aspect-video bg-white shadow-lg rounded-xl overflow-hidden border border-amber-100 mb-8">
             <iframe 
               className="w-full h-full"
-              src="https://youtube.com/embed/shorts/oloiXicHd8s?si=M62KuY7EM20o9A7J" 
+              src="https://www.youtube.com/embed/oloiXicHd8s" 
               title="NEET toppers sharing their success stories"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
               allowFullScreen
@@ -71,3 +71,4 @@ const SuccessStoriesSection: React.FC = () => {
 };
 
 export default SuccessStoriesSection;
+
