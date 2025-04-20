@@ -125,7 +125,7 @@ const PaymentPromotionDialog: React.FC<PaymentPromotionDialogProps> = ({
         setAppliedCoupon(null);
         setCouponMessage({
           type: 'error',
-          message: 'Invalid coupon code. Try NEET2025 or AIIMS2025.'
+          message: 'Invalid coupon code.'
         });
       }
       setIsApplyingCoupon(false);
