@@ -3,8 +3,8 @@ import { loadRazorpayScript } from '../../utils/loadScript'
 
 // Define API base URL from environment variables with fallback
 // FIXME: move to env variables
-const API_BASE_URL = 'https://api.learnzy.co.in'
-// const API_BASE_URL = 'http://localhost:3000'
+// const API_BASE_URL = 'https://api.learnzy.co.in'
+const API_BASE_URL = 'http://localhost:3000'
 
 // Add logging to understand what endpoints we're using
 console.log(`Payment Service: Using API endpoints at ${API_BASE_URL}`)
