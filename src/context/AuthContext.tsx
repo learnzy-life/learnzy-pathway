@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Session, User } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { supabase } from '../lib/supabase'
 
 type AuthContextType = {
   user: User | null
@@ -12,8 +12,6 @@ type AuthContextType = {
   signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<void>
-  bypassAuth: () => void
-  isDevelopmentBypass: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -22,54 +20,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [isDevelopmentBypass, setIsDevelopmentBypass] = useState(false)
 
   useEffect(() => {
-    // Check if dev bypass is active in localStorage
-    const devBypass = localStorage.getItem('devAuthBypass') === 'true'
-    setIsDevelopmentBypass(devBypass)
-    
-    if (!devBypass) {
-      // Only fetch real auth if not in bypass mode
-      // Get initial session
-      supabase.auth.getSession().then(({ data: { session } }) => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      setUser(session?.user || null)
+      setIsLoading(false)
+    })
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
         setSession(session)
         setUser(session?.user || null)
         setIsLoading(false)
-      })
+      }
+    )
 
-      // Listen for auth changes
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        (_event, session) => {
-          setSession(session)
-          setUser(session?.user || null)
-          setIsLoading(false)
-        }
-      )
-
-      return () => subscription.unsubscribe()
-    } else {
-      // If in dev bypass mode, set a fake user
-      setIsLoading(false)
-    }
+    return () => subscription.unsubscribe()
   }, [])
-
-  const bypassAuth = () => {
-    // Create fake user and session for development
-    const fakeUser = {
-      id: 'dev-user-id',
-      email: 'dev@example.com',
-      app_metadata: {},
-      user_metadata: {},
-      aud: 'authenticated',
-      created_at: new Date().toISOString()
-    } as User
-    
-    setUser(fakeUser)
-    localStorage.setItem('devAuthBypass', 'true')
-    setIsDevelopmentBypass(true)
-    toast.success('Development auth bypass enabled')
-  }
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -78,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         password,
       })
-      
+
       if (error) {
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Invalid email or password. Please try again.')
@@ -86,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           throw error
         }
       }
-      
+
       if (data?.user) {
         toast.success('Successfully signed in!')
       }
@@ -108,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           emailRedirectTo: window.location.origin + '/auth'
         }
       })
-      
+
       if (error) {
         if (error.message.includes('User already registered')) {
           throw new Error('An account with this email already exists. Please sign in instead.')
@@ -116,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           throw error
         }
       }
-      
+
       toast.success('Account created! You can now sign in.')
     } catch (error) {
       toast.error(error.message || 'Error signing up')
@@ -163,16 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       setIsLoading(true)
-      
-      // If in dev bypass mode, just clear the bypass
-      if (isDevelopmentBypass) {
-        localStorage.removeItem('devAuthBypass')
-        setIsDevelopmentBypass(false)
-        setUser(null)
-        toast.success('Development bypass disabled')
-        return
-      }
-      
+
       const { error } = await supabase.auth.signOut()
       if (error) throw error
       toast.success('Successfully signed out')
@@ -192,8 +153,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signInWithGoogle,
     signOut,
     resetPassword,
-    bypassAuth,
-    isDevelopmentBypass
   }
 
   return (

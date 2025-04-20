@@ -1,16 +1,15 @@
-
+import { Button } from '@/components/ui/button'
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, EyeOff, LogIn } from 'lucide-react'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
-import { useAuth } from '../../context/AuthContext'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
 import { useForm } from 'react-hook-form'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { useAuth } from '../../context/AuthContext'
 
 interface AuthFormProps {
   isLogin: boolean
@@ -30,6 +29,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
 
   const { signIn, signUp, signInWithGoogle, resetPassword } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -45,14 +45,15 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
     try {
       if (isLogin) {
         await signIn(values.email, values.password)
-        // Navigate only if sign-in was successful
-        navigate('/')
+        // Navigate after successful sign-in
+        const from = location.state?.from || '/subjects'
+        navigate(from, { replace: true })
       } else {
         await signUp(values.email, values.password)
-        // Show success message but don't navigate - let user check email or sign in
-        toast.success('Account created successfully! You can now sign in.')
-        // Switch to login view after successful registration
-        setIsLogin(true)
+        // Navigate after successful sign-up
+        const from = location.state?.from || '/onboarding'
+        navigate(from, { replace: true })
+        toast.success('Account created successfully!')
       }
     } catch (error) {
       console.error('Authentication error:', error)
@@ -73,7 +74,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     const email = form.getValues('email')
     if (!email) {
       toast.error('Please enter your email address')
@@ -127,7 +128,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
             ) : null}
             Send Reset Link
           </Button>
-        
+
           <div className="text-center pt-2">
             <Button
               type="button"
@@ -156,9 +157,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="you@example.com" 
-                    {...field} 
+                  <Input
+                    placeholder="you@example.com"
+                    {...field}
                     type="email"
                     autoComplete="email"
                     className="bg-background"
@@ -167,7 +168,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="password"
@@ -176,9 +177,9 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Input 
-                      placeholder="••••••••" 
-                      {...field} 
+                    <Input
+                      placeholder="••••••••"
+                      {...field}
                       type={showPassword ? "text" : "password"}
                       autoComplete={isLogin ? "current-password" : "new-password"}
                       className="bg-background pr-10"

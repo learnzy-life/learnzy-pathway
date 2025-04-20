@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -12,7 +11,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   redirectTo = '/auth',
 }) => {
-  const { user, isLoading, isDevelopmentBypass } = useAuth()
+  const { user, isLoading } = useAuth()
   const location = useLocation()
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
 
@@ -33,12 +32,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     )
   }
 
-  // Allow access if dev bypass is active or user is authenticated
-  if (isDevelopmentBypass || user) {
+  // Allow access if user is authenticated
+  if (user) {
     return <>{children}</>
   }
 
-  // Redirect to login if not authenticated and not bypassed
+  // Redirect to login if not authenticated
   return <Navigate to={redirectTo} state={{ from: location.pathname }} replace />
 }
 
