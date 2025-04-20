@@ -19,7 +19,7 @@ interface PaymentPromotionDialogProps {
 }
 
 // Coupon configuration
-const VALID_COUPONS = ['NEET2025', 'AIIMS2025'];
+const VALID_COUPONS = ['NEET2025', 'AIIMS2025', 'LEARNZY2025'];
 const ORIGINAL_PRICE = 5000;
 const DISCOUNTED_PRICE = 345;
 
