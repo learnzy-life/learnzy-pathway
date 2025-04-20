@@ -1,4 +1,3 @@
-
 import React from 'react'
 import Header from '../components/Header'
 import SuccessStoriesSection from '../components/landing/SuccessStoriesSection'
@@ -14,6 +13,7 @@ import { useAuth } from '../context/AuthContext'
 import { useOnboardingStatus } from '../hooks/useOnboardingStatus'
 import OnboardingNudge from '../components/OnboardingNudge'
 import CountdownTimer from '../components/landing/CountdownTimer'
+import PromotionalBanner from '../components/landing/PromotionalBanner'
 
 const Index = () => {
   const { user } = useAuth()
@@ -25,6 +25,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-white">
       <Header />
       <CountdownTimer />
+      <PromotionalBanner />
 
       <main className="container mx-auto px-2 sm:px-6 pt-16 pb-6 sm:pb-10 overflow-hidden">
         {user && !isLoading && !hasCompletedOnboarding && (
@@ -48,4 +49,3 @@ const Index = () => {
 }
 
 export default Index
-
