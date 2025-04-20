@@ -34,7 +34,10 @@ const PromotionalBanner = () => {
       <div className="relative w-full overflow-hidden">
         <div className="animate-marquee whitespace-nowrap flex items-center justify-center gap-8">
           <BannerContent />
-          {/* Duplicate content for seamless loop */}
+          <BannerContent />
+          <BannerContent />
+          <BannerContent />
+          <BannerContent />
           <BannerContent />
         </div>
       </div>
