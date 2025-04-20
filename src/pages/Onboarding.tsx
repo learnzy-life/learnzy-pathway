@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Button } from '../components/ui/button'
@@ -21,8 +21,34 @@ const Onboarding: React.FC = () => {
   const [previousAttempts, setPreviousAttempts] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const { user } = useAuth()
+  const { user, isLoading: isAuthLoading } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const checkUserDetails = async () => {
+      if (!isAuthLoading && user) {
+        try {
+          const { data, error, count } = await supabase
+            .from('user_details')
+            .select('user_id', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+
+          if (error) {
+            console.error('Error checking user details:', error)
+            return
+          }
+
+          if (count && count > 0) {
+            navigate('/subjects', { replace: true })
+          }
+        } catch (err) {
+          console.error('Unexpected error checking user details:', err)
+        }
+      }
+    }
+
+    checkUserDetails()
+  }, [user, isAuthLoading, navigate])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

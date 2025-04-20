@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import React, { useState } from 'react'
 import Header from '../components/Header'
 import AuthForm from '../components/auth/AuthForm'
 import AuthHeader from '../components/auth/AuthHeader'
@@ -7,35 +6,7 @@ import { useAuth } from '../context/AuthContext'
 
 const Auth: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true)
-  const { user, isLoading, session } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
-
-  // Handle routing after OAuth redirect (e.g., Google sign-in)
-  useEffect(() => {
-    // Only proceed if:
-    // 1. User is authenticated
-    // 2. Not still loading
-    // 3. This is likely an OAuth redirect (checking search params)
-    if (user && !isLoading && window.location.hash.includes('access_token')) {
-      // Get current timestamp
-      const now = new Date()
-      // Get user creation timestamp
-      const userCreatedAt = new Date(user.created_at)
-      // Calculate time difference in seconds
-      const accountAge = (now.getTime() - userCreatedAt.getTime()) / 1000
-
-      // If account was created in the last 60 seconds, treat as new sign up
-      // Otherwise, treat as existing user sign in
-      if (accountAge < 60) {
-        // New sign up - route to onboarding
-        navigate('/onboarding', { replace: true })
-      } else {
-        // Existing sign in - route to subjects
-        navigate('/subjects', { replace: true })
-      }
-    }
-  }, [user, isLoading, navigate])
+  const { user, isLoading } = useAuth()
 
   if (isLoading && !user) {
     return (
