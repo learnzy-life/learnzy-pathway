@@ -15,6 +15,7 @@ import { useOnboardingStatus } from '../hooks/useOnboardingStatus'
 import OnboardingNudge from '../components/OnboardingNudge'
 import CountdownTimer from '../components/landing/CountdownTimer'
 import PromotionalBanner from '../components/landing/PromotionalBanner'
+import TeacherMessageSection from '../components/landing/TeacherMessageSection'
 
 const Index = () => {
   const { user } = useAuth()
@@ -36,6 +37,7 @@ const Index = () => {
         )}
 
         <HeroSection />
+        <TeacherMessageSection />
         <SuccessStoriesSection />
         <FreeResourcesSection />
         <BriefCyclesSection />
