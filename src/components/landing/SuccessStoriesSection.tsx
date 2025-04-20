@@ -19,17 +19,6 @@ const SuccessStoriesSection: React.FC = () => {
           <div className="aspect-video bg-white shadow-lg rounded-xl overflow-hidden border border-amber-100 mb-8">
             <iframe 
               className="w-full h-full"
-              src="https://www.instagram.com/reel/DIrB4yFAZth/embed" 
-              title="AIIMS Topper Success Story"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-              allowFullScreen
-              loading="lazy"
-            ></iframe>
-          </div>
-
-          <div className="aspect-video bg-white shadow-lg rounded-xl overflow-hidden border border-amber-100 mb-8">
-            <iframe 
-              className="w-full h-full"
               src="https://youtube.com/embed/shorts/oloiXicHd8s?si=M62KuY7EM20o9A7J" 
               title="NEET toppers sharing their success stories"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
