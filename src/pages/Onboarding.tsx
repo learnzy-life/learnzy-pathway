@@ -12,6 +12,7 @@ import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
+import { sendSignupEmail } from '../services/emailService'
 
 const Onboarding: React.FC = () => {
   const [fullName, setFullName] = useState('')
@@ -44,17 +45,22 @@ const Onboarding: React.FC = () => {
     setIsLoading(true)
 
     try {
-      const { error } = await supabase
-        .from('user_details')
-        .insert({
-          user_id: user.id,
-          full_name: fullName,
-          mobile_number: mobileNumber,
-          is_first_attempt: isFirstAttempt,
-          previous_attempts: isFirstAttempt ? null : parseInt(previousAttempts),
-        })
+      const { error } = await supabase.from('user_details').insert({
+        user_id: user.id,
+        full_name: fullName,
+        mobile_number: mobileNumber,
+        is_first_attempt: isFirstAttempt,
+        previous_attempts: isFirstAttempt ? null : parseInt(previousAttempts),
+      })
 
       if (error) throw error
+
+      // Send signup email after successful signup
+      try {
+        await sendSignupEmail(user.email, fullName)
+      } catch (emailError) {
+        console.error('Failed to send signup email:', emailError)
+      }
 
       toast.success('Details saved successfully!')
       navigate('/subjects')

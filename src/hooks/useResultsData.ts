@@ -1,10 +1,10 @@
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import { Subject } from '../services/question';
 import { getTestSession } from '../services/testSession';
 import { calculateAnalytics } from '../utils/analytics';
-import { supabase } from '../lib/supabase';
 
 export const useResultsData = (subject?: Subject, sessionId?: string | null) => {
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
       try {
         // Get session ID from params or prop
         const id = sessionId || searchParams.get('sessionId');
-        
+
         // Handle case when no session ID is provided
         if (!id) {
           console.error('No session ID provided for results page');
@@ -29,7 +29,7 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
           setLoading(false);
           return;
         }
-        
+
         // Handle case when no subject is provided
         if (!subject) {
           console.error('No subject provided for results page');
@@ -42,7 +42,7 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
 
         // Fetch session data
         const sessionData = await getTestSession(id);
-        
+
         if (!sessionData) {
           console.error('No session data found for ID:', id);
           setErrorMessage('No test data found. Please try taking the test again.');
@@ -57,10 +57,10 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
           setLoading(false);
           return;
         }
-        
+
         // Check if this is the user's first test in this subject
         const { data: { user } } = await supabase.auth.getUser();
-        
+
         if (user) {
           const { data: previousTests, error: previousTestsError } = await supabase
             .from('test_sessions')
@@ -69,25 +69,25 @@ export const useResultsData = (subject?: Subject, sessionId?: string | null) => 
             .eq('subject', subject)
             .not('id', 'eq', id)
             .limit(1);
-            
+
           if (previousTestsError) {
             console.error('Error checking for previous tests:', previousTestsError);
           } else {
             setIsFirstTest(previousTests?.length === 0);
           }
         }
-        
+
         // Calculate analytics with the questions from sessionData
         console.log(`Calculating analytics for ${sessionData.questions.length} questions`);
         const analytics = await calculateAnalytics(
-          sessionData.questions, 
+          sessionData.questions,
           sessionData.questions,
           subject
         );
-        
+
         // Add questions for review if needed
         analytics.questions = sessionData.questions;
-        
+
         setResultsData(analytics);
       } catch (error) {
         console.error('Error fetching results data:', error);

@@ -1,7 +1,7 @@
 // Define API base URL from environment variables with fallback
 // FIXME: move to env variables
-const API_BASE_URL = 'https://api.learnzy.co.in'
-// const API_BASE_URL = 'http://localhost:3000'
+// const API_BASE_URL = 'https://api.learnzy.co.in'
+const API_BASE_URL = 'http://localhost:3000'
 
 // Add logging to confirm the endpoint
 console.log(`Email Service: Using API endpoint at ${API_BASE_URL}`);
@@ -43,11 +43,11 @@ export async function sendSignupEmail(toEmail: string, userName: string): Promis
 /**
  * Calls the backend API to send the Topper Bio NCERT email.
  * @param toEmail - The recipient's email address.
- * @param props - Props containing { userName?, downloadLink }
+ * @param props - Props containing { userName? }
  */
 export async function sendTopperBioEmail(
   toEmail: string,
-  props: { userName?: string; downloadLink: string }
+  props: { userName?: string }
 ): Promise<void> {
    console.log(`Requesting topperBio email send to ${toEmail} via backend API.`);
   try {

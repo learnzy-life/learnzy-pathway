@@ -1,5 +1,6 @@
 import { toast } from 'sonner'
 import { supabase } from '../../lib/supabase'
+import { sendTopperBioEmail } from '../emailService'
 import { generateReviewTest } from './reviewTest'
 import { QuestionResult, TestSession } from './types'
 
@@ -49,6 +50,22 @@ export const completeTestSession = async (
     // Get subject-level metadata from the first question (trying both cases)
     const firstQuestion = questions.length > 0 ? questions[0] : null
 
+    // Determine the test subject from the questions or session ID
+    let testSubject = '';
+
+    // Try to determine subject from questions first
+    if (firstQuestion) {
+      testSubject = (firstQuestion.Subject || firstQuestion.subject || '').toLowerCase();
+    }
+
+    // If subject is not determined from questions, try from sessionId
+    if (!testSubject && sessionId) {
+      // If it's a diagnostic test, the subject is part of the URL/path
+      if (sessionId.includes('biology')) {
+        testSubject = 'biology';
+      }
+    }
+
     // Update the session with both questions data and top-level metadata fields
     const { error } = await supabase
       .from('test_sessions')
@@ -74,6 +91,47 @@ export const completeTestSession = async (
       console.error('Error completing test session:', error)
       toast.error('Failed to save test results')
       return false
+    }
+
+    // Get user data to send emails
+    const { data: sessionData } = await supabase
+      .from('test_sessions')
+      .select('user_id, subject')
+      .eq('id', sessionId)
+      .single()
+
+    // If subject wasn't determined earlier, use the one from the database
+    if (!testSubject && sessionData?.subject) {
+      testSubject = sessionData.subject.toLowerCase();
+    }
+
+    // Send email if this is a biology test
+    if (testSubject === 'biology' && sessionData?.user_id) {
+      try {
+        // Get user's email
+        const { data: userData } = await supabase
+          .from('user_details')
+          .select('email, full_name')
+          .eq('user_id', sessionData.user_id)
+          .single()
+
+        if (userData?.email) {
+          // Prepare download link for biology notes
+          console.log(`Sending topperBio email to ${userData.email} after biology test completion`);
+
+          // Send the topperBio email
+          await sendTopperBioEmail(userData.email, {
+            userName: userData.full_name || 'Student',
+          });
+
+          console.log('TopperBio email sent successfully');
+
+          // Don't show toast to avoid distracting the user from test results
+        }
+      } catch (emailError) {
+        console.error('Error sending topperBio email:', emailError);
+        // Don't fail the test completion if email fails
+      }
     }
 
     // Check if this is Mock 4 of a cycle and automatically generate Mock 5
