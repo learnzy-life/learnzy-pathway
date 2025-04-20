@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { Tag, Star, Clock } from 'lucide-react'
+import { Tag, Clock } from 'lucide-react'
 
 const PromotionalBanner = () => {
   return (
