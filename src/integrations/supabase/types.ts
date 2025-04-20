@@ -156,6 +156,30 @@ export type Database = {
         }
         Relationships: []
       }
+      locations: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          x_coordinate: number
+          y_coordinate: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          x_coordinate: number
+          y_coordinate: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          x_coordinate?: number
+          y_coordinate?: number
+        }
+        Relationships: []
+      }
       mock_1: {
         Row: {
           bloom_taxonomy: string | null

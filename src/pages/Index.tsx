@@ -13,6 +13,7 @@ import BriefCyclesSection from '../components/landing/BriefCyclesSection'
 import { useAuth } from '../context/AuthContext'
 import { useOnboardingStatus } from '../hooks/useOnboardingStatus'
 import OnboardingNudge from '../components/OnboardingNudge'
+import CountdownTimer from '../components/landing/CountdownTimer'
 
 const Index = () => {
   const { user } = useAuth()
@@ -23,6 +24,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-white">
       <Header />
+      <CountdownTimer />
 
       <main className="container mx-auto px-2 sm:px-6 pt-16 pb-6 sm:pb-10 overflow-hidden">
         {user && !isLoading && !hasCompletedOnboarding && (
@@ -46,3 +48,4 @@ const Index = () => {
 }
 
 export default Index
+
