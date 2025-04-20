@@ -64,10 +64,16 @@ const AuthForm: React.FC<AuthFormProps> = ({ isLogin, setIsLogin }) => {
 
   const handleGoogleSignIn = async () => {
     try {
+      setLoading(true)
+      toast.info('Redirecting to Google for authentication...')
       await signInWithGoogle()
       // Redirect happens automatically after OAuth
+      // Navigation after successful redirect is handled in Auth.tsx
     } catch (error) {
       console.error('Google sign-in error:', error)
+      toast.error('Failed to connect with Google. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
