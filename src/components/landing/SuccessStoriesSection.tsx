@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
@@ -19,7 +18,7 @@ const SuccessStoriesSection: React.FC = () => {
           <div className="aspect-video bg-white shadow-lg rounded-xl overflow-hidden border border-amber-100 mb-8">
             <iframe 
               className="w-full h-full"
-              src="https://www.youtube.com/embed/oloiXicHd8s" 
+              src="https://www.youtube.com/embed/oloiXicHd8s?si=M62KuY7EM20o9A7J" 
               title="NEET toppers sharing their success stories"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
               allowFullScreen
@@ -71,4 +70,3 @@ const SuccessStoriesSection: React.FC = () => {
 };
 
 export default SuccessStoriesSection;
-
