@@ -33,7 +33,7 @@ const HeroSection: React.FC = () => {
           className="button-primary w-full sm:w-auto flex items-center justify-center gap-2 bg-[#F4841B] hover:bg-[#E67816] text-center py-3 px-4 sm:px-5 rounded-xl font-medium text-sm sm:text-base whitespace-nowrap"
           onClick={handleStartTestClick}
         >
-          Free Physics Formula Book <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+          Start Your Free Test <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
         </Link>
       </div>
     </section>
@@ -41,3 +41,4 @@ const HeroSection: React.FC = () => {
 };
 
 export default HeroSection;
+
